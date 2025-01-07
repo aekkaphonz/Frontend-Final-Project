@@ -128,7 +128,7 @@ function ResponsiveAppBar() {
           </Search>
           <Box
             sx={{
-              mr: 2,
+              mr: 1,
               flexGrow: 1,
               display: { xs: 'none', md: 'flex' },
               justifyContent: 'flex-end', 
