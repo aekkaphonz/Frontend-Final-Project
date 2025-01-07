@@ -1,0 +1,9 @@
+.border__R{
+    border-radius: 0.75rem;
+}
+
+.btn1{
+    display: flex;
+    justify-content: center;
+
+}
