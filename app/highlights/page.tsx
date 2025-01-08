@@ -157,7 +157,7 @@ function Carousel({ data }) {
                         paddingLeft: 1,
                         borderRadius: 1,
                     }}>
-                        อ้ากกกก
+                        2
                     </Typography>
                 </Container>
             </div>
