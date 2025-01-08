@@ -1,6 +1,6 @@
 "use client";
 
-import { Box, Typography, IconButton, Button } from "@mui/material";
+import { Box, Typography, List, ListItem, ListItemIcon, ListItemText, IconButton, Button } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import Container from "@mui/material/Container";
@@ -11,11 +11,19 @@ import CardMedia from "@mui/material/CardMedia";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import Navbar from "@/app/navbar/page";
+import Article from "@/app/home/article/page"
 
-export default function Page() {
-    const [data, setData] = useState([]);
 
-    // ดึงข้อมูลในฝั่ง Client ด้วย useEffect
+interface Attraction {
+    id: string;
+    coverimage: string;
+    name: string;
+    detail: string;
+}
+
+export default function page() {
+    const [data, setData] = useState<Attraction[]>([]);
+
     useEffect(() => {
         async function fetchData() {
             try {
@@ -23,7 +31,7 @@ export default function Page() {
                 if (!res.ok) {
                     throw new Error("Failed to fetch data");
                 }
-                const result = await res.json();
+                const result: Attraction[] = await res.json();
                 setData(result);
             } catch (error) {
                 console.error(error);
@@ -40,7 +48,7 @@ export default function Page() {
     );
 }
 
-function Carousel({ data }) {
+function Carousel({ data }: { data: Attraction[] }) {
     const [currentIndex, setCurrentIndex] = React.useState(0);
 
     const handlePrev = () => {
@@ -132,7 +140,7 @@ function Carousel({ data }) {
                                         </CardContent>
                                     </CardActionArea>
                                     <Button size="small" color="primary">
-                                        <Link href={`/home/${a.id}`}>Learn More</Link>
+                                        <Link href={`/home/highlights/${a.id}`}>Learn More</Link>
                                     </Button>
                                 </Card>
                             ))}
@@ -149,18 +157,10 @@ function Carousel({ data }) {
                             <ArrowForwardIosIcon />
                         </IconButton>
                     </Box>
-
-                    <Typography variant="h6" gutterBottom sx={{
-                        mb: 2, mt: 4,
-                        borderBottom: "1px solid #176B87",
-                        backgroundColor: "#86B6F6",
-                        paddingLeft: 1,
-                        borderRadius: 1,
-                    }}>
-                        บทความที่น่าสนใจ
-                    </Typography>
+                    <Article/>
                 </Container>
             </div>
         </>
     );
 }
+
