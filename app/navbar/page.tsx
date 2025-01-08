@@ -240,7 +240,7 @@ function ResponsiveAppBar() {
         component="button"
         sx={{
           "&:hover": {
-            backgroundColor: "rgba(0, 0, 0, 0.08)", // สีเทาเมื่อ hover
+            backgroundColor: "rgba(0, 0, 0, 0.08)", 
           },
         }}
       >
