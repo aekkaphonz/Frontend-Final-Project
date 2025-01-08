@@ -157,7 +157,7 @@ function Carousel({ data }) {
                         paddingLeft: 1,
                         borderRadius: 1,
                     }}>
-                        2
+                        บทความที่น่าสนใจ
                     </Typography>
                 </Container>
             </div>
