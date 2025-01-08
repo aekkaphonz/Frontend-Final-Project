@@ -1,63 +1,149 @@
 "use client";
 
-import React from "react";
-import { Box, Button, TextField } from "@mui/material";
-
-import { useForm } from "react-hook-form";
+import React, { useState } from "react";
+import Visibility from "@mui/icons-material/Visibility";
+import VisibilityOff from "@mui/icons-material/VisibilityOff";
+import EmailIcon from "@mui/icons-material/Email";
+import {
+  Box,
+  Button,
+  Card,
+  CardContent,
+  Checkbox,
+  IconButton,
+  InputAdornment,
+  TextField,
+} from "@mui/material";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { Controller, useForm } from "react-hook-form";
+import './signin.css'
 function signin() {
-  const { register, handleSubmit } = useForm();
+  const [isFormSubmitted, setIsFormSubmitted] = useState(false);
+
+  const router = useRouter();
+  useEffect(() => {
+    if (isFormSubmitted) {
+      router.push("/");
+    }
+  }, [isFormSubmitted, router]);
+
+  const { register, handleSubmit, control } = useForm();
 
   const handleFormSubmit = (formData: any) => {
-    console.log("User email", formData);
-    alert("Login success! ");
+    setIsFormSubmitted(true);
+  };
+
+  const [showPassword, setShowPassword] = useState(false);
+
+  const handleClickShowPassword = () => {
+    setShowPassword((prev) => !prev);
   };
   return (
-    <div>
-      <form onSubmit={handleSubmit(handleFormSubmit)}>
-        <Box
-          className="border__R"
-          display="flex"
-          flexDirection="column"
-          gap="2rem"
-          mt="2rem"
-          padding="2rem"
-          maxWidth="500px"
-          mx="auto"
-        >
-          <div className="font-bold text-3xl">Sign in</div>
-          <div className="w-96">
-            <TextField
-              id="Email"
-              label="Email * "
-              variant="outlined"
-              fullWidth
-              {...register("email")}
-            />
-          </div>
-          <div className="w-full">
-            <TextField
-              type="password"
-              id="password"
-              label="Password"
-              variant="outlined"
-              fullWidth
-              {...register("password")}
-            />
-          </div>
+    <form onSubmit={handleSubmit(handleFormSubmit)}>
+      <Card sx={{ maxWidth: 500, mx: "auto", mt: "2rem" }}>
+        <CardContent>
+          <Box
+            className="border__R"
+            display="flex"
+            flexDirection="column"
+            gap="2rem"
+            mt="2rem"
+            padding="2rem"
+            maxWidth="500px"
+            mx="auto"
+          >
+            <div className="font-bold text-3xl">เข้าสู่ระบบ</div>
+            <div className="w-full">
+              <TextField
+                id="Email"
+                label="อีเมล"
+                variant="outlined"
+                fullWidth
+                {...register("email")}
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <EmailIcon />
+                    </InputAdornment>
+                  ),
+                }}
+              />
+            </div>
+            <div className="w-full">
+              <TextField
+                type={showPassword ? "text" : "password"}
+                id="password"
+                label="รหัสผ่าน"
+                variant="outlined"
+                fullWidth
+                {...register("password")}
+                InputProps={{
+                  endAdornment: (
+                    <IconButton
+                      aria-label="toggle password visibility"
+                      onClick={handleClickShowPassword}
+                      edge="end"
+                    >
+                      {showPassword ? <VisibilityOff /> : <Visibility />}
+                    </IconButton>
+                  ),
+                }}
+              />
+            </div>
 
-          <div className="btn1">
-            <Button
-              variant="contained"
-              className="w-full bg-green-500 text-white"
-              type="submit"
-            >
-              Login
-            </Button>
-          </div>
-          <a href="http://localhost:3000/signup" className="text-right underline">Don't have an account? Sign Up</a>
-        </Box>
-      </form>
-    </div>
+            <div className="grid grid-cols-2 justify-between items-center">
+              <div className="flex items-center">
+                <Controller
+                  name="agreeToTerms"
+                  control={control}
+                  render={({ field }) => (
+                    <div>
+                      <Checkbox {...field} defaultChecked />
+                      <label>บันทึกการเข้าใช้งาน</label>
+                    </div>
+                  )}
+                />
+              </div>
+              <div className="text-right">
+                <a href="http://localhost:3000/signup">ลืมรหัสผ่าน</a>
+              </div>
+            </div>
+
+            <div className="btn1">
+              <Button
+                variant="contained"
+                
+                sx={{
+                  backgroundColor: "#6B7280",
+                  "&:hover": {
+                    backgroundColor: "#4B5563",
+                  },
+                  "&:focus": {
+                    backgroundColor: "#6B7280",
+                  },
+                  "&.MuiButton-root": {
+                    outline: "none",
+                  },
+                }}
+                className="w-full text-white p-2 text-lg"
+                type="submit"
+              >
+                เข้าสู่ระบบ
+              </Button>
+            </div>
+            <div className="text-center">
+              <a
+                href="http://localhost:3000/signup"
+                className="text-right underline "
+              >
+                ลงทะเบียนเพื่อเริ่มต้นใช้งาน
+              </a>
+            </div>
+          </Box>
+        </CardContent>
+      </Card>
+    </form>
   );
 }
 
