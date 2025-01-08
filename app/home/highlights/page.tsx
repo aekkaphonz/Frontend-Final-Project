@@ -79,7 +79,7 @@ function Carousel({ data }: { data: Attraction[] }) {
                         mb: 2, borderBottom: "1px solid #176B87",
                         backgroundColor: "#86B6F6",
                         paddingLeft: 1,
-                        borderRadius: 1,
+                        borderRadius: 2,
 
                     }}>
                         ไฮไลท์
