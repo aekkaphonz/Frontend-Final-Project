@@ -27,11 +27,11 @@ import axios from "axios";
 export default function SignUp() {
   const [isFormSubmitted, setIsFormSubmitted] = useState(false);
   const router = useRouter();
-  useEffect(() => {
-    // if (isFormSubmitted) {
-    //   router.push("/signin");
-    // }
-  }, [isFormSubmitted, router]);
+  // useEffect(() => {
+  //   if (isFormSubmitted) {
+  //     router.push("/signin");
+  //    }
+  // }, [isFormSubmitted, router]);
 
   const {
     register,
@@ -61,7 +61,7 @@ export default function SignUp() {
       if (response.status === 201) {
         console.log("User created successfully:", response.data);
 
-        alert("ลงทะเบียนเสร็จสิ้น")
+        alert("ลงทะเบียนเสร็จสิ้น");
       }
     } catch (error) {}
   };

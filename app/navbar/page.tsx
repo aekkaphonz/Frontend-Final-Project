@@ -115,7 +115,7 @@ function ResponsiveAppBar() {
               textDecoration: 'none',
             }}
           >
-            App Block
+            Blogs
           </Typography>
           <Search>
             <SearchIconWrapper>
