@@ -1,9 +1,7 @@
-<<<<<<< HEAD
-import Navbar from "./Navbar";
 
-=======
+
 "use client";
->>>>>>> master
+
 
 import React from "react";
 import { Box, Button, Container, Typography, Grid, Card, CardContent } from "@mui/material";
@@ -11,14 +9,7 @@ import Navbar from "@/app/navbar/homeNavbar";
 
 export default function Home() {
   return (
-<<<<<<< HEAD
-    <div>
-    <Navbar/>
-    <div className=" text-6xl mt-6">
-      Blogs Page 
-    </div>
-    </div>
-=======
+
     <>
       <Navbar />
       <Container
@@ -189,6 +180,6 @@ export default function Home() {
         </Typography>
       </Box>
     </>
->>>>>>> master
+
   );
 }
