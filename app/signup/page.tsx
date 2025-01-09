@@ -22,6 +22,7 @@ import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import axios from "axios";
 
 export default function SignUp() {
   const [isFormSubmitted, setIsFormSubmitted] = useState(false);
@@ -41,31 +42,35 @@ export default function SignUp() {
     getValues,
   } = useForm();
 
-  const onSubmit = (data: FieldValues) => {
+  const onSubmit = async (data: FieldValues) => {
     const gender =
       data.gender === 0 ? "ชาย" : data.gender === 1 ? "หญิง" : "อื่นๆ";
     const dateOfBirth = data.dateOfBirth
       ? dayjs(data.dateOfBirth).format("DD/MM/YYYY")
       : "ยังไม่กำหนด";
 
-    console.log("Form Submitted Data:", {
-      userName: data.userName,
-      email: data.email,
-      password: data.password,
-      gender,
-      dateOfBirth,
-    });
+    try {
+      const response = await axios.post("http://localhost:3001/user/register", {
+        userName: data.userName,
+        email: data.email,
+        password: data.password,
+        gender,
+        dateOfBirth,
+      });
 
-    setIsFormSubmitted(true);
-    reset();
+      if (response.status === 201) {
+        console.log("User created successfully:", response.data);
+
+        alert("ลงทะเบียนเสร็จสิ้น")
+      }
+    } catch (error) {}
   };
 
-  const [age, setAge] = React.useState("");
+  // const [age, setAge] = React.useState("");
 
-  const handleChange = (event: SelectChangeEvent) => {
-    setAge(event.target.value);
-  };
-  const [value, setValue] = React.useState<Dayjs | null>(dayjs("2022-04-17"));
+  // const handleChange = (event: SelectChangeEvent) => {
+  //   setAge(event.target.value);
+  // };
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
@@ -126,8 +131,8 @@ export default function SignUp() {
                 {...register("password", {
                   required: "กรุณาระบุรหัสผ่าน",
                   minLength: {
-                    value: 10,
-                    message: "รหัสผ่านต้องมีอย่างน้อย 10 ตัว",
+                    value: 6,
+                    message: "รหัสผ่านต้องมีอย่างน้อย 6 ตัว",
                   },
                 })}
               />
