@@ -1,188 +1,250 @@
 "use client";
 
-import * as React from 'react';
-import Container from '@mui/material/Container';
-import Avatar from '@mui/material/Avatar';
-import Button from '@mui/material/Button';
-import Tooltip from '@mui/material/Tooltip';
-import { styled, alpha } from '@mui/material/styles';
-import AppBar from '@mui/material/AppBar';
-import Box from '@mui/material/Box';
-import Toolbar from '@mui/material/Toolbar';
-import IconButton from '@mui/material/IconButton';
-import Typography from '@mui/material/Typography';
-import InputBase from '@mui/material/InputBase';
-import MenuItem from '@mui/material/MenuItem';
-import Menu from '@mui/material/Menu';
-import MenuIcon from '@mui/icons-material/Menu';
-import SearchIcon from '@mui/icons-material/Search';
-import AddCircleIcon from '@mui/icons-material/AddCircle';
-import ChatIcon from '@mui/icons-material/Chat';
+import React, { useState } from "react";
+import {
+  Container,
+  Button,
+  AppBar,
+  Box,
+  Toolbar,
+  IconButton,
+  Typography,
+  InputBase,
+  Drawer,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+} from "@mui/material";
+import { styled, alpha } from "@mui/material/styles";
+import {
+  Menu as MenuIcon,
+  Search as SearchIcon,
+  AddCircle as AddCircleIcon,
+  Home as HomeIcon,
+  Person as PersonIcon,
+  Star as StarIcon,
+  Close as CloseIcon,
+} from "@mui/icons-material";
 
-const Search = styled('div')(({ theme }) => ({
-  position: 'absolute',
-  top: '50%',
-  left: '50%',
-  transform: 'translate(-50%, -50%)',
+const themeColors = {
+  primary: "#77bfa3",
+  secondary: "#98c9a3",
+  background: "#dde7c7",
+  hover: "#bfd8bd",
+  text: "#edeec9",
+};
+
+const Search = styled("div")(({ theme }) => ({
+  position: "relative",
   borderRadius: theme.shape.borderRadius,
   backgroundColor: alpha(theme.palette.common.white, 0.15),
-  '&:hover': {
+  "&:hover": {
     backgroundColor: alpha(theme.palette.common.white, 0.25),
   },
-  width: '500px',
+  marginLeft: 0,
+  width: "100%",
+  maxWidth: "500px",
 }));
 
-
 const StyledInputBase = styled(InputBase)(({ theme }) => ({
-  color: 'inherit',
-  '& .MuiInputBase-input': {
+  color: "inherit",
+  width: "100%",
+  "& .MuiInputBase-input": {
     padding: theme.spacing(1, 1, 1, 0),
-    // vertical padding + font size from searchIcon
     paddingLeft: `calc(1em + ${theme.spacing(4)})`,
-    transition: theme.transitions.create('width'),
-    width: '100%',
-    [theme.breakpoints.up('md')]: {
-      width: '20ch',
-    },
+    transition: theme.transitions.create("width"),
+    width: "100%",
   },
 }));
 
-const SearchIconWrapper = styled('div')(({ theme }) => ({
+const SearchIconWrapper = styled("div")(({ theme }) => ({
   padding: theme.spacing(0, 2),
-  height: '100%',
-  position: 'absolute',
-  pointerEvents: 'none',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
+  height: "100%",
+  position: "absolute",
+  pointerEvents: "none",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
 }));
 
-const pages = ['ตั้งกระทู้'];
-const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
+const pages = ["สร้าง"];
 
 function ResponsiveAppBar() {
-  const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
-  const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
+  const [drawerOpen, setDrawerOpen] = useState(false);
 
-  const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorElNav(event.currentTarget);
-  };
-  const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorElUser(event.currentTarget);
-  };
+  const toggleDrawer =
+    (open: boolean) =>
+      (event: React.MouseEvent<HTMLElement> | React.KeyboardEvent<HTMLElement>) => {
+        // ตรวจสอบชนิดของ event
+        if (
+          event.type === "keydown" &&
+          ((event as React.KeyboardEvent).key === "Tab" ||
+            (event as React.KeyboardEvent).key === "Shift")
+        ) {
+          return;
+        }
+        setDrawerOpen(open);
+      };
 
-  const handleCloseNavMenu = () => {
-    setAnchorElNav(null);
-  };
-
-  const handleCloseUserMenu = () => {
-    setAnchorElUser(null);
-  };
 
   return (
-    <AppBar position="static">
-      <Container maxWidth="xl">
-        <Toolbar disableGutters>
-          <IconButton
-            size="large"
-            edge="start"
-            color="inherit"
-            aria-label="open drawer"
-            sx={{ mr: 2 }}
-          >
-            <MenuIcon />
-          </IconButton>
-          <IconButton
-            size="large"
-            edge="start"
-            color="inherit"
-            aria-label="open drawer"
-            sx={{ mr: 2 }}
-          >
-            <ChatIcon />
-          </IconButton>
-          <Typography
-            variant="h6"
-            noWrap
-            component="a"
-            href="/"
-            sx={{
-              mr: 2,
-              display: { xs: 'none', md: 'flex' },
-              fontFamily: 'monospace',
-              fontWeight: 700,
-              color: 'inherit',
-              textDecoration: 'none',
-            }}
-          >
-            App Block
-          </Typography>
-          <Search>
-            <SearchIconWrapper>
-              <SearchIcon />
-            </SearchIconWrapper>
-            <StyledInputBase
-              placeholder="Search…"
-              inputProps={{ 'aria-label': 'search' }}
-            />
-          </Search>
-          <Box
-            sx={{
-              mr: 1,
-              flexGrow: 1,
-              display: { xs: 'none', md: 'flex' },
-              justifyContent: 'flex-end', 
-              alignItems: 'center', 
-            }}
-          >
-            {pages.map((page) => (
+    <>
+      {/* Navbar */}
+      <AppBar position="static" sx={{ bgcolor: themeColors.primary }}>
+        <Container maxWidth="xl">
+          <Toolbar disableGutters>
+            {/* Menu Button */}
+            <IconButton
+              size="large"
+              edge="start"
+              color="inherit"
+              onClick={toggleDrawer(true)}
+              sx={{ mr: 2 }}
+            >
+              <MenuIcon />
+            </IconButton>
+            {/* Logo */}
+            <Typography
+              variant="h6"
+              noWrap
+              component="a"
+              href="/home/highlights"
+              sx={{
+                mr: 2,
+                fontFamily: "monospace",
+                fontWeight: 700,
+                color: themeColors.text,
+                textDecoration: "none",
+              }}
+            >
+              App Block
+            </Typography>
+            {/* Search Bar */}
+            <Search>
+              <SearchIconWrapper>
+                <SearchIcon />
+              </SearchIconWrapper>
+              <StyledInputBase
+                placeholder="Search…"
+                inputProps={{ "aria-label": "search" }}
+              />
+            </Search>
+            {/* Create Button */}
+            <Box sx={{ flexGrow: 1, display: "flex", justifyContent: "flex-end" }}>
+              {pages.map((page) => (
+                <Button
+                  key={page}
+                  sx={{
+                    my: 2,
+                    color: themeColors.text,
+                    display: "block",
+                    "&:hover": { bgcolor: themeColors.hover },
+                  }}
+                >
+                  <AddCircleIcon sx={{ mr: 1 }} />
+                  {page}
+                </Button>
+              ))}
+            </Box>
+            {/* Login/Register Buttons */}
+            <Box sx={{ display: "flex", gap: 1 }}>
               <Button
-                key={page}
-                onClick={handleCloseNavMenu}
+                variant="outlined"
                 sx={{
-                  my: 2,
-                  color: 'white',
-                  display: 'block',
+                  color: themeColors.text,
+                  borderColor: themeColors.text,
+                  fontWeight: "bold",
+                  borderRadius: "8px",
+                  "&:hover": {
+                    bgcolor: alpha(themeColors.text, 0.1),
+                    borderColor: themeColors.text,
+                  },
                 }}
               >
-                <AddCircleIcon sx={{ mr: 1 }} />
-                {page}
+                เข้าสู่ระบบ
               </Button>
-            ))}
-          </Box>
+            </Box>
+          </Toolbar>
+        </Container>
+      </AppBar>
 
-          <Box sx={{ flexGrow: 0 }}>
-            <Tooltip title="Open settings">
-              <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
-              </IconButton>
-            </Tooltip>
-            <Menu
-              sx={{ mt: '45px' }}
-              id="menu-appbar"
-              anchorEl={anchorElUser}
-              anchorOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
-              }}
-              keepMounted
-              transformOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
-              }}
-              open={Boolean(anchorElUser)}
-              onClose={handleCloseUserMenu}
-            >
-              {settings.map((setting) => (
-                <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                  <Typography sx={{ textAlign: 'center' }}>{setting}</Typography>
-                </MenuItem>
-              ))}
-            </Menu>
+      {/* Sidebar Drawer */}
+      <Drawer anchor="left" open={drawerOpen} onClose={toggleDrawer(false)}>
+        <Box
+          sx={{
+            width: 250,
+            bgcolor: themeColors.background,
+            height: "100%",
+          }}
+          role="presentation"
+          onClick={toggleDrawer(false)}
+          onKeyDown={toggleDrawer(false)}
+        >
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              padding: "8px",
+            }}
+          >
+            <Typography variant="h6" sx={{ fontWeight: "bold", color: themeColors.primary }}>
+              Menu
+            </Typography>
+            <IconButton onClick={toggleDrawer(false)}>
+              <CloseIcon />
+            </IconButton>
           </Box>
-        </Toolbar>
-      </Container>
-    </AppBar>
+          <List>
+            <ListItem
+              component="a"
+              href="/home/highlights"
+              sx={{
+                "&:hover": { bgcolor: themeColors.hover },
+                display: "flex",
+                alignItems: "center",
+              }}
+            >
+              <ListItemIcon>
+                <HomeIcon />
+              </ListItemIcon>
+              <ListItemText primary="หน้าหลัก" />
+            </ListItem>
+
+            <ListItem
+              component="a"
+              href="/home/feed"
+              sx={{
+                "&:hover": { bgcolor: themeColors.hover },
+                display: "flex",
+                alignItems: "center",
+              }}
+            >
+              <ListItemIcon>
+                <PersonIcon />
+              </ListItemIcon>
+              <ListItemText primary="หน้าฟีด" />
+            </ListItem>
+            <ListItem
+              component="a"
+               href="/home/popular"
+              sx={{
+                "&:hover": { bgcolor: themeColors.hover },
+                display: "flex",
+                alignItems: "center",
+              }}
+            >
+              <ListItemIcon>
+                <StarIcon />
+              </ListItemIcon>
+              <ListItemText primary="ยอดนิยม" />
+            </ListItem>
+          </List>
+        </Box>
+      </Drawer>
+    </>
   );
 }
+
 export default ResponsiveAppBar;
