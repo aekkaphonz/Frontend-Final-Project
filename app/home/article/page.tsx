@@ -93,7 +93,7 @@ export default function Page() {
           </Typography>
 
           <List>
-            {articles.slice(0, showMore ? articles.length : 2).map((article) => (
+            {articles.slice(0, showMore ? articles.length : 10).map((article) => (
               <ListItem
                 key={article.id}
                 sx={{
