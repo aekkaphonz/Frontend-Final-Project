@@ -12,7 +12,6 @@ import {
 } from "@mui/material";
 import { useRouter } from "next/navigation"; // ใช้สำหรับนำทางใน Next.js
 import Navbar from "@/app/navbar/page";
-import  Article from "@/app/home/article/page" 
 
 interface Attraction {
   id: string;
@@ -46,7 +45,7 @@ export default function Page() {
   }, []);
 
   return (
-    <Box sx={{ display: "flex", minHeight: "100vh", backgroundColor: "#f9f9f9" }}>
+    <Box sx={{ display: "flex", minHeight: "100vh", backgroundColor: "#f6f6e7" }}>
       {/* Navbar */}
       <Navbar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
 
@@ -69,8 +68,11 @@ export default function Page() {
           sx={{
             fontWeight: "bold",
             textAlign: "center",
-            color: "#333",
+            color: "#94c379",
             marginBottom: "30px",
+            borderBottom: "2px solid #c9dbc4",
+            display: "inline-block",
+            paddingBottom: "5px",
           }}
         >
           บทความ
@@ -102,6 +104,12 @@ function RegionCard({ attraction }: { attraction: Attraction }) {
           overflow: "hidden",
           boxShadow: "0 4px 10px rgba(0, 0, 0, 0.1)",
           position: "relative",
+          transition: "transform 0.2s",
+          "&:hover": {
+            transform: "scale(1.05)",
+            boxShadow: "0 6px 15px rgba(0, 0, 0, 0.2)",
+          },
+          backgroundColor: "#f6f6e7",
         }}
       >
         <CardActionArea onClick={handleCardClick}>
@@ -113,16 +121,29 @@ function RegionCard({ attraction }: { attraction: Attraction }) {
           />
           <CardContent
             sx={{
-              backgroundColor: "#fff",
+              backgroundColor: "#ffffff",
               textAlign: "center",
               padding: "10px",
+              borderTop: "3px solid #94c379",
             }}
           >
             <Typography
               variant="h6"
-              sx={{ fontWeight: "bold", color: "#333" }}
+              sx={{
+                fontWeight: "bold",
+                color: "#333",
+                marginBottom: "5px",
+              }}
             >
               {attraction.name}
+            </Typography>
+            <Typography
+              variant="body2"
+              sx={{
+                color: "#353c41",
+              }}
+            >
+              {attraction.detail.substring(0, 50)}...
             </Typography>
           </CardContent>
         </CardActionArea>

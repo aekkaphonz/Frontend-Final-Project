@@ -25,10 +25,16 @@ const themeColors = {
 };
 
 export default function PopularPage() {
-  const [posts, setPosts] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [page, setPage] = useState(1);
+  const [posts, setPosts] = useState<any[]>([]); // เก็บข้อมูลโพสต์
+  const [loading, setLoading] = useState(true); // สถานะการโหลดข้อมูล
+  const [page, setPage] = useState(1); // หน้าปัจจุบัน
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false); // ควบคุม Sidebar
 
+  const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen);
+  };
+
+  // ดึงข้อมูลจาก API
   const fetchPosts = async (pageNumber = 1) => {
     try {
       setLoading(true);
@@ -56,7 +62,7 @@ export default function PopularPage() {
   return (
     <Box sx={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
       {/* Navbar */}
-      <Navbar />
+      <Navbar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
 
       {/* Main Content */}
       <Container
@@ -65,9 +71,9 @@ export default function PopularPage() {
           backgroundColor: themeColors.background,
           padding: 3,
           borderRadius: 2,
-          mt: 10, // เพิ่ม margin เพื่อหลีกเลี่ยงการทับกับ Navbar
+          mt: 10,
           boxShadow: "0px 4px 8px rgba(0,0,0,0.1)",
-          flexGrow: 1, // ดันให้ footer อยู่ด้านล่างสุดของหน้า
+          flexGrow: 1,
         }}
       >
         <Typography
@@ -90,7 +96,7 @@ export default function PopularPage() {
         ) : (
           <List>
             {posts.map((post, index) => (
-              <Box key={post.id}>
+              <React.Fragment key={post.id}>
                 <ListItem
                   sx={{
                     display: "flex",
@@ -119,11 +125,13 @@ export default function PopularPage() {
                     <IconButton>
                       <CommentIcon color="primary" />
                     </IconButton>
-                    <Typography>{Math.floor(Math.random() * 50)}</Typography>
+                    <Typography>
+                      {Math.floor(Math.random() * 50) + 1}
+                    </Typography>
                   </Box>
                 </ListItem>
                 {index < posts.length - 1 && <Divider sx={{ my: 2 }} />}
-              </Box>
+              </React.Fragment>
             ))}
           </List>
         )}
