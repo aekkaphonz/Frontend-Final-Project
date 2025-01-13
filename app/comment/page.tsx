@@ -64,18 +64,17 @@ export default function BlogPage() {
           description: attraction.detail,
           comments: [],
           coverImage: attraction.coverimage,
-          viewCount: 0, // เริ่มต้นเป็น 0
-          likeCount: 0, // เริ่มต้นเป็น 0
+          viewCount: 0, // เริ่มจาก 0
+          likeCount: 0, // เริ่มจาก 0
         }));
         setBoards(fetchedBoards);
       } catch (error) {
         console.error("Error fetching boards:", error);
       }
     };
-  
+
     fetchBoards();
   }, []);
-  
 
   const handleAddComment = () => {
     if (selectedBoard && activeComment.trim()) {
@@ -168,6 +167,24 @@ export default function BlogPage() {
     setSelectedBoard(board);
   };
 
+  const handleLike = () => {
+    if (selectedBoard) {
+      setBoards((prevBoards) =>
+        prevBoards.map((board) =>
+          board.id === selectedBoard.id
+            ? { ...board, likeCount: board.likeCount + 1 }
+            : board
+        )
+      );
+
+      setSelectedBoard((prevBoard) =>
+        prevBoard
+          ? { ...prevBoard, likeCount: prevBoard.likeCount + 1 }
+          : null
+      );
+    }
+  };
+
   return (
     <>
       <Navbar />
@@ -210,7 +227,9 @@ export default function BlogPage() {
                         }}
                       >
                         <Box sx={{ display: "flex", alignItems: "center" }}>
-                          <VisibilityIcon sx={{ fontSize: "1.2rem", mr: 1 }} />
+                          <VisibilityIcon
+                            sx={{ fontSize: "1.2rem", mr: 1 }}
+                          />
                           <Typography>{board.viewCount}</Typography>
                         </Box>
                         <Box sx={{ display: "flex", alignItems: "center" }}>
@@ -222,7 +241,9 @@ export default function BlogPage() {
                           </Typography>
                         </Box>
                         <Box sx={{ display: "flex", alignItems: "center" }}>
-                          <ThumbUpIcon sx={{ fontSize: "1.2rem", mr: 1 }} />
+                          <ThumbUpIcon
+                            sx={{ fontSize: "1.2rem", mr: 1 }}
+                          />
                           <Typography>{board.likeCount}</Typography>
                         </Box>
                       </Box>
@@ -252,6 +273,29 @@ export default function BlogPage() {
             <Typography variant="body1" sx={{ mb: 4 }}>
               {selectedBoard.description}
             </Typography>
+
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                mb: 2,
+              }}
+            >
+              <Button
+                variant="outlined"
+                onClick={handleLike}
+                sx={{
+                  mr: 2,
+                  borderColor: "#77bfa3",
+                  color: "#77bfa3",
+                  "&:hover": { backgroundColor: "#f5f5f5" },
+                }}
+              >
+                <ThumbUpIcon sx={{ mr: 1 }} />
+                Like
+              </Button>
+              <Typography>{selectedBoard.likeCount} Likes</Typography>
+            </Box>
 
             <Box
               sx={{
