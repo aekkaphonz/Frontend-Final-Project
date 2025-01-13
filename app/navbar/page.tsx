@@ -1,249 +1,176 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
-  Container,
-  Button,
   AppBar,
-  Box,
   Toolbar,
-  IconButton,
+  Box,
   Typography,
-  InputBase,
-  Drawer,
   List,
   ListItem,
   ListItemIcon,
   ListItemText,
+  Button,
+  IconButton,
+  Drawer,
 } from "@mui/material";
-import { styled, alpha } from "@mui/material/styles";
 import {
-  Menu as MenuIcon,
-  Search as SearchIcon,
-  AddCircle as AddCircleIcon,
   Home as HomeIcon,
   Person as PersonIcon,
   Star as StarIcon,
-  Close as CloseIcon,
+  Menu as MenuIcon,
 } from "@mui/icons-material";
+import Link from "next/link";
 
 const themeColors = {
-  primary: "#77bfa3",
-  secondary: "#98c9a3",
-  background: "#dde7c7",
-  hover: "#bfd8bd",
-  text: "#edeec9",
+  primary: "#ffffff",
+  sidebar: "#f5f5f5",
+  text: "#333333",
+  hover: "#e0e0e0",
 };
 
-const Search = styled("div")(({ theme }) => ({
-  position: "relative",
-  borderRadius: theme.shape.borderRadius,
-  backgroundColor: alpha(theme.palette.common.white, 0.15),
-  "&:hover": {
-    backgroundColor: alpha(theme.palette.common.white, 0.25),
-  },
-  marginLeft: 0,
-  width: "100%",
-  maxWidth: "500px",
-}));
-
-const StyledInputBase = styled(InputBase)(({ theme }) => ({
-  color: "inherit",
-  width: "100%",
-  "& .MuiInputBase-input": {
-    padding: theme.spacing(1, 1, 1, 0),
-    paddingLeft: `calc(1em + ${theme.spacing(4)})`,
-    transition: theme.transitions.create("width"),
-    width: "100%",
-  },
-}));
-
-const SearchIconWrapper = styled("div")(({ theme }) => ({
-  padding: theme.spacing(0, 2),
-  height: "100%",
-  position: "absolute",
-  pointerEvents: "none",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-}));
-
-const pages = ["สร้าง"];
-
 function ResponsiveAppBar() {
-  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [currentPath, setCurrentPath] = useState("");
+  const [sidebarOpen, setSidebarOpen] = useState(true); // เปิด Sidebar เริ่มต้น
 
-  const toggleDrawer =
-    (open: boolean) =>
-      (event: React.MouseEvent<HTMLElement> | React.KeyboardEvent<HTMLElement>) => {
-        // ตรวจสอบชนิดของ event
-        if (
-          event.type === "keydown" &&
-          ((event as React.KeyboardEvent).key === "Tab" ||
-            (event as React.KeyboardEvent).key === "Shift")
-        ) {
-          return;
-        }
-        setDrawerOpen(open);
-      };
+  const toggleSidebar = () => {
+    setSidebarOpen((prev) => !prev);
+  };
 
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setCurrentPath(window.location.pathname);
+    }
+  }, []);
+
+  const menuItems = [
+    { text: "หน้าหลัก", icon: <HomeIcon />, link: "/home/highlights" },
+    { text: "หน้าฟีด", icon: <PersonIcon />, link: "/home/feed" },
+    { text: "ยอดนิยม", icon: <StarIcon />, link: "/home/popular" },
+  ];
 
   return (
-    <>
+    <Box sx={{ display: "flex" }}>
       {/* Navbar */}
-      <AppBar position="static" sx={{ bgcolor: themeColors.primary }}>
-        <Container maxWidth="xl">
-          <Toolbar disableGutters>
-            {/* Menu Button */}
-            <IconButton
-              size="large"
-              edge="start"
-              color="inherit"
-              onClick={toggleDrawer(true)}
-              sx={{ mr: 2 }}
-            >
-              <MenuIcon />
-            </IconButton>
-            {/* Logo */}
-            <Typography
-              variant="h6"
-              noWrap
-              component="a"
-              href="/home/highlights"
-              sx={{
-                mr: 2,
-                fontFamily: "monospace",
-                fontWeight: 700,
-                color: themeColors.text,
-                textDecoration: "none",
-              }}
-            >
-              App Block
-            </Typography>
-            {/* Search Bar */}
-            <Search>
-              <SearchIconWrapper>
-                <SearchIcon />
-              </SearchIconWrapper>
-              <StyledInputBase
-                placeholder="Search…"
-                inputProps={{ "aria-label": "search" }}
-              />
-            </Search>
-            {/* Create Button */}
-            <Box sx={{ flexGrow: 1, display: "flex", justifyContent: "flex-end" }}>
-              {pages.map((page) => (
-                <Button
-                  key={page}
-                  sx={{
-                    my: 2,
-                    color: themeColors.text,
-                    display: "block",
-                    "&:hover": { bgcolor: themeColors.hover },
-                  }}
-                >
-                  <AddCircleIcon sx={{ mr: 1 }} />
-                  {page}
-                </Button>
-              ))}
-            </Box>
-            {/* Login/Register Buttons */}
-            <Box sx={{ display: "flex", gap: 1 }}>
-              <Button
-                variant="outlined"
-                sx={{
-                  color: themeColors.text,
-                  borderColor: themeColors.text,
-                  fontWeight: "bold",
-                  borderRadius: "8px",
-                  "&:hover": {
-                    bgcolor: alpha(themeColors.text, 0.1),
-                    borderColor: themeColors.text,
-                  },
-                }}
-              >
-                เข้าสู่ระบบ
-              </Button>
-            </Box>
-          </Toolbar>
-        </Container>
-      </AppBar>
+      <AppBar
+        position="fixed"
+        sx={{
+          bgcolor: themeColors.primary,
+          zIndex: 1201,
+          transition: "background-color 0.3s",
+        }}
+      >
+        <Toolbar>
+          {/* Toggle Sidebar */}
+          <IconButton
+            edge="start"
+            color="inherit"
+            aria-label="menu"
+            onClick={toggleSidebar}
+            sx={{ marginRight: 2 }}
+          >
+            <MenuIcon />
+          </IconButton>
 
-      {/* Sidebar Drawer */}
-      <Drawer anchor="left" open={drawerOpen} onClose={toggleDrawer(false)}>
-        <Box
-          sx={{
-            width: 250,
-            bgcolor: themeColors.background,
-            height: "100%",
-          }}
-          role="presentation"
-          onClick={toggleDrawer(false)}
-          onKeyDown={toggleDrawer(false)}
-        >
-          <Box
+          {/* Logo */}
+          <Typography
+            component={Link}
+            href="/"
+            variant="h6"
             sx={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              padding: "8px",
+              flexGrow: 1,
+              fontWeight: "bold",
+              color: themeColors.text,
+              textDecoration: "none",
+              transition: "color 0.3s",
             }}
           >
-            <Typography variant="h6" sx={{ fontWeight: "bold", color: themeColors.primary }}>
-              Menu
-            </Typography>
-            <IconButton onClick={toggleDrawer(false)}>
-              <CloseIcon />
-            </IconButton>
-          </Box>
-          <List>
-            <ListItem
-              component="a"
-              href="/home/highlights"
-              sx={{
-                "&:hover": { bgcolor: themeColors.hover },
-                display: "flex",
-                alignItems: "center",
-              }}
-            >
-              <ListItemIcon>
-                <HomeIcon />
-              </ListItemIcon>
-              <ListItemText primary="หน้าหลัก" />
-            </ListItem>
+            App Block
+          </Typography>
 
-            <ListItem
-              component="a"
-              href="/home/feed"
-              sx={{
-                "&:hover": { bgcolor: themeColors.hover },
-                display: "flex",
-                alignItems: "center",
-              }}
+          {/* Login Button */}
+          <Button
+            variant="outlined"
+            sx={{
+              color: themeColors.text,
+              borderColor: themeColors.text,
+              textTransform: "none",
+              marginLeft: "16px",
+              "&:hover": {
+                borderColor: themeColors.hover,
+                bgcolor: themeColors.hover,
+              },
+              transition: "all 0.3s",
+            }}
+          >
+            เข้าสู่ระบบ
+          </Button>
+        </Toolbar>
+      </AppBar>
+
+      {/* Sidebar */}
+      <Drawer
+        variant="persistent"
+        anchor="left"
+        open={sidebarOpen}
+        sx={{
+          "& .MuiDrawer-paper": {
+            width: "250px",
+            bgcolor: themeColors.sidebar,
+            color: themeColors.text,
+            padding: "16px 8px",
+            boxShadow: "2px 0 5px rgba(0,0,0,0.1)",
+          },
+        }}
+      >
+        <Typography
+          variant="h6"
+          sx={{
+            fontWeight: "bold",
+            marginBottom: "16px",
+            textAlign: "center",
+          }}
+        >
+          Menu
+        </Typography>
+        <List>
+          {menuItems.map((item) => (
+            <Link
+              href={item.link}
+              key={item.text}
+              style={{ textDecoration: "none" }}
             >
-              <ListItemIcon>
-                <PersonIcon />
-              </ListItemIcon>
-              <ListItemText primary="หน้าฟีด" />
-            </ListItem>
-            <ListItem
-              component="a"
-               href="/home/popular"
-              sx={{
-                "&:hover": { bgcolor: themeColors.hover },
-                display: "flex",
-                alignItems: "center",
-              }}
-            >
-              <ListItemIcon>
-                <StarIcon />
-              </ListItemIcon>
-              <ListItemText primary="ยอดนิยม" />
-            </ListItem>
-          </List>
-        </Box>
+              <ListItem
+                sx={{
+                  "&:hover": { bgcolor: themeColors.hover },
+                  color: themeColors.text,
+                  bgcolor:
+                    item.link === currentPath ? themeColors.hover : "inherit",
+                  transition: "background-color 0.3s",
+                }}
+              >
+                <ListItemIcon sx={{ color: themeColors.text }}>
+                  {item.icon}
+                </ListItemIcon>
+                <ListItemText primary={item.text} />
+              </ListItem>
+            </Link>
+          ))}
+        </List>
       </Drawer>
-    </>
+
+      {/* Main Content Area */}
+      <Box
+        component="main"
+        sx={{
+          flexGrow: 1,
+          padding: "16px",
+          marginLeft: sidebarOpen ? "250px" : "0", // Dynamic Layout
+          transition: "margin-left 0.3s",
+        }}
+      >
+      </Box>
+    </Box>
   );
 }
 

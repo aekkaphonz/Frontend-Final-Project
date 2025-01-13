@@ -3,10 +3,6 @@
 import {
     Box,
     Typography,
-    List,
-    ListItem,
-    ListItemIcon,
-    ListItemText,
     IconButton,
     Button,
     Container,
@@ -19,8 +15,9 @@ import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
-import Navbar from "@/app/navbar/page";
 import Article from "@/app/home/article/page";
+import Navbar from "@/app/navbar/page"
+
 
 interface Attraction {
     id: string;
@@ -30,7 +27,13 @@ interface Attraction {
 }
 
 export default function page() {
+    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [data, setData] = useState<Attraction[]>([]);
+
+
+    const toggleSidebar = () => {
+        setIsSidebarOpen(!isSidebarOpen);
+    };
 
     useEffect(() => {
         async function fetchData() {
@@ -72,133 +75,135 @@ function Carousel({ data }: { data: Attraction[] }) {
     };
 
     return (
-        <Container
-            maxWidth="md"
-            sx={{
-                mt: 5,
-                borderRadius: 2,
-                border: "2px solid #77bfa3",
-                backgroundColor: "#dde7c7",
-                padding: 2,
-                marginLeft: "auto",
-                marginRight: "auto",
-                px: 4,
-            }}
-        >
-            <Typography
-                variant="h6"
-                gutterBottom
+        <>
+            <Container
+                maxWidth="lg"
                 sx={{
-                    mb: 2,
-                    borderBottom: "2px solid #98c9a3",
-                    backgroundColor: "#98c9a3",
-                    paddingLeft: 1,
-                    borderRadius: 1,
-                    color: "#edf6e5",
+                    mt: 5,
+                    borderRadius: 2,
+                    border: "2px solid #77bfa3",
+                    backgroundColor: "#dde7c7",
+                    padding: 2,
+                    marginLeft: "auto",
+                    marginRight: "auto",
+                    px: 4,
                 }}
             >
-                ไฮไลท์
-            </Typography>
-
-            <Box
-                sx={{
-                    display: "flex",
-                    alignItems: "center",
-                    position: "relative",
-                    overflow: "hidden",
-                }}
-            >
-                <IconButton
-                    onClick={handlePrev}
+                <Typography
+                    variant="h6"
+                    gutterBottom
                     sx={{
-                        position: "absolute",
-                        left: 0,
-                        zIndex: 1,
-                        color: "#77bfa3",
-                        "&:hover": { backgroundColor: "#bfd8bd" },
+                        mb: 2,
+                        borderBottom: "2px solid #98c9a3",
+                        backgroundColor: "#98c9a3",
+                        paddingLeft: 1,
+                        borderRadius: 1,
+                        color: "#edf6e5",
                     }}
                 >
-                    <ArrowBackIosIcon />
-                </IconButton>
+                    ไฮไลท์
+                </Typography>
 
                 <Box
                     sx={{
                         display: "flex",
-                        transition: "transform 0.5s ease-in-out",
-                        transform: `translateX(-${currentIndex * 100}%)`,
-                        width: `${data.length * 100}%`,
+                        alignItems: "center",
+                        position: "relative",
+                        overflow: "hidden",
                     }}
                 >
-                    {data.map((a) => (
-                        <Card
-                            key={a.id}
-                            sx={{
-                                flex: "0 0 33.3333%",
-                                maxWidth: "100%",
-                                mx: 1,
-                                mb: 2,
-                                borderBottom: "2px solid #77bfa3",
-                                backgroundColor: "#edf6e5",
-                                position: "relative",
-                            }}
-                        >
-                            <CardActionArea
-                                sx={{
-                                    "&:hover": {
-                                        backgroundColor: "#dde7c7",
-                                    },
-                                }}
-                            >
-                                <CardMedia
-                                    component="img"
-                                    image={a.coverimage}
-                                    alt={a.name}
-                                    sx={{ height: 150 }}
-                                />
-                                <CardContent>
-                                    <Typography
-                                        gutterBottom
-                                        variant="h6"
-                                        component="div"
-                                        sx={{ color: "#77bfa3" }}
-                                    >
-                                        {a.name}
-                                    </Typography>
-                                    <Typography variant="body2" color="#353c41">
-                                        {a.detail}
-                                    </Typography>
-                                </CardContent>
-                            </CardActionArea>
-                            <Button
-                                size="small"
-                                sx={{
-                                    color: "#77bfa3",
-                                    position: "absolute",
-                                    bottom: 8,
-                                    left: 8,
-                                    "&:hover": { color: "#bfd8bd" },
-                                }}
-                            >
-                                <Link href={`/home/highlights/${a.id}`}>Learn More</Link>
-                            </Button>
-                        </Card>
-                    ))}
-                </Box>
+                    <IconButton
+                        onClick={handlePrev}
+                        sx={{
+                            position: "absolute",
+                            left: 0,
+                            zIndex: 1,
+                            color: "#77bfa3",
+                            "&:hover": { backgroundColor: "#bfd8bd" },
+                        }}
+                    >
+                        <ArrowBackIosIcon />
+                    </IconButton>
 
-                <IconButton
-                    onClick={handleNext}
-                    sx={{
-                        position: "absolute",
-                        right: 0,
-                        zIndex: 1,
-                        color: "#77bfa3",
-                        "&:hover": { backgroundColor: "#bfd8bd" },
-                    }}
-                >
-                    <ArrowForwardIosIcon />
-                </IconButton>
-            </Box>
-            <Article />
-        </Container>
+                    <Box
+                        sx={{
+                            display: "flex",
+                            transition: "transform 0.5s ease-in-out",
+                            transform: `translateX(-${currentIndex * 100}%)`,
+                            width: `${data.length * 100}%`,
+                        }}
+                    >
+                        {data.map((a) => (
+                            <Card
+                                key={a.id}
+                                sx={{
+                                    flex: "0 0 33.3333%",
+                                    maxWidth: "100%",
+                                    mx: 1,
+                                    mb: 2,
+                                    borderBottom: "2px solid #77bfa3",
+                                    backgroundColor: "#edf6e5",
+                                    position: "relative",
+                                }}
+                            >
+                                <CardActionArea
+                                    sx={{
+                                        "&:hover": {
+                                            backgroundColor: "#dde7c7",
+                                        },
+                                    }}
+                                >
+                                    <CardMedia
+                                        component="img"
+                                        image={a.coverimage}
+                                        alt={a.name}
+                                        sx={{ height: 150 }}
+                                    />
+                                    <CardContent>
+                                        <Typography
+                                            gutterBottom
+                                            variant="h6"
+                                            component="div"
+                                            sx={{ color: "#77bfa3" }}
+                                        >
+                                            {a.name}
+                                        </Typography>
+                                        <Typography variant="body2" color="#353c41">
+                                            {a.detail}
+                                        </Typography>
+                                    </CardContent>
+                                </CardActionArea>
+                                <Button
+                                    size="small"
+                                    sx={{
+                                        color: "#77bfa3",
+                                        position: "absolute",
+                                        bottom: 8,
+                                        left: 8,
+                                        "&:hover": { color: "#bfd8bd" },
+                                    }}
+                                >
+                                    <Link href={`/home/highlights/${a.id}`}>Learn More</Link>
+                                </Button>
+                            </Card>
+                        ))}
+                    </Box>
+
+                    <IconButton
+                        onClick={handleNext}
+                        sx={{
+                            position: "absolute",
+                            right: 0,
+                            zIndex: 1,
+                            color: "#77bfa3",
+                            "&:hover": { backgroundColor: "#bfd8bd" },
+                        }}
+                    >
+                        <ArrowForwardIosIcon />
+                    </IconButton>
+                </Box>
+                <Article />
+            </Container>
+        </>
     );
 }

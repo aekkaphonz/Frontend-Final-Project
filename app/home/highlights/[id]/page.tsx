@@ -12,6 +12,7 @@ import FavoriteIcon from '@mui/icons-material/Favorite';
 import ShareIcon from '@mui/icons-material/Share';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
+import Navbar from "@/app/navbar/page"
 
 interface myParams {
     params: {
@@ -30,6 +31,8 @@ export default async function Page({ params }: myParams) {
     const data = await getData(params.id);
 
     return (
+        <>
+        <Navbar/>
         <Container maxWidth="md" sx={{ mt: 4, textAlign: 'center' }}>
             <Card 
                 sx={{
@@ -89,5 +92,6 @@ export default async function Page({ params }: myParams) {
                 </CardActions>
             </Card>
         </Container>
+        </>
     )
 }

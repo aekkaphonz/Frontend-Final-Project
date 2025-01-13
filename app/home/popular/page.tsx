@@ -57,7 +57,7 @@ export default function PopularPage() {
     <>
     <Navbar/>
     <Container
-      maxWidth="md"
+      maxWidth="lg"
       sx={{
         backgroundColor: themeColors.background,
         padding: 3,
