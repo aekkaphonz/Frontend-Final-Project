@@ -1,10 +1,5 @@
 "use client";
 
-import React, { useState } from "react";
-import Visibility from "@mui/icons-material/Visibility";
-import VisibilityOff from "@mui/icons-material/VisibilityOff";
-import EmailIcon from "@mui/icons-material/Email";
-import GoogleIcon from "@mui/icons-material/Google";
 import {
   Box,
   Button,
@@ -15,6 +10,12 @@ import {
   InputAdornment,
   TextField,
 } from "@mui/material";
+import React, { useState } from "react";
+import Visibility from "@mui/icons-material/Visibility";
+import VisibilityOff from "@mui/icons-material/VisibilityOff";
+import EmailIcon from "@mui/icons-material/Email";
+import GoogleIcon from "@mui/icons-material/Google";
+
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Controller, useForm } from "react-hook-form";

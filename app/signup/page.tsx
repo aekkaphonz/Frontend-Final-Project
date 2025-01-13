@@ -22,7 +22,7 @@ import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import axios from "axios";
+import axios, { AxiosError }  from "axios";  
 
 export default function SignUp() {
   const [isFormSubmitted, setIsFormSubmitted] = useState(false);
@@ -44,26 +44,33 @@ export default function SignUp() {
 
   const onSubmit = async (data: FieldValues) => {
     const gender =
-      data.gender === 0 ? "ชาย" : data.gender === 1 ? "หญิง" : "อื่นๆ";
+      data.gender === 0 ? "เลือก" : data.gender === 1 ? "ชาย" : data.gender === 2 ? "หญิง":"อื่นๆ";
     const dateOfBirth = data.dateOfBirth
       ? dayjs(data.dateOfBirth).format("DD/MM/YYYY")
       : "ยังไม่กำหนด";
 
-    try {
-      const response = await axios.post("http://localhost:3001/user/register", {
-        userName: data.userName,
-        email: data.email,
-        password: data.password,
-        gender,
-        dateOfBirth,
-      });
-
-      if (response.status === 201) {
-        console.log("User created successfully:", response.data);
-
-        alert("ลงทะเบียนเสร็จสิ้น");
+      try {
+        const response = await axios.post("http://localhost:3001/user/register", {
+          userName: data.userName,
+          email: data.email,
+          password: data.password,
+          gender,
+          dateOfBirth,
+        });
+      
+        if (response.status === 201) {
+          console.log("User created successfully:", response.data);
+          alert("ลงทะเบียนเสร็จสิ้น");
+        }
+      } catch (error) {
+        if (axios.isAxiosError(error)) {
+          const errorMessage = error.response?.data?.message || "เกิดข้อผิดพลาด";
+          alert(errorMessage);
+        } else {
+          alert("เกิดข้อผิดพลาดที่ไม่ทราบสาเหตุ");
+        }
       }
-    } catch (error) {}
+      
   };
 
   // const [age, setAge] = React.useState("");
@@ -163,12 +170,12 @@ export default function SignUp() {
                         {...field}
                         label="เพศ"
                       >
-                        <MenuItem value="">
-                          <em></em>
+                        <MenuItem value={0}>
+                          <em>เลือก</em>
                         </MenuItem>
-                        <MenuItem value={0}>ชาย</MenuItem>
-                        <MenuItem value={1}>หญิง</MenuItem>
-                        <MenuItem value={2}>อื่นๆ</MenuItem>
+                        <MenuItem value={1}>ชาย</MenuItem>
+                        <MenuItem value={2}>หญิง</MenuItem>
+                        <MenuItem value={3}>อื่นๆ</MenuItem>
                       </Select>
                     </FormControl>
                   )}
