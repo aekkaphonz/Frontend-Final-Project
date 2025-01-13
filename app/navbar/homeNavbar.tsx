@@ -48,7 +48,7 @@ export default function HomeNavbar() {
                         },
                     }}
                 >
-                    Signin
+                    Sign in
                 </Button>
             </Toolbar>
         </AppBar>

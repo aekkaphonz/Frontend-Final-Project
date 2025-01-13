@@ -16,10 +16,9 @@ import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import EmailIcon from "@mui/icons-material/Email";
 import GoogleIcon from "@mui/icons-material/Google";
 
-import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Controller, useForm } from "react-hook-form";
-
+import { useForm } from "react-hook-form";
+import axios from "axios";
 function signin() {
   const [isFormSubmitted, setIsFormSubmitted] = useState(false);
 
@@ -31,6 +30,16 @@ function signin() {
   // }, [isFormSubmitted, router]);
 
   const { register, handleSubmit, control } = useForm();
+
+  const handleGoogleLogin = async () => {
+    try {
+     
+      window.location.href = "http://localhost:3001/auth/google";
+    } catch (error) {
+      console.error("Login failed:", error);
+    }
+  };
+  
 
   const handleFormSubmit = async (formData: any) => {
     try {
@@ -115,6 +124,7 @@ function signin() {
               />
             </div>
 
+            {/* เผื่อใช้
             <div className="grid grid-cols-2 justify-between items-center">
               <div className="flex items-center">
                 <Controller
@@ -131,18 +141,22 @@ function signin() {
               <div className="text-right">
                 <a href="http://localhost:3000/signup">ลืมรหัสผ่าน</a>
               </div>
+            </div> */}
+
+            <div className="text-right text-red-500">
+              <a href="http://localhost:3000/signup">ลืมรหัสผ่าน ?</a>
             </div>
 
             <div className="btn1">
               <Button
                 variant="contained"
                 sx={{
-                  backgroundColor: "#6B7280",
+                  backgroundColor: "#77bfa3",
                   "&:hover": {
-                    backgroundColor: "#4B5563",
+                    backgroundColor: "#98c9a3",
                   },
                   "&:focus": {
-                    backgroundColor: "#6B7280",
+                    backgroundColor: "#bfd8bd",
                   },
                   "&.MuiButton-root": {
                     outline: "none",
@@ -168,12 +182,12 @@ function signin() {
               <Button
                 variant="contained"
                 sx={{
-                  backgroundColor: "#6B7280",
+                  backgroundColor: "#77bfa3",
                   "&:hover": {
-                    backgroundColor: "#4B5563",
+                    backgroundColor: "#98c9a3",
                   },
                   "&:focus": {
-                    backgroundColor: "#6B7280",
+                    backgroundColor: "#bfd8bd",
                   },
                   "&.MuiButton-root": {
                     outline: "none",
@@ -181,6 +195,7 @@ function signin() {
                 }}
                 className="w-4/6 text-white p-2 text-sm"
                 type="submit"
+                onClick={handleGoogleLogin}
                 startIcon={<GoogleIcon />}
               >
                 Login with Google
