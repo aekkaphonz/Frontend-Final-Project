@@ -3,13 +3,17 @@ import React, { useEffect, useState } from "react";
 import Container from "@mui/material/Container";
 import Grid from "@mui/material/Grid";
 import Card from "@mui/material/Card";
-import CardActions from "@mui/material/CardActions";
 import CardContent from "@mui/material/CardContent";
 import CardMedia from "@mui/material/CardMedia";
-import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
-import TextField from "@mui/material/TextField";
 import Box from "@mui/material/Box";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import ChatBubbleOutlineIcon from "@mui/icons-material/ChatBubbleOutline";
+import ThumbUpIcon from "@mui/icons-material/ThumbUp";
+import Button from "@mui/material/Button";
+import TextField from "@mui/material/TextField";
+import IconButton from "@mui/material/IconButton";
+import ReplyIcon from "@mui/icons-material/Reply";
 import Navbar from "@/app/navbar/page";
 
 interface Board {
@@ -18,12 +22,15 @@ interface Board {
   description: string;
   comments: Comment[];
   coverImage?: string;
+  viewCount: number;
+  likeCount: number;
 }
 
 interface Comment {
   id: number;
   name: string;
   message: string;
+  replies?: Comment[];
 }
 
 async function getAttractions() {
@@ -34,10 +41,18 @@ async function getAttractions() {
   return res.json();
 }
 
+const countCommentsAndReplies = (comments: Comment[]): number => {
+  return comments.length + comments.reduce((sum, comment) => sum + (comment.replies?.length || 0), 0);
+};
+
 export default function BlogPage() {
   const [boards, setBoards] = useState<Board[]>([]);
   const [selectedBoard, setSelectedBoard] = useState<Board | null>(null);
   const [activeComment, setActiveComment] = useState<string>("");
+  const [replyMessage, setReplyMessage] = useState<string>("");
+  const [replyingToCommentId, setReplyingToCommentId] = useState<number | null>(
+    null
+  );
 
   useEffect(() => {
     const fetchBoards = async () => {
@@ -49,25 +64,28 @@ export default function BlogPage() {
           description: attraction.detail,
           comments: [],
           coverImage: attraction.coverimage,
+          viewCount: 0, // เริ่มต้นเป็น 0
+          likeCount: 0, // เริ่มต้นเป็น 0
         }));
         setBoards(fetchedBoards);
       } catch (error) {
         console.error("Error fetching boards:", error);
       }
     };
-
+  
     fetchBoards();
   }, []);
+  
 
   const handleAddComment = () => {
     if (selectedBoard && activeComment.trim()) {
-      const newComment = {
+      const newComment: Comment = {
         id: selectedBoard.comments.length + 1,
         name: "Anonymous",
         message: activeComment,
+        replies: [],
       };
 
-      // อัปเดต state ของ boards และ selectedBoard
       setBoards((prevBoards) =>
         prevBoards.map((board) =>
           board.id === selectedBoard.id
@@ -83,9 +101,71 @@ export default function BlogPage() {
       );
 
       setActiveComment("");
-    } else {
-      alert("Please enter a comment!");
     }
+  };
+
+  const handleAddReply = (commentId: number) => {
+    if (selectedBoard && replyMessage.trim()) {
+      setBoards((prevBoards) =>
+        prevBoards.map((board) =>
+          board.id === selectedBoard.id
+            ? {
+                ...board,
+                comments: board.comments.map((comment) =>
+                  comment.id === commentId
+                    ? {
+                        ...comment,
+                        replies: [
+                          ...(comment.replies || []),
+                          {
+                            id: (comment.replies?.length || 0) + 1,
+                            name: "Anonymous",
+                            message: replyMessage,
+                          },
+                        ],
+                      }
+                    : comment
+                ),
+              }
+            : board
+        )
+      );
+
+      setSelectedBoard((prevBoard) =>
+        prevBoard
+          ? {
+              ...prevBoard,
+              comments: prevBoard.comments.map((comment) =>
+                comment.id === commentId
+                  ? {
+                      ...comment,
+                      replies: [
+                        ...(comment.replies || []),
+                        {
+                          id: (comment.replies?.length || 0) + 1,
+                          name: "Anonymous",
+                          message: replyMessage,
+                        },
+                      ],
+                    }
+                  : comment
+              ),
+            }
+          : null
+      );
+
+      setReplyMessage("");
+      setReplyingToCommentId(null);
+    }
+  };
+
+  const handleViewBoard = (board: Board) => {
+    setBoards((prevBoards) =>
+      prevBoards.map((b) =>
+        b.id === board.id ? { ...b, viewCount: b.viewCount + 1 } : b
+      )
+    );
+    setSelectedBoard(board);
   };
 
   return (
@@ -97,11 +177,16 @@ export default function BlogPage() {
             <Typography variant="h4" align="center" gutterBottom>
               Attractions
             </Typography>
-
             <Grid container spacing={2}>
               {boards.map((board) => (
                 <Grid item xs={12} md={4} key={board.id}>
-                  <Card>
+                  <Card
+                    onClick={() => handleViewBoard(board)}
+                    sx={{
+                      cursor: "pointer",
+                      "&:hover": { boxShadow: 4 },
+                    }}
+                  >
                     {board.coverImage && (
                       <CardMedia
                         sx={{ height: 140 }}
@@ -116,16 +201,32 @@ export default function BlogPage() {
                       <Typography variant="body2" color="text.secondary">
                         {board.description}
                       </Typography>
-                    </CardContent>
-                    <CardActions>
-                      <Button
-                        size="small"
-                        variant="outlined"
-                        onClick={() => setSelectedBoard(board)}
+                      <Box
+                        sx={{
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "space-between",
+                          mt: 2,
+                        }}
                       >
-                        View Comments ({board.comments.length})
-                      </Button>
-                    </CardActions>
+                        <Box sx={{ display: "flex", alignItems: "center" }}>
+                          <VisibilityIcon sx={{ fontSize: "1.2rem", mr: 1 }} />
+                          <Typography>{board.viewCount}</Typography>
+                        </Box>
+                        <Box sx={{ display: "flex", alignItems: "center" }}>
+                          <ChatBubbleOutlineIcon
+                            sx={{ fontSize: "1.2rem", mr: 1 }}
+                          />
+                          <Typography>
+                            {countCommentsAndReplies(board.comments)}
+                          </Typography>
+                        </Box>
+                        <Box sx={{ display: "flex", alignItems: "center" }}>
+                          <ThumbUpIcon sx={{ fontSize: "1.2rem", mr: 1 }} />
+                          <Typography>{board.likeCount}</Typography>
+                        </Box>
+                      </Box>
+                    </CardContent>
                   </Card>
                 </Grid>
               ))}
@@ -135,9 +236,13 @@ export default function BlogPage() {
           <>
             <Button
               variant="contained"
-              color="primary"
               onClick={() => setSelectedBoard(null)}
-              sx={{ mt: 2 }}
+              sx={{
+                mt: 2,
+                backgroundColor: "#77bfa3",
+                color: "#fff",
+                "&:hover": { backgroundColor: "#66a994" },
+              }}
             >
               Back to Boards
             </Button>
@@ -156,33 +261,6 @@ export default function BlogPage() {
                 borderRadius: 2,
               }}
             >
-              <Typography variant="h6" sx={{ mb: 2 }}>
-                Comments ({selectedBoard.comments.length})
-              </Typography>
-              {selectedBoard.comments.length === 0 ? (
-                <Typography color="text.secondary">
-                  No comments yet.
-                </Typography>
-              ) : (
-                <Box sx={{ mb: 2 }}>
-                  {selectedBoard.comments.map((comment) => (
-                    <Box
-                      key={comment.id}
-                      sx={{
-                        mb: 2,
-                        p: 2,
-                        backgroundColor: "#f5f5f5",
-                        borderRadius: 1,
-                        boxShadow: 1,
-                      }}
-                    >
-                      <Typography>
-                        <strong>{comment.name}:</strong> {comment.message}
-                      </Typography>
-                    </Box>
-                  ))}
-                </Box>
-              )}
               <TextField
                 fullWidth
                 multiline
@@ -194,11 +272,79 @@ export default function BlogPage() {
               />
               <Button
                 variant="contained"
-                color="primary"
                 onClick={handleAddComment}
+                sx={{
+                  backgroundColor: "#77bfa3",
+                  color: "#fff",
+                  "&:hover": { backgroundColor: "#66a994" },
+                }}
               >
                 Add Comment
               </Button>
+
+              <Box sx={{ mt: 4 }}>
+                {selectedBoard.comments.map((comment) => (
+                  <Box
+                    key={comment.id}
+                    sx={{
+                      mt: 2,
+                      p: 2,
+                      backgroundColor: "#f5f5f5",
+                      borderRadius: 1,
+                      boxShadow: 1,
+                    }}
+                  >
+                    <Typography>
+                      <strong>{comment.name}</strong>: {comment.message}
+                    </Typography>
+                    {comment.replies &&
+                      comment.replies.map((reply) => (
+                        <Box
+                          key={reply.id}
+                          sx={{
+                            mt: 1,
+                            pl: 2,
+                            borderLeft: "2px solid #ccc",
+                          }}
+                        >
+                          <Typography>
+                            <strong>{reply.name}</strong>: {reply.message}
+                          </Typography>
+                        </Box>
+                      ))}
+                    <IconButton
+                      size="small"
+                      onClick={() => setReplyingToCommentId(comment.id)}
+                    >
+                      <ReplyIcon />
+                    </IconButton>
+                    {replyingToCommentId === comment.id && (
+                      <Box sx={{ mt: 2 }}>
+                        <TextField
+                          fullWidth
+                          multiline
+                          rows={2}
+                          placeholder="Reply to comment"
+                          value={replyMessage}
+                          onChange={(e) => setReplyMessage(e.target.value)}
+                          sx={{ mb: 2 }}
+                        />
+                        <Button
+                          variant="contained"
+                          onClick={() => handleAddReply(comment.id)}
+                          sx={{
+                            backgroundColor: "#77bfa3",
+                            color: "#fff",
+                            "&:hover": { backgroundColor: "#66a994" },
+                          }}
+                        >
+                          Add Reply
+                        </Button>
+                      </Box>
+                    )}
+                  </Box>
+                ))}
+              </Box>
             </Box>
           </>
         )}

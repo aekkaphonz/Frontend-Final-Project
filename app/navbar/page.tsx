@@ -245,9 +245,11 @@ function ResponsiveAppBar() {
         }}
       >
         <ListItemIcon>
-          <StarIcon />
+        <StarIcon sx={{ color: "#77bfa3" }} />
         </ListItemIcon>
-        <ListItemText primary="ยอดนิยม" />
+        <ListItemText primary="ยอดนิยม"
+        sx={{ color: "#000", fontWeight: "bold" }}
+         />
       </ListItem>
     </List>
         </Box>
