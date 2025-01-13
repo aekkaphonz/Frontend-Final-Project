@@ -85,7 +85,7 @@ function ResponsiveAppBar() {
               transition: "color 0.3s",
             }}
           >
-            App Block
+            Blogs
           </Typography>
 
           {/* Login Button */}

@@ -28,7 +28,7 @@ export default function HomeNavbar() {
                         color: themeColors.text,
                     }}
                 >
-                    App Block
+                    Blogs
                 </Typography>
 
 
