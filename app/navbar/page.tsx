@@ -70,6 +70,7 @@ function Sb({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: () => v
           {/* Buttons */}
           <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
             <Button
+            href="/signin"
               variant="contained"
               sx={{
                 backgroundColor: "#fff", // สีขาว
@@ -85,6 +86,7 @@ function Sb({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: () => v
               สร้าง
             </Button>
             <Button
+            href="/signin"
               variant="contained"
               sx={{
                 backgroundColor: "#000",
