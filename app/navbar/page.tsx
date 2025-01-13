@@ -1,177 +1,123 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import {
-  AppBar,
-  Toolbar,
-  Box,
-  Typography,
-  List,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
-  Button,
-  IconButton,
-  Drawer,
-} from "@mui/material";
-import {
-  Home as HomeIcon,
-  Person as PersonIcon,
-  Star as StarIcon,
-  Menu as MenuIcon,
-} from "@mui/icons-material";
+import React from "react";
+import { Box, List, ListItem, ListItemIcon, ListItemText, AppBar, Toolbar, IconButton, Typography } from "@mui/material";
+import MenuIcon from "@mui/icons-material/Menu";
+import HomeIcon from '@mui/icons-material/Home';
+import ArticleIcon from '@mui/icons-material/Article';
+import WhatshotIcon from '@mui/icons-material/Whatshot';
 import Link from "next/link";
 
-const themeColors = {
-  primary: "#ffffff",
-  sidebar: "#f5f5f5",
-  text: "#333333",
-  hover: "#e0e0e0",
-};
-
-function ResponsiveAppBar() {
-  const [currentPath, setCurrentPath] = useState("");
-  const [sidebarOpen, setSidebarOpen] = useState(true); // เปิด Sidebar เริ่มต้น
-
-  const toggleSidebar = () => {
-    setSidebarOpen((prev) => !prev);
-  };
-
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      setCurrentPath(window.location.pathname);
-    }
-  }, []);
-
-  const menuItems = [
-    { text: "หน้าหลัก", icon: <HomeIcon />, link: "/home/highlights" },
-    { text: "หน้าฟีด", icon: <PersonIcon />, link: "/home/feed" },
-    { text: "ยอดนิยม", icon: <StarIcon />, link: "/home/popular" },
-  ];
-
+function Sb({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: () => void }) {
   return (
-    <Box sx={{ display: "flex" }}>
+    <>
       {/* Navbar */}
       <AppBar
         position="fixed"
         sx={{
-          bgcolor: themeColors.primary,
-          zIndex: 1201,
-          transition: "background-color 0.3s",
+          backgroundColor: "#ffffff",
+          boxShadow: "0px 3px 3px rgba(0,0,0,0.1)",
+          borderBottom: "1px solid #ddd",
+          zIndex: 1300, // ให้อยู่เหนือ Sidebar
         }}
       >
         <Toolbar>
-          {/* Toggle Sidebar */}
           <IconButton
+            size="large"
             edge="start"
-            color="inherit"
-            aria-label="menu"
             onClick={toggleSidebar}
-            sx={{ marginRight: 2 }}
+            sx={{ color: "#000" }}
           >
             <MenuIcon />
           </IconButton>
-
-          {/* Logo */}
-          <Typography
-            component={Link}
-            href="/"
-            variant="h6"
-            sx={{
-              flexGrow: 1,
-              fontWeight: "bold",
-              color: themeColors.text,
-              textDecoration: "none",
-              transition: "color 0.3s",
-            }}
-          >
-            Blogs
+          <Typography variant="h6" noWrap component="div" sx={{ color: "#000", fontWeight: 700 }}>
+            Web Blog
           </Typography>
-
-          {/* Login Button */}
-          <Button
-            variant="outlined"
-            sx={{
-              color: themeColors.text,
-              borderColor: themeColors.text,
-              textTransform: "none",
-              marginLeft: "16px",
-              "&:hover": {
-                borderColor: themeColors.hover,
-                bgcolor: themeColors.hover,
-              },
-              transition: "all 0.3s",
-            }}
-          >
-            เข้าสู่ระบบ
-          </Button>
         </Toolbar>
       </AppBar>
 
       {/* Sidebar */}
-      <Drawer
-        variant="persistent"
-        anchor="left"
-        open={sidebarOpen}
-        sx={{
-          "& .MuiDrawer-paper": {
-            width: "250px",
-            bgcolor: themeColors.sidebar,
-            color: themeColors.text,
-            padding: "16px 8px",
-            boxShadow: "2px 0 5px rgba(0,0,0,0.1)",
-          },
-        }}
-      >
-        <Typography
-          variant="h6"
-          sx={{
-            fontWeight: "bold",
-            marginBottom: "16px",
-            textAlign: "center",
-          }}
-        >
-          Menu
-        </Typography>
-        <List>
-          {menuItems.map((item) => (
-            <Link
-              href={item.link}
-              key={item.text}
-              style={{ textDecoration: "none" }}
-            >
-              <ListItem
-                sx={{
-                  "&:hover": { bgcolor: themeColors.hover },
-                  color: themeColors.text,
-                  bgcolor:
-                    item.link === currentPath ? themeColors.hover : "inherit",
-                  transition: "background-color 0.3s",
-                }}
-              >
-                <ListItemIcon sx={{ color: themeColors.text }}>
-                  {item.icon}
-                </ListItemIcon>
-                <ListItemText primary={item.text} />
-              </ListItem>
-            </Link>
-          ))}
-        </List>
-      </Drawer>
-
-      {/* Main Content Area */}
       <Box
-        component="main"
         sx={{
-          flexGrow: 1,
-          padding: "16px",
-          marginLeft: sidebarOpen ? "250px" : "0", // Dynamic Layout
-          transition: "margin-left 0.3s",
+          width: isOpen ? 240 : 72, // ความกว้างเมื่อเปิด/ปิด
+          height: "100vh",
+          backgroundColor: "#fff",
+          transition: "width 0.3s",
+          position: "fixed",
+          top: 64, // เลื่อน Sidebar ให้เริ่มหลัง Navbar
+          left: 0,
+          zIndex: 1200,
+          overflow: "hidden",
+          boxShadow: "2px 0px 5px rgba(0,0,0,0.1)",
         }}
       >
+        <List>
+          <Link href="/home/highlights">
+            <ListItem
+
+              component="button"
+
+              sx={{
+                display: "flex",
+                flexDirection: isOpen ? "row" : "column",
+                alignItems: "center",
+                justifyContent: isOpen ? "flex-start" : "center",
+                padding: isOpen ? "12px 20px" : "12px 0",
+                "&:hover": {
+                  backgroundColor: "rgba(0, 0, 0, 0.08)",
+                },
+              }}
+            >
+              <ListItemIcon sx={{ justifyContent: "center", color: "#000", minWidth: "40px" }}>
+                <HomeIcon />
+              </ListItemIcon>
+              {isOpen && <ListItemText primary="หน้าหลัก" sx={{ color: "#000" }} />}
+            </ListItem>
+          </Link>
+          <Link href="/home/article">
+            <ListItem
+              component="button"
+              sx={{
+                display: "flex",
+                flexDirection: isOpen ? "row" : "column",
+                alignItems: "center",
+                justifyContent: isOpen ? "flex-start" : "center",
+                padding: isOpen ? "12px 20px" : "12px 0",
+                "&:hover": {
+                  backgroundColor: "rgba(0, 0, 0, 0.08)",
+                },
+              }}
+            >
+              <ListItemIcon sx={{ justifyContent: "center", color: "#000", minWidth: "40px" }}>
+                <ArticleIcon />
+              </ListItemIcon>
+              {isOpen && <ListItemText primary="น่าสนใจ" sx={{ color: "#000" }} />}
+            </ListItem>
+          </Link>
+          <Link href="/home/popular">
+            <ListItem
+              component="button"
+              sx={{
+                display: "flex",
+                flexDirection: isOpen ? "row" : "column",
+                alignItems: "center",
+                justifyContent: isOpen ? "flex-start" : "center",
+                padding: isOpen ? "12px 20px" : "12px 0",
+                "&:hover": {
+                  backgroundColor: "rgba(0, 0, 0, 0.08)",
+                },
+              }}
+            >
+              <ListItemIcon sx={{ justifyContent: "center", color: "#000", minWidth: "40px" }}>
+                <WhatshotIcon />
+              </ListItemIcon>
+              {isOpen && <ListItemText primary="มาเเรง" sx={{ color: "#000" }} />}
+            </ListItem>
+          </Link>
+        </List>
       </Box>
-    </Box>
+    </>
   );
 }
 
-export default ResponsiveAppBar;
+export default Sb;
