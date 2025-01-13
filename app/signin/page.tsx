@@ -43,26 +43,28 @@ function signin() {
 
   const handleFormSubmit = async (formData: any) => {
     try {
-      const response = await fetch("http://localhost:3001/auth/login", {
-        method: "POST",
+      const response = await axios.post("http://localhost:3001/auth/login", formData, {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(formData),
       });
-
-      if (response.ok) {
-        const data = await response.json();
-
+  
+      console.log("Response data:", response.data);
+      console.log("Response status:", response.status);
+  
+      if (response.data) {
         router.push("/");
       } else {
-        const error = await response.json();
-
         alert("การเข้าสู่ระบบล้มเหลว");
       }
-    } catch (error) {
-      console.error("Error login:", error);
-      alert("An error occurred. Please try again later.");
+    } catch (error: any) {
+      if (error.response && error.response.data) {
+        console.error("Backend error:", error.response.data);
+        alert(`Error: ${error.response.data.message || "การเข้าสู่ระบบล้มเหลว"}`);
+      } else {
+        console.error("Error login:", error);
+        alert("An error occurred. Please try again later.");
+      }
     }
   };
 
