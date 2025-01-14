@@ -196,7 +196,7 @@ function signin() {
                   },
                 }}
                 className="w-4/6 text-white p-2 text-sm"
-                type="submit"
+                type="button"
                 onClick={handleGoogleLogin}
                 startIcon={<GoogleIcon />}
               >
