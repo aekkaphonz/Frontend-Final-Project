@@ -322,7 +322,7 @@ export default function BlogPage() {
                   "&:hover": { backgroundColor: "#66a994" },
                 }}
               >
-                Add Comment
+                Add Comment1
               </Button>
 
               <Box sx={{ mt: 4 }}>
