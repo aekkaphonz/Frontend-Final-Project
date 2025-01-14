@@ -22,7 +22,9 @@ import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import Swal from "sweetalert2";
 import axios from "axios";
+
 
 export default function SignUp() {
   const [isFormSubmitted, setIsFormSubmitted] = useState(false);
@@ -32,6 +34,8 @@ export default function SignUp() {
   //     router.push("/signin");
   //    }
   // }, [isFormSubmitted, router]);
+
+  
 
   const {
     register,
@@ -59,11 +63,24 @@ export default function SignUp() {
       });
 
       if (response.status === 201) {
-        console.log("User created successfully:", response.data);
-
-        alert("ลงทะเบียนเสร็จสิ้น");
+        Swal.fire({
+          title: "สมัครสมาชิกสำเร็จ !",
+          text: "คุณสมัครสมาชิกเรียบร้อยแล้ว!",
+          icon: "success",
+          confirmButtonText: "ตกลง",
+          confirmButtonColor: "#77bfa3",
+        });
+        reset(); // รีเซ็ตฟอร์ม
       }
-    } catch (error) {}
+    } catch (error) {
+      Swal.fire({
+        title: "เกิดข้อผิดพลาด!",
+        text: "ไม่สามารถสมัครสมาชิกได้ กรุณาลองใหม่อีกครั้ง",
+        icon: "error",
+        confirmButtonText: "ตกลง",
+        confirmButtonColor: "#d33",
+      });
+    }
   };
 
   // const [age, setAge] = React.useState("");
@@ -89,7 +106,11 @@ export default function SignUp() {
             <div className="w-full">
               <TextField
                 id="firstname"
-                label="ชื่อผู้ใช้ *"
+                label={
+                  <span>
+                      ชื่อผู้ใช้ <span style={{ color: "red" }}>*</span>
+                  </span>
+                }
                 variant="outlined"
                 fullWidth
                 {...register("userName", {
@@ -105,7 +126,11 @@ export default function SignUp() {
             <div className="w-full">
               <TextField
                 id="email"
-                label="อีเมล *"
+                label={
+                  <span>
+                      อีเมล <span style={{ color: "red" }}>*</span>
+                  </span>
+                }
                 variant="outlined"
                 fullWidth
                 {...register("email", {
@@ -120,12 +145,17 @@ export default function SignUp() {
                 <p className="text-red-500 text-sm">{`${errors.email.message}`}</p>
               )}
             </div>
+
             {/* รหัสผ่าน */}
             <div className="w-full">
               <TextField
                 type="password"
                 id="password"
-                label="รหัสผ่าน *"
+                label={
+                  <span>
+                      รหัสผ่าน <span style={{ color: "red" }}>*</span>
+                  </span>
+                }
                 variant="outlined"
                 fullWidth
                 {...register("password", {
@@ -236,19 +266,20 @@ export default function SignUp() {
               <Button
                 variant="contained"
                 sx={{
-                  backgroundColor: "#6B7280",
+                  backgroundColor: "#77bfa3",
                   "&:hover": {
-                    backgroundColor: "#4B5563",
+                    backgroundColor: "#77bfa3",
                   },
                   "&:focus": {
-                    backgroundColor: "#6B7280",
+                    backgroundColor: "#77bfa3",
                   },
                   "&.MuiButton-root": {
                     outline: "none",
                   },
                 }}
                 className="w-full text-white p-2 text-lg"
-                type="submit"
+               
+                type="submit"              
               >
                 ยืนยัน
               </Button>
