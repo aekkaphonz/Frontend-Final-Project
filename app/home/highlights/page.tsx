@@ -1,166 +1,217 @@
 "use client";
 
-import { Box, Typography, List, ListItem, ListItemIcon, ListItemText, IconButton, Button } from "@mui/material";
-import React, { useEffect, useState } from "react";
-import Link from "next/link";
-import Container from "@mui/material/Container";
-import Card from "@mui/material/Card";
-import CardActionArea from "@mui/material/CardActionArea";
-import CardContent from "@mui/material/CardContent";
-import CardMedia from "@mui/material/CardMedia";
-import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
-import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
+import React, { useState, useEffect } from "react";
+import {
+  Box,
+  Typography,
+  Grid,
+  Card,
+  CardMedia,
+  CardContent,
+  CardActionArea,
+  IconButton,
+} from "@mui/material";
+import { Favorite, Visibility, ChatBubbleOutline } from "@mui/icons-material";
+import { useRouter } from "next/navigation";
 import Navbar from "@/app/navbar/page";
-import Article from "@/app/home/article/page"
-
 
 interface Attraction {
-    id: string;
-    coverimage: string;
-    name: string;
-    detail: string;
+  id: string;
+  coverimage: string;
+  name: string;
+  detail: string;
+  viewCount: number;
+  likeCount: number;
+  commentCount: number;
 }
 
-export default function page() {
-    const [data, setData] = useState<Attraction[]>([]);
+export default function Page() {
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [data, setData] = useState<Attraction[]>([]);
 
-    useEffect(() => {
-        async function fetchData() {
-            try {
-                const res = await fetch("https://melivecode.com/api/attractions");
-                if (!res.ok) {
-                    throw new Error("Failed to fetch data");
-                }
-                const result: Attraction[] = await res.json();
-                setData(result);
-            } catch (error) {
-                console.error(error);
-            }
+  const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen);
+  };
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const res = await fetch("https://melivecode.com/api/attractions");
+        if (!res.ok) {
+          throw new Error("Failed to fetch data");
         }
-        fetchData();
-    }, []);
+        const result: Attraction[] = await res.json();
 
-    return (
-        <>
-            <Navbar />
-            <Carousel data={data} />
-        </>
-    );
+        const enhancedData = await Promise.all(
+          result.map(async (item) => {
+            const detailsRes = await fetch(
+              `https://melivecode.com/api/attractions/${item.id}`
+            );
+            const details = await detailsRes.json();
+
+            return {
+              ...item,
+              viewCount: details.attraction.viewCount || 0,
+              likeCount: details.attraction.likeCount || 0,
+              commentCount: details.attraction.commentCount || 0,
+            };
+          })
+        );
+
+        setData(enhancedData);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    }
+
+    fetchData();
+  }, []);
+
+  return (
+    <Box sx={{ display: "flex", minHeight: "100vh", backgroundColor: "#f6f6e7" }}>
+      <Navbar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
+
+      <Box
+        component="main"
+        sx={{
+          flexGrow: 1,
+          marginLeft: isSidebarOpen ? "240px" : "72px",
+          transition: "margin-left 0.3s",
+          paddingTop: "80px",
+          paddingX: 2,
+          paddingBottom: 2,
+        }}
+      >
+        <Typography
+          variant="h5"
+          gutterBottom
+          sx={{
+            fontWeight: "bold",
+            textAlign: "center",
+            color: "#98c9a3",
+            marginBottom: "20px",
+            borderBottom: "2px solid #c9dbc4",
+            display: "inline-block",
+            paddingBottom: "5px",
+          }}
+        >
+          บทความทั้งหมด
+        </Typography>
+
+        <Grid container spacing={3} justifyContent="center">
+          {data.map((item) => (
+            <RegionCard key={item.id} attraction={item} />
+          ))}
+        </Grid>
+      </Box>
+    </Box>
+  );
 }
 
-function Carousel({ data }: { data: Attraction[] }) {
-    const [currentIndex, setCurrentIndex] = React.useState(0);
+function RegionCard({ attraction }: { attraction: Attraction }) {
+  const router = useRouter();
 
-    const handlePrev = () => {
-        setCurrentIndex((prevIndex) =>
-            prevIndex === 0 ? data.length - 0.5 : prevIndex - 0.5
-        );
-    };
+  const handleCardClick = async () => {
+    try {
+      // อัปเดต viewCount ใน backend
+      await fetch(`https://melivecode.com/api/attractions/update/${attraction.id}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ viewCount: attraction.viewCount + 1 }),
+      });
 
-    const handleNext = () => {
-        setCurrentIndex((prevIndex) =>
-            prevIndex === data.length - 0.5 ? 0 : prevIndex + 0.5
-        );
-    };
+      // เพิ่ม viewCount ใน frontend
+      attraction.viewCount += 1;
 
-    return (
-        <>
-            <div className="bigbox">
-                <Container maxWidth="xl" sx={{
-                    mt: 5,
-                    borderRadius: 2, // 1 = 4px
-                    border: "2px solid #1976d2",
-                    backgroundColor: "#EEF5FF",
-                    padding: 2,
-                    marginLeft:1,
-                    marginRight:1,
-                }}>
-                    <Typography variant="h6" gutterBottom sx={{
-                        mb: 2, borderBottom: "1px solid #176B87",
-                        backgroundColor: "#86B6F6",
-                        paddingLeft: 1,
-                        borderRadius: 1,
+      // นำทางไปยังหน้ารายละเอียด
+      router.push(`/home/highlights/${attraction.id}`);
+    } catch (error) {
+      console.error("Error updating view count:", error);
+    }
+  };
 
-                    }}>
-                        ไฮไลท์
-                    </Typography>
-
-                    <Box
-                        sx={{
-                            display: "flex",
-                            alignItems: "center",
-                            position: "relative",
-                            overflow: "hidden",
-                        }}
-                    >
-                        <IconButton
-                            onClick={handlePrev}
-                            sx={{
-                                position: "absolute",
-                                left: 0,
-                                zIndex: 1,
-                            }}
-                        >
-                            <ArrowBackIosIcon />
-                        </IconButton>
-
-                        <Box
-                            sx={{
-                                display: "flex",
-                                transition: "transform 0.5s ease-in-out",
-                                transform: `translateX(-${currentIndex * 100}%)`,
-                                width: `${data.length * 100}%`,
-                            }}
-                        >
-                            {data.map((a) => (
-                                <Card
-                                    key={a.id}
-                                    sx={{
-                                        flex: "0 0 33.3333%",
-                                        maxWidth: "100%",
-                                        mx: 1,
-                                        mb: 2,
-                                        borderBottom: "2px solid #1976d2",
-                                    }}
-                                >
-                                    <CardActionArea>
-                                        <CardMedia
-                                            component="img"
-                                            image={a.coverimage}
-                                            alt={a.name}
-                                            sx={{ height: 150 }}
-                                        />
-                                        <CardContent>
-                                            <Typography gutterBottom variant="h6" component="div">
-                                                {a.name}
-                                            </Typography>
-                                            <Typography variant="body2" color="text.secondary">
-                                                {a.detail}
-                                            </Typography>
-                                        </CardContent>
-                                    </CardActionArea>
-                                    <Button size="small" color="primary">
-                                        <Link href={`/home/highlights/${a.id}`}>Learn More</Link>
-                                    </Button>
-                                </Card>
-                            ))}
-                        </Box>
-
-                        <IconButton
-                            onClick={handleNext}
-                            sx={{
-                                position: "absolute",
-                                right: 0,
-                                zIndex: 1,
-                            }}
-                        >
-                            <ArrowForwardIosIcon />
-                        </IconButton>
-                    </Box>
-                    <Article/>
-                </Container>
-            </div>
-        </>
-    );
+  return (
+    <Grid item xs={12} sm={6} md={4} lg={3}>
+      <Card
+        sx={{
+          borderRadius: "15px",
+          overflow: "hidden",
+          boxShadow: "0 4px 10px rgba(0, 0, 0, 0.1)",
+          position: "relative",
+          transition: "transform 0.2s",
+          "&:hover": {
+            transform: "scale(1.05)",
+            boxShadow: "0 6px 15px rgba(0, 0, 0, 0.2)",
+          },
+          backgroundColor: "#f6f6e7",
+        }}
+      >
+        <CardActionArea onClick={handleCardClick}>
+          <CardMedia
+            component="img"
+            height="150"
+            image={attraction.coverimage}
+            alt={attraction.name}
+          />
+          <CardContent
+            sx={{
+              backgroundColor: "#ffffff",
+              textAlign: "center",
+              padding: "10px",
+              borderTop: "3px solid #98c9a3",
+            }}
+          >
+            <Typography
+              variant="h6"
+              sx={{
+                fontWeight: "bold",
+                color: "#333",
+                marginBottom: "5px",
+              }}
+            >
+              {attraction.name}
+            </Typography>
+            <Typography
+              variant="body2"
+              sx={{
+                color: "#353c41",
+              }}
+            >
+              {attraction.detail.substring(0, 50)}...
+            </Typography>
+          </CardContent>
+        </CardActionArea>
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            padding: "10px 20px",
+            backgroundColor: "#fff",
+          }}
+        >
+          <Box sx={{ display: "flex", alignItems: "center" }}>
+            <Visibility sx={{ fontSize: 18, color: "#666" }} />
+            <Typography sx={{ ml: 1, fontSize: 14, color: "#666" }}>
+              {attraction.viewCount}
+            </Typography>
+          </Box>
+          <Box sx={{ display: "flex", alignItems: "center" }}>
+            <ChatBubbleOutline sx={{ fontSize: 18, color: "#666" }} />
+            <Typography sx={{ ml: 1, fontSize: 14, color: "#666" }}>
+              {attraction.commentCount}
+            </Typography>
+          </Box>
+          <Box sx={{ display: "flex", alignItems: "center" }}>
+            <Favorite sx={{ fontSize: 18, color: "red" }} />
+            <Typography sx={{ ml: 1, fontSize: 14, color: "#666" }}>
+              {attraction.likeCount}
+            </Typography>
+          </Box>
+        </Box>
+      </Card>
+    </Grid>
+  );
 }
-
