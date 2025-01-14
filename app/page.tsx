@@ -5,7 +5,8 @@
 
 import React from "react";
 import { Box, Button, Container, Typography, Grid, Card, CardContent } from "@mui/material";
-import Navbar from "@/app/navbar/homeN";
+import Navbar from "@/app/navbar/homeNavbar";
+
 
 export default function Home() {
   return (

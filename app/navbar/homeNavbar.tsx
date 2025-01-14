@@ -1,11 +1,14 @@
 "use client";
+
 import React from "react";
 import { AppBar, Toolbar, Typography, Button, Box } from "@mui/material";
+
 const themeColors = {
     primary: "#ffffff",
     text: "#000000",
     buttonBorder: "#000000",
 };
+
 export default function HomeNavbar() {
     return (
         <AppBar
@@ -25,8 +28,10 @@ export default function HomeNavbar() {
                         color: themeColors.text,
                     }}
                 >
-                    App Block
+                    Blogs
                 </Typography>
+
+
                 {/* Call to Action Button */}
                 <Button
                     href="/signin"

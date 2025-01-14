@@ -187,7 +187,6 @@ export default function BlogPage() {
 
   return (
     <>
-      <Navbar />
       <Container maxWidth="md">
         {!selectedBoard ? (
           <>
