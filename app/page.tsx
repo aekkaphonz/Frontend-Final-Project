@@ -9,6 +9,8 @@ import Navbar from "@/app/navbar/homeNavbar";
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import Link from "next/link";
 
+
+
 export default function Home() {
   return (
 
@@ -46,8 +48,9 @@ export default function Home() {
               marginBottom: "1rem",
             }}
           >
-             แบ่งปันเรื่องราวที่น่าจดจำของคุณ!
+            แบ่งปันเรื่องราวที่น่าจดจำของคุณ!
           </Typography>
+
           <Typography
             variant="h6"
             sx={{
@@ -76,6 +79,7 @@ export default function Home() {
             >
               สำรวจบทความ
             </Button>
+
             <Button
               href="/signin"
               variant="contained"
