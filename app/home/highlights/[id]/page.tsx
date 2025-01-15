@@ -12,11 +12,13 @@ import {
   IconButton,
   Tooltip,
   TextField,
+  InputAdornment
 } from "@mui/material";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import ShareIcon from "@mui/icons-material/Share";
 import ReplyIcon from "@mui/icons-material/Reply";
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
+import SendIcon from '@mui/icons-material/Send';
 import { useRouter } from "next/navigation";
 import { useParams } from "next/navigation";
 
@@ -236,15 +238,21 @@ export default function Page() {
             value={newComment}
             onChange={(e) => setNewComment(e.target.value)}
             sx={{ mb: 2 }}
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton
+                    color="primary"
+                    onClick={handleAddComment}
+                    edge="end"
+                  >
+                    <SendIcon />
+                  </IconButton>
+                </InputAdornment>
+              ),
+            }}
           />
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={handleAddComment}
-            sx={{ mb: 2 }}
-          >
-            ส่ง
-          </Button>
+
           {comments.map((comment) => (
             <Box
               key={comment.id}
@@ -291,13 +299,21 @@ export default function Page() {
                     value={replyMessage}
                     onChange={(e) => setReplyMessage(e.target.value)}
                     sx={{ mb: 2 }}
+                    InputProps={{
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          <IconButton
+                            color="primary"
+                            variant="contained"
+                            onClick={() => handleAddReply(comment.id)}
+                            edge="end"
+                          >
+                            <SendIcon />
+                          </IconButton>
+                        </InputAdornment>
+                      ),
+                    }}
                   />
-                  <Button
-                    variant="contained"
-                    onClick={() => handleAddReply(comment.id)}
-                  >
-                    ส่ง
-                  </Button>
                 </Box>
               )}
             </Box>
