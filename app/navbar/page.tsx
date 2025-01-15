@@ -1,4 +1,4 @@
-"use client";
+ "use client";
 
 import React from "react";
 import { Box, List, ListItem, ListItemIcon, ListItemText, AppBar, Toolbar, IconButton, Typography, Button, TextField, Tooltip, } from "@mui/material";
@@ -7,9 +7,15 @@ import HomeIcon from '@mui/icons-material/Home';
 import ArticleIcon from '@mui/icons-material/Article';
 import WhatshotIcon from '@mui/icons-material/Whatshot';
 import Link from "next/link";
-import AddIcon from '@mui/icons-material/Add';
+import AddBoxIcon from '@mui/icons-material/AddBox';
 import SearchIcon from '@mui/icons-material/Search';
 
+const themeColors = {
+  primary: "#ffffff",
+  text: "#000000",
+  buttonBorder: "#000000",
+  buttonGreen: "#77bfa3",
+};
 
 function Sb({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: () => void }) {
   return (
@@ -26,7 +32,12 @@ function Sb({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: () => v
       >
         <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
           {/* Sidebar Menu */}
-          <Box sx={{ display: "flex", alignItems: "center" }}>
+          <Box sx={{ 
+            display: "flex", 
+            alignItems: "center" ,
+            gap: "10px",
+            }}
+          >
             <IconButton
               size="large"
               edge="start"
@@ -35,6 +46,13 @@ function Sb({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: () => v
             >
               <MenuIcon />
             </IconButton>
+
+            <img
+              src="/images/logo-blogs.png"
+              alt="Cleaning Illustration"
+              style={{ maxWidth: "140px", height: "auto" }} // ขนาดโลโก้
+            />
+
             <Typography
               variant="h6"
               noWrap
@@ -42,7 +60,7 @@ function Sb({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: () => v
               sx={{ color: "#000", fontWeight: 700, cursor: "pointer" }}
             >
               <Link href="/" style={{ textDecoration: "none" }}>
-                App Block
+              Blogger DeeDee
               </Link>
             </Typography>
           </Box>
@@ -54,7 +72,7 @@ function Sb({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: () => v
               variant="outlined"
               size="small"
               sx={{
-                width: "60%",
+                width: "80%",
                 backgroundColor: "#f6f6f6", 
               }}
               InputProps={{
@@ -69,32 +87,58 @@ function Sb({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: () => v
 
           {/* Buttons */}
           <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-            <Button
-            href="/signin"
-              variant="contained"
+            <Typography
+              variant="h6"
+              noWrap
+              component="div"
               sx={{
                 backgroundColor: "#fff", // สีขาว
-                color: "#000",
-                border: "1px solid #ddd", // เพิ่มขอบปุ่ม
+                color: "#3399FF",
+              }}
+            >
+              <Link href="/signin" style={{ textDecoration: "none" }}>
+                <AddBoxIcon />
+                สร้าง
+              </Link>
+            </Typography>
+
+            {/* Signin Button */}
+            <Button
+              href="/signin"
+              variant="outlined"
+              sx={{
+                backgroundColor: "#ffffff",
+                color: themeColors.buttonGreen,
+                borderColor: themeColors.buttonGreen,
+                fontWeight: "bold",
+                textTransform: "none",
                 "&:hover": {
-                  backgroundColor: "#000",
-                  color: "#fff",
+                  backgroundColor: themeColors.buttonGreen,
+                  borderColor: themeColors.buttonGreen,
+                  color: "#ffffff",
                 },
               }}
             >
-              <AddIcon />
-              สร้าง
+              เข้าสู่ระบบ
             </Button>
+            
+            {/* Signup Button */}
             <Button
-            href="/signin"
+              href="/signup"
               variant="contained"
               sx={{
-                backgroundColor: "#000",
-                color: "#fff",
-                "&:hover": { backgroundColor: "#333" },
+                backgroundColor: themeColors.buttonGreen,
+                color: "#ffffff",
+                fontWeight: "bold",
+                textTransform: "none",
+                "&:hover": {
+                  backgroundColor: "#ffffff",
+                  borderColor: themeColors.buttonGreen,
+                  color: themeColors.buttonGreen,
+                },
               }}
             >
-              เข้าสู่ระบบ/ลงทะเบียน
+              ลงทะเบียน
             </Button>
           </Box>
         </Toolbar>
