@@ -9,25 +9,20 @@ import {
   CardMedia,
   CardContent,
   CardActionArea,
-  IconButton,
 } from "@mui/material";
-import { Favorite, Visibility, ChatBubbleOutline } from "@mui/icons-material";
 import { useRouter } from "next/navigation";
 import Navbar from "@/app/navbar/page";
 
-interface Attraction {
-  id: string;
-  coverimage: string;
-  name: string;
-  detail: string;
-  viewCount: number;
-  likeCount: number;
-  commentCount: number;
+interface Post {
+  _id: string;
+  title: string;
+  content: string;
+  images: string[];
 }
 
 export default function Page() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [data, setData] = useState<Attraction[]>([]);
+  const [data, setData] = useState<Post[]>([]);
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
@@ -36,41 +31,25 @@ export default function Page() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const res = await fetch("https://melivecode.com/api/attractions");
+        const res = await fetch("http://localhost:3001/posts");
         if (!res.ok) {
           throw new Error("Failed to fetch data");
         }
-        const result: Attraction[] = await res.json();
-
-        const enhancedData = await Promise.all(
-          result.map(async (item) => {
-            const detailsRes = await fetch(
-              `https://melivecode.com/api/attractions/${item.id}`
-            );
-            const details = await detailsRes.json();
-
-            return {
-              ...item,
-              viewCount: details.attraction.viewCount || 0,
-              likeCount: details.attraction.likeCount || 0,
-              commentCount: details.attraction.commentCount || 0,
-            };
-          })
-        );
-
-        setData(enhancedData);
+        const result: Post[] = await res.json();
+        setData(result);
       } catch (error) {
-        console.error("Error fetching data:", error);
+        console.error("Error fetching posts:", error);
       }
     }
-
     fetchData();
   }, []);
 
   return (
     <Box sx={{ display: "flex", minHeight: "100vh", backgroundColor: "#f6f6e7" }}>
+      {/* Navbar */}
       <Navbar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
 
+      {/* Main Content */}
       <Box
         component="main"
         sx={{
@@ -82,25 +61,27 @@ export default function Page() {
           paddingBottom: 2,
         }}
       >
+        {/* Header */}
         <Typography
-          variant="h5"
+          variant="h4"
           gutterBottom
           sx={{
             fontWeight: "bold",
             textAlign: "center",
-            color: "#98c9a3",
-            marginBottom: "20px",
+            color: "#94c379",
+            marginBottom: "30px",
             borderBottom: "2px solid #c9dbc4",
             display: "inline-block",
             paddingBottom: "5px",
           }}
         >
-          บทความทั้งหมด
+          บทความ
         </Typography>
 
+        {/* Regions Grid */}
         <Grid container spacing={3} justifyContent="center">
-          {data.map((item) => (
-            <RegionCard key={item.id} attraction={item} />
+          {data.map((post) => (
+            <RegionCard key={post._id} post={post} />
           ))}
         </Grid>
       </Box>
@@ -108,28 +89,11 @@ export default function Page() {
   );
 }
 
-function RegionCard({ attraction }: { attraction: Attraction }) {
+function RegionCard({ post }: { post: Post }) {
   const router = useRouter();
 
-  const handleCardClick = async () => {
-    try {
-      // อัปเดต viewCount ใน backend
-      await fetch(`https://melivecode.com/api/attractions/update/${attraction.id}`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ viewCount: attraction.viewCount + 1 }),
-      });
-
-      // เพิ่ม viewCount ใน frontend
-      attraction.viewCount += 1;
-
-      // นำทางไปยังหน้ารายละเอียด
-      router.push(`/home/highlights/${attraction.id}`);
-    } catch (error) {
-      console.error("Error updating view count:", error);
-    }
+  const handleCardClick = () => {
+    router.push(`/home/highlights/${post._id}`);
   };
 
   return (
@@ -152,15 +116,18 @@ function RegionCard({ attraction }: { attraction: Attraction }) {
           <CardMedia
             component="img"
             height="150"
-            image={attraction.coverimage}
-            alt={attraction.name}
+            image={post.images.length > 0 ? post.images[0] : ""}
+            alt="ยังม้ายยยมีรูป"
+            sx={{
+              backgroundColor: post.images.length > 0 ? "transparent" : "#f0f0f0",
+            }}
           />
           <CardContent
             sx={{
               backgroundColor: "#ffffff",
               textAlign: "center",
               padding: "10px",
-              borderTop: "3px solid #98c9a3",
+              borderTop: "3px solid #94c379",
             }}
           >
             <Typography
@@ -171,7 +138,7 @@ function RegionCard({ attraction }: { attraction: Attraction }) {
                 marginBottom: "5px",
               }}
             >
-              {attraction.name}
+              {post.title}
             </Typography>
             <Typography
               variant="body2"
@@ -179,38 +146,10 @@ function RegionCard({ attraction }: { attraction: Attraction }) {
                 color: "#353c41",
               }}
             >
-              {attraction.detail.substring(0, 50)}...
+              {post.content.substring(0, 100)}...
             </Typography>
           </CardContent>
         </CardActionArea>
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            padding: "10px 20px",
-            backgroundColor: "#fff",
-          }}
-        >
-          <Box sx={{ display: "flex", alignItems: "center" }}>
-            <Visibility sx={{ fontSize: 18, color: "#666" }} />
-            <Typography sx={{ ml: 1, fontSize: 14, color: "#666" }}>
-              {attraction.viewCount}
-            </Typography>
-          </Box>
-          <Box sx={{ display: "flex", alignItems: "center" }}>
-            <ChatBubbleOutline sx={{ fontSize: 18, color: "#666" }} />
-            <Typography sx={{ ml: 1, fontSize: 14, color: "#666" }}>
-              {attraction.commentCount}
-            </Typography>
-          </Box>
-          <Box sx={{ display: "flex", alignItems: "center" }}>
-            <Favorite sx={{ fontSize: 18, color: "red" }} />
-            <Typography sx={{ ml: 1, fontSize: 14, color: "#666" }}>
-              {attraction.likeCount}
-            </Typography>
-          </Box>
-        </Box>
       </Card>
     </Grid>
   );
