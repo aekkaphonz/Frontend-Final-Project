@@ -1,10 +1,5 @@
 "use client";
 
-import React, { useState } from "react";
-import Visibility from "@mui/icons-material/Visibility";
-import VisibilityOff from "@mui/icons-material/VisibilityOff";
-import EmailIcon from "@mui/icons-material/Email";
-import GoogleIcon from "@mui/icons-material/Google";
 import {
   Box,
   Button,
@@ -15,10 +10,15 @@ import {
   InputAdornment,
   TextField,
 } from "@mui/material";
-import { useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { Controller, useForm } from "react-hook-form";
+import React, { useState } from "react";
+import Visibility from "@mui/icons-material/Visibility";
+import VisibilityOff from "@mui/icons-material/VisibilityOff";
+import EmailIcon from "@mui/icons-material/Email";
+import GoogleIcon from "@mui/icons-material/Google";
 
+import { useRouter } from "next/navigation";
+import { useForm } from "react-hook-form";
+import axios from "axios";
 function signin() {
   const [isFormSubmitted, setIsFormSubmitted] = useState(false);
 
@@ -31,28 +31,40 @@ function signin() {
 
   const { register, handleSubmit, control } = useForm();
 
+  const handleGoogleLogin = async () => {
+    try {
+     
+      window.location.href = "http://localhost:3001/auth/google";
+    } catch (error) {
+      console.error("Login failed:", error);
+    }
+  };
+  
+
   const handleFormSubmit = async (formData: any) => {
     try {
-      const response = await fetch("http://localhost:3001/auth/login", {
-        method: "POST",
+      const response = await axios.post("http://localhost:3001/auth/login", formData, {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(formData),
       });
-
-      if (response.ok) {
-        const data = await response.json();
-
+  
+      console.log("Response data:", response.data);
+      console.log("Response status:", response.status);
+  
+      if (response.data) {
         router.push("/");
       } else {
-        const error = await response.json();
-
         alert("การเข้าสู่ระบบล้มเหลว");
       }
-    } catch (error) {
-      console.error("Error login:", error);
-      alert("An error occurred. Please try again later.");
+    } catch (error: any) {
+      if (error.response && error.response.data) {
+        console.error("Backend error:", error.response.data);
+        alert(`Error: ${error.response.data.message || "การเข้าสู่ระบบล้มเหลว"}`);
+      } else {
+        console.error("Error login:", error);
+        alert("An error occurred. Please try again later.");
+      }
     }
   };
 
@@ -114,6 +126,7 @@ function signin() {
               />
             </div>
 
+            {/* เผื่อใช้
             <div className="grid grid-cols-2 justify-between items-center">
               <div className="flex items-center">
                 <Controller
@@ -135,6 +148,10 @@ function signin() {
                   ลืมรหัสผ่าน? 
                 </a>
               </div>
+            </div> */}
+
+            <div className="text-right text-red-500">
+              <a href="http://localhost:3000/signup">ลืมรหัสผ่าน ?</a>
             </div>
 
             <div className="btn1">
@@ -175,6 +192,7 @@ function signin() {
               <Button
                 variant="contained"
                 sx={{
+
                   backgroundColor: "#ffffff",
                   gap: "10px",
                   fontWeight: "bold",
@@ -183,13 +201,18 @@ function signin() {
                   },
                   "&:focus": {
                     backgroundColor: "#ffffff",
+
                   },
                   "&.MuiButton-root": {
                     outline: "none",
                   },
                 }}
+
                 className="w-4/6 text-[#77bfa3] p-2 text-sm "
-                type="submit"
+                type="button"
+                onClick={handleGoogleLogin}
+                startIcon={<GoogleIcon />}
+
               >
                 <img
                   src="/images/google-logo.png"
