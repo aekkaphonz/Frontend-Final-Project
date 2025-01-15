@@ -23,11 +23,8 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 
 import Swal from "sweetalert2";
+
 import axios from "axios";
-
-import axios, { AxiosError } from "axios";
-
-
 
 export default function SignUp() {
   const [isFormSubmitted, setIsFormSubmitted] = useState(false);
@@ -37,8 +34,6 @@ export default function SignUp() {
   //     router.push("/signin");
   //    }
   // }, [isFormSubmitted, router]);
-
-  
 
   const {
     register,
@@ -82,7 +77,6 @@ export default function SignUp() {
       });
 
       if (response.status === 201) {
-
         Swal.fire({
           title: "สมัครสมาชิกสำเร็จ !",
           text: "คุณสมัครสมาชิกเรียบร้อยแล้ว!",
@@ -100,7 +94,6 @@ export default function SignUp() {
         confirmButtonText: "ตกลง",
         confirmButtonColor: "#d33",
       });
-
     }
   };
 
@@ -129,7 +122,7 @@ export default function SignUp() {
                 id="firstname"
                 label={
                   <span>
-                      ชื่อผู้ใช้ <span style={{ color: "red" }}>*</span>
+                    ชื่อผู้ใช้ <span style={{ color: "red" }}>*</span>
                   </span>
                 }
                 variant="outlined"
@@ -149,7 +142,7 @@ export default function SignUp() {
                 id="email"
                 label={
                   <span>
-                      อีเมล <span style={{ color: "red" }}>*</span>
+                    อีเมล <span style={{ color: "red" }}>*</span>
                   </span>
                 }
                 variant="outlined"
@@ -174,7 +167,7 @@ export default function SignUp() {
                 id="password"
                 label={
                   <span>
-                      รหัสผ่าน <span style={{ color: "red" }}>*</span>
+                    รหัสผ่าน <span style={{ color: "red" }}>*</span>
                   </span>
                 }
                 variant="outlined"
@@ -351,7 +344,6 @@ export default function SignUp() {
                   รีเซ็ต
                 </Button>
               </div>
-
             </div>
           </Box>
         </CardContent>
