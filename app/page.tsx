@@ -32,7 +32,7 @@ export default function Home() {
             borderRadius: "50%",
             backgroundColor: "#ccffe2", // สีของวงกลม
             position: "absolute",
-            bottom: "-20%",
+            bottom: "-25%",
             left: "-20%",
             zIndex: 0,
           }}
