@@ -15,46 +15,49 @@ import ShareIcon from "@mui/icons-material/Share";
 import IconButton from "@mui/material/IconButton";
 import Tooltip from "@mui/material/Tooltip";
 import Navbar from "@/app/navbar/page";
-import { useParams } from "next/navigation"; // สำหรับ dynamic params
+import { useParams } from "next/navigation";
 
-interface Attraction {
-    name: string;
-    coverimage: string;
-    detail: string;
+interface Post {
+    _id: string;
+    title: string;
+    content: string;
+    images: string[]; // รูปภาพเป็น array
 }
 
 export default function Page() {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false); // สำหรับควบคุม Sidebar
-    const [data, setData] = useState<Attraction | null>(null);
+    const [data, setData] = useState<Post | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
-    const params: any = useParams();
+    const params = useParams(); // ดึง `id` จาก dynamic route
 
     const toggleSidebar = () => {
         setIsSidebarOpen(!isSidebarOpen);
     };
 
     useEffect(() => {
-        async function fetchData(id: string) {
+        const fetchData = async (id: string) => {
             try {
-                const res = await fetch(`https://melivecode.com/api/attractions/${id}`);
+                const res = await fetch(`http://localhost:3001/posts/${id}`);
                 if (!res.ok) {
-                    throw new Error("Failed to fetch data");
+                    throw new Error(`Failed to fetch data with status: ${res.status}`);
                 }
-                const result = await res.json();
-                setData(result.attraction);
-                setLoading(false);
-            } catch (err: any) {
-                console.error(err.message);
+                const result: Post = await res.json();
+                setData(result);
+            } catch (error: any) {
+                console.error("Error fetching data:", error.message);
                 setError("ไม่สามารถโหลดข้อมูลได้");
+            } finally {
                 setLoading(false);
             }
-        }
+        };
 
-        if (params && params.id) {
+        if (params?.id) {
+            console.log("Fetching data for ID:", params.id);
             fetchData(params.id);
         } else {
+            console.error("ไม่พบพารามิเตอร์ ID");
             setError("ไม่พบพารามิเตอร์ ID");
             setLoading(false);
         }
@@ -64,7 +67,6 @@ export default function Page() {
         <Box sx={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
             {/* Navbar */}
             <Navbar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
-
 
             {/* Main Content */}
             <Container
@@ -97,9 +99,10 @@ export default function Page() {
                             <CardMedia
                                 component="img"
                                 sx={{ height: 300 }}
-                                image={data.coverimage}
-                                alt={data.name}
+                                image={data.images.length > 0 ? data.images[0] : ""}
+                                alt={data.images.length > 0 ? "รูปภาพ" : "ยังไม่มีรูปภาพ"}
                             />
+
                             <CardContent sx={{ textAlign: "center" }}>
                                 <Typography
                                     gutterBottom
@@ -107,10 +110,10 @@ export default function Page() {
                                     component="div"
                                     sx={{ color: "#3f51b5", fontWeight: "bold" }}
                                 >
-                                    {data.name}
+                                    {data.title}
                                 </Typography>
                                 <Typography variant="body1" sx={{ color: "#616161", mt: 2 }}>
-                                    {data.detail}
+                                    {data.content}
                                 </Typography>
                             </CardContent>
                         </CardActionArea>

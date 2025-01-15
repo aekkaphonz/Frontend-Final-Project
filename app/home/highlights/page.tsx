@@ -10,19 +10,19 @@ import {
   CardContent,
   CardActionArea,
 } from "@mui/material";
-import { useRouter } from "next/navigation"; // ใช้สำหรับนำทางใน Next.js
+import { useRouter } from "next/navigation";
 import Navbar from "@/app/navbar/page";
 
-interface Attraction {
-  id: string;
-  coverimage: string;
-  name: string;
-  detail: string;
+interface Post {
+  _id: string;
+  title: string;
+  content: string;
+  images: string[];
 }
 
 export default function Page() {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false); // สำหรับควบคุม Sidebar
-  const [data, setData] = useState<Attraction[]>([]);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [data, setData] = useState<Post[]>([]);
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
@@ -31,14 +31,14 @@ export default function Page() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const res = await fetch("https://melivecode.com/api/attractions");
+        const res = await fetch("http://localhost:3001/posts");
         if (!res.ok) {
           throw new Error("Failed to fetch data");
         }
-        const result: Attraction[] = await res.json();
+        const result: Post[] = await res.json();
         setData(result);
       } catch (error) {
-        console.error(error);
+        console.error("Error fetching posts:", error);
       }
     }
     fetchData();
@@ -54,9 +54,9 @@ export default function Page() {
         component="main"
         sx={{
           flexGrow: 1,
-          marginLeft: isSidebarOpen ? "240px" : "72px", // รองรับการเปลี่ยนขนาด Sidebar
+          marginLeft: isSidebarOpen ? "240px" : "72px",
           transition: "margin-left 0.3s",
-          paddingTop: "80px", // เว้นระยะจาก Navbar ด้านบน
+          paddingTop: "80px",
           paddingX: 2,
           paddingBottom: 2,
         }}
@@ -80,8 +80,8 @@ export default function Page() {
 
         {/* Regions Grid */}
         <Grid container spacing={3} justifyContent="center">
-          {data.map((item) => (
-            <RegionCard key={item.id} attraction={item} />
+          {data.map((post) => (
+            <RegionCard key={post._id} post={post} />
           ))}
         </Grid>
       </Box>
@@ -89,11 +89,11 @@ export default function Page() {
   );
 }
 
-function RegionCard({ attraction }: { attraction: Attraction }) {
+function RegionCard({ post }: { post: Post }) {
   const router = useRouter();
 
   const handleCardClick = () => {
-    router.push(`/home/highlights/${attraction.id}`); // นำทางไปยังหน้ารายละเอียด
+    router.push(`/home/highlights/${post._id}`);
   };
 
   return (
@@ -116,8 +116,11 @@ function RegionCard({ attraction }: { attraction: Attraction }) {
           <CardMedia
             component="img"
             height="150"
-            image={attraction.coverimage}
-            alt={attraction.name}
+            image={post.images.length > 0 ? post.images[0] : ""}
+            alt="ยังม้ายยยมีรูป"
+            sx={{
+              backgroundColor: post.images.length > 0 ? "transparent" : "#f0f0f0",
+            }}
           />
           <CardContent
             sx={{
@@ -135,7 +138,7 @@ function RegionCard({ attraction }: { attraction: Attraction }) {
                 marginBottom: "5px",
               }}
             >
-              {attraction.name}
+              {post.title}
             </Typography>
             <Typography
               variant="body2"
@@ -143,7 +146,7 @@ function RegionCard({ attraction }: { attraction: Attraction }) {
                 color: "#353c41",
               }}
             >
-              {attraction.detail.substring(0, 50)}...
+              {post.content.substring(0, 100)}...
             </Typography>
           </CardContent>
         </CardActionArea>
