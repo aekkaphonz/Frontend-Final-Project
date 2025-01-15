@@ -1,5 +1,4 @@
 "use client";
-
 import {
   Box,
   Button,
@@ -22,8 +21,12 @@ import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+
 import Swal from "sweetalert2";
 import axios from "axios";
+
+import axios, { AxiosError } from "axios";
+
 
 
 export default function SignUp() {
@@ -46,9 +49,25 @@ export default function SignUp() {
     getValues,
   } = useForm();
 
+  const handleReset = () => {
+    reset({
+      userName: "",
+      email: "",
+      password: "",
+      gender: "",
+      dateOfBirth: null,
+    });
+  };
+
   const onSubmit = async (data: FieldValues) => {
     const gender =
-      data.gender === 0 ? "ชาย" : data.gender === 1 ? "หญิง" : "อื่นๆ";
+      data.gender === 0
+        ? "เลือก"
+        : data.gender === 1
+        ? "ชาย"
+        : data.gender === 2
+        ? "หญิง"
+        : "อื่นๆ";
     const dateOfBirth = data.dateOfBirth
       ? dayjs(data.dateOfBirth).format("DD/MM/YYYY")
       : "ยังไม่กำหนด";
@@ -63,6 +82,7 @@ export default function SignUp() {
       });
 
       if (response.status === 201) {
+
         Swal.fire({
           title: "สมัครสมาชิกสำเร็จ !",
           text: "คุณสมัครสมาชิกเรียบร้อยแล้ว!",
@@ -80,6 +100,7 @@ export default function SignUp() {
         confirmButtonText: "ตกลง",
         confirmButtonColor: "#d33",
       });
+
     }
   };
 
@@ -193,12 +214,12 @@ export default function SignUp() {
                         {...field}
                         label="เพศ"
                       >
-                        <MenuItem value="">
-                          <em></em>
+                        <MenuItem value={0}>
+                          <em>เลือก</em>
                         </MenuItem>
-                        <MenuItem value={0}>ชาย</MenuItem>
-                        <MenuItem value={1}>หญิง</MenuItem>
-                        <MenuItem value={2}>อื่นๆ</MenuItem>
+                        <MenuItem value={1}>ชาย</MenuItem>
+                        <MenuItem value={2}>หญิง</MenuItem>
+                        <MenuItem value={3}>อื่นๆ</MenuItem>
                       </Select>
                     </FormControl>
                   )}
@@ -247,7 +268,7 @@ export default function SignUp() {
               </div>
             </div>
 
-            <div>
+            {/* <div> เผื่อใช้
               <Controller
                 name="agreeToTerms"
                 control={control}
@@ -260,6 +281,7 @@ export default function SignUp() {
                   </div>
                 )}
               />
+
             </div>
 
             <div className="btn1">
@@ -283,6 +305,53 @@ export default function SignUp() {
               >
                 ยืนยัน
               </Button>
+
+            </div> */}
+            <div className="grid grid-cols-2 justify-between items-center">
+              <div className="btn1 flex items-center">
+                <Button
+                  variant="contained"
+                  sx={{
+                    backgroundColor: "#77bfa3",
+                    "&:hover": {
+                      backgroundColor: "#98c9a3",
+                    },
+                    "&:focus": {
+                      backgroundColor: "#bfd8bd",
+                    },
+                    "&.MuiButton-root": {
+                      outline: "none",
+                    },
+                  }}
+                  className="w-4/5 text-white p-2 text-lg"
+                  type="submit"
+                >
+                  ยืนยัน
+                </Button>
+              </div>
+              <div className="btn1 flex items-center">
+                <Button
+                  variant="contained"
+                  sx={{
+                    backgroundColor: "#D22B2B",
+                    "&:hover": {
+                      backgroundColor: "#D2042D",
+                    },
+                    "&:focus": {
+                      backgroundColor: "#D2042D",
+                    },
+                    "&.MuiButton-root": {
+                      outline: "none",
+                    },
+                  }}
+                  className="w-4/5 text-white p-2 text-lg"
+                  type="button"
+                  onClick={handleReset}
+                >
+                  รีเซ็ต
+                </Button>
+              </div>
+
             </div>
           </Box>
         </CardContent>
