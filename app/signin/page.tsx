@@ -141,7 +141,12 @@ function signin() {
                 />
               </div>
               <div className="text-right">
-                <a href="http://localhost:3000/signup">ลืมรหัสผ่าน</a>
+                <a 
+                  href="http://localhost:3000/signup" 
+                  className="text-red-500 underline" // เส้นใต้
+                >
+                  ลืมรหัสผ่าน? 
+                </a>
               </div>
             </div> */}
 
@@ -155,10 +160,10 @@ function signin() {
                 sx={{
                   backgroundColor: "#77bfa3",
                   "&:hover": {
-                    backgroundColor: "#98c9a3",
+                    backgroundColor: "#77bfa3",
                   },
                   "&:focus": {
-                    backgroundColor: "#bfd8bd",
+                    backgroundColor: "#77bfa3",
                   },
                   "&.MuiButton-root": {
                     outline: "none",
@@ -172,7 +177,10 @@ function signin() {
             </div>
             <div className="flex justify-center items-center gap-2 ">
               <a className="text-right  ">ยังไม่เป็นสมาชิก?</a>
-              <a href="http://localhost:3000/signup" className="text-blue-500">
+              <a 
+                href="http://localhost:3000/signup" 
+                className="text-blue-500"
+              >
                 ลงทะเบียนสมัครสมาชิก
               </a>
             </div>
@@ -184,22 +192,36 @@ function signin() {
               <Button
                 variant="contained"
                 sx={{
-                  backgroundColor: "#77bfa3",
+
+                  backgroundColor: "#ffffff",
+                  gap: "10px",
+                  fontWeight: "bold",
                   "&:hover": {
-                    backgroundColor: "#98c9a3",
+                    backgroundColor: "#ffffff",
                   },
                   "&:focus": {
-                    backgroundColor: "#bfd8bd",
+                    backgroundColor: "#ffffff",
+
                   },
                   "&.MuiButton-root": {
                     outline: "none",
                   },
                 }}
-                className="w-4/6 text-white p-2 text-sm"
+
+                className="w-4/6 text-[#77bfa3] p-2 text-sm "
                 type="button"
                 onClick={handleGoogleLogin}
                 startIcon={<GoogleIcon />}
+
               >
+                <img
+                  src="/images/google-logo.png"
+                  alt="Cleaning Illustration"
+                  style={{ 
+                    maxWidth: "25px", 
+                    height: "auto" 
+                  }}
+                />
                 Login with Google
               </Button>
             </div>
