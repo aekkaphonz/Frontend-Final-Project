@@ -345,6 +345,12 @@ export default function SignUp() {
                 </Button>
               </div>
             </div>
+            <div className="flex justify-center items-center gap-2 ">
+              <a className="text-right  ">เป็นสมากชิกแล้ว !</a>
+              <a href="http://localhost:3000/signup" className="text-blue-500">
+                เข้าสู่ระบบ
+              </a>
+            </div>
           </Box>
         </CardContent>
       </Card>

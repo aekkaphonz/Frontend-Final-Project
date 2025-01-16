@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { useRouter } from "next/navigation"; // ใช้ router สำหรับเปลี่ยนหน้า
+import { useRouter } from "next/navigation"; 
 import { styled } from "@mui/material/styles";
 import Paper from "@mui/material/Paper";
 import Grid from "@mui/material/Grid";
@@ -27,26 +27,25 @@ const Item = styled(Paper)(({ theme }) => ({
 }));
 
 export default function Page() {
-  const router = useRouter(); // ใช้ router สำหรับเปลี่ยนหน้า
+  const router = useRouter(); 
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [rows, setRows] = useState<any[]>([]); // เก็บข้อมูลบทความที่ได้จาก backend
-  const [openModal, setOpenModal] = useState(false); // เปิด/ปิด Modal
-  const [selectedPost, setSelectedPost] = useState<string | null>(null); // เก็บ ID หรือชื่อบทความที่เลือกจะลบ
-
+  const [rows, setRows] = useState<any[]>([]); 
+  const [openModal, setOpenModal] = useState(false); 
+  const [selectedPost, setSelectedPost] = useState<string | null>(null); 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
 
   const fetchPosts = async () => {
     try {
-      const response = await fetch("http://localhost:3001/posts"); // เรียก API จริง
+      const response = await fetch("http://localhost:3001/posts"); 
       if (!response.ok) throw new Error("Failed to fetch posts");
 
       const data = await response.json();
       setRows(data);
     } catch (error) {
       console.error("Error fetching posts:", error);
-      setRows([]); // ตั้งค่าเป็นว่างในกรณีที่ API ล้มเหลว
+      setRows([]); 
     }
   };
 
@@ -70,7 +69,7 @@ export default function Page() {
 
         if (response.ok) {
           alert("ลบบทความสำเร็จ!");
-          setRows(rows.filter((row) => row._id !== selectedPost)); // เปลี่ยนเป็น _id
+          setRows(rows.filter((row) => row._id !== selectedPost)); 
         } else {
           throw new Error("Failed to delete post");
         }
@@ -139,7 +138,7 @@ export default function Page() {
                       <TableCell component="th" scope="row">
                         <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
                           <img
-                            src={row.images[0] || "https://via.placeholder.com/50"} // รูปภาพ (ถ้ามี)
+                            src={row.images[0] || "https://via.placeholder.com/50"} 
                             alt={row.title || "-"}
                             style={{ width: "50px", height: "50px", borderRadius: "8px" }}
                           />
@@ -163,7 +162,7 @@ export default function Page() {
                           sx={{ color: "red" }}
                           variant="text"
                           onClick={() => {
-                            setSelectedPost(row._id); // เปลี่ยนเป็น _id
+                            setSelectedPost(row._id); 
                             setOpenModal(true);
                           }}
                         >
