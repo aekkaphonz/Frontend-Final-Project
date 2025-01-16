@@ -53,7 +53,7 @@ export default function Page() {
       const response = await fetch(
         `http://localhost:3001/posts?userId=${userId}`
       );
-      a087663da653468564596214e88dc2d168bd0be1;
+      
       if (!response.ok) throw new Error("Failed to fetch posts");
 
       const data = await response.json();
