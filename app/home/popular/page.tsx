@@ -36,18 +36,19 @@ export default function PopularPage() {
 
   // ดึงข้อมูลจาก API
   const fetchPosts = async (pageNumber = 1) => {
+    setLoading(true);
     try {
-      setLoading(true);
-      const response = await axios.get(
-        `https://jsonplaceholder.typicode.com/posts?_page=${pageNumber}&_limit=5`
-      );
-      setPosts((prevPosts) => [...prevPosts, ...response.data]);
-      setLoading(false);
+        const response = await axios.get(
+            `https://jsonplaceholder.typicode.com/posts?_page=${pageNumber}&_limit=5`
+        );
+        setPosts((prevPosts) => [...prevPosts, ...response.data]);
     } catch (error) {
-      console.error("Error fetching posts:", error);
-      setLoading(false);
+        console.error("Error fetching posts:", error);
+    } finally {
+        setLoading(false);
     }
-  };
+};
+
 
   useEffect(() => {
     fetchPosts();

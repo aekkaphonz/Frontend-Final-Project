@@ -1,0 +1,207 @@
+"use client";
+
+import React from 'react';
+import { styled } from '@mui/material/styles';
+import Container from '@mui/material/Container';
+import Box from '@mui/material/Box';
+import Paper from '@mui/material/Paper';
+import Grid from '@mui/material/Grid';
+import { Height } from '@mui/icons-material';
+import ReactECharts from 'echarts-for-react';
+import { Button, Typography, } from '@mui/material';
+import "./dashboard.css";
+import VisibilityIcon from '@mui/icons-material/Visibility';
+
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import LibraryBooksIcon from '@mui/icons-material/LibraryBooks';
+import CommentIcon from '@mui/icons-material/Comment';
+import ThumbUpIcon from '@mui/icons-material/ThumbUp';
+import ChatBubbleIcon from '@mui/icons-material/ChatBubble';
+import BorderColorIcon from '@mui/icons-material/BorderColor';
+import { blue, green } from '@mui/material/colors';
+
+const Item = styled(Paper)(({ theme }) => ({
+  backgroundColor: '#fff',
+  ...theme.typography.body2,
+  padding: theme.spacing(1),
+  textAlign: 'center',
+  color: theme.palette.text.secondary,
+  ...theme.applyStyles('dark', {
+    backgroundColor: '#1A2027',
+  }),
+}));
+
+interface attraction {
+  id: number,
+  name: string,
+  posts: string,
+  totalPost: number,
+  comments: string,
+  totalLike: number,
+  visitors: number,
+}
+
+export default function page() {
+  const chartOptions = {
+    title: {
+      text: 'จำนวนผู้อ่าน',
+      top: 20,
+    },
+    tooltip: {
+      trigger: 'axis',
+    },
+    legend: {
+      data: ['ปีนี้', 'ปีก่อน'],
+      top: '10%',
+      right: '10%',
+    },
+    grid: {
+      top: '25%',
+      left: '10%',
+      right: '10%',
+      bottom: '10%',
+    },
+    xAxis: {
+      type: 'category',
+      boundaryGap: false,
+      data: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+    },
+    yAxis: {
+      type: 'value',
+    },
+    series: [
+      {
+        name: 'ปีนี้',
+        type: 'line',
+        smooth: true,
+        data: [1, 11, 54, 19, 72, 80, 37, 62, 75, 77, 39, 91],
+        lineStyle: {
+          color: blue[500],
+        },
+        itemStyle: {
+          color: blue[500],
+        },
+        areaStyle: {
+          color: 'rgba(84, 112, 198, 0.2)',
+        },
+      },
+      {
+        name: 'ปีก่อน',
+        type: 'line',
+        smooth: true,
+        data: [2, 11, 24, 9, 44, 50, 20, 40, 45, 42, 30, 26],
+        lineStyle: {
+          color: green[500],
+        },
+        itemStyle: {
+          color: green[500],
+        },
+        areaStyle: {
+          color: 'rgba(91, 204, 117, 0.2)',
+        },
+      },
+    ],
+  };
+
+  return (
+    <Container fixed >
+      <Grid container spacing={2} sx={{ marginTop: 6 }}>
+        <Grid item md={5.6} sx={{ marginRight: 4, marginBottom: 2, }}>
+          <Item id="profile-item" sx={{ height: 150, textAlign: 'start', }}>
+            <Typography sx={{ ml: 3, mt: 2, fontSize: 24, fontWeight: 'bold' }}>Dew Witsarut</Typography>
+            <Typography sx={{ ml: 4 }}>ผู้เขียน/นักเขียน</Typography>
+            <Typography></Typography>
+            <AccountCircleIcon id="profile-icon" className='icon' sx={{ fontSize: 180, ml: 47, mt: -17, color: blue[500], filter: 'drop-shadow(2px 4px 3px rgba(0, 0, 0, 0.3))' }} />
+          </Item>
+        </Grid>
+        <Grid item md={2}>
+          <Item id="profile-item" sx={{ height: 150, textAlign: 'start' }}>
+            <LibraryBooksIcon id="profile-icon" className='icon' sx={{ fontSize: 80, marginLeft: 10, marginTop: -4, color: '#577BC1', filter: 'drop-shadow(2px 4px 3px rgba(0, 0, 0, 0.3))' }} />
+            <Typography sx={{ fontWeight: 'bold', fontSize: 14, marginTop: 3.5, marginLeft: 2 }} >จำนวนบทความ</Typography>
+            <Typography sx={{ textAlign: 'start', fontWeight: 'bold', fontSize: 22, marginLeft: 2, color: '#577BC1' }}>20</Typography>
+          </Item>
+        </Grid>
+        <Grid item md={2}>
+          <Item id="profile-item" sx={{ height: 150, textAlign: 'start' }}>
+            <CommentIcon id="profile-icon" className='icon' sx={{ fontSize: 80, marginLeft: 10, marginTop: -4, color: '#85A947', filter: 'drop-shadow(2px 4px 3px rgba(0, 0, 0, 0.3))' }} />
+            <Typography sx={{ fontWeight: 'bold', fontSize: 14, marginTop: 3.5, marginLeft: 2 }}>คอมเมนท์</Typography>
+            <Typography sx={{ textAlign: 'start', fontWeight: 'bold', fontSize: 22, marginLeft: 2, color: '#85A947', }}>20</Typography>
+          </Item>
+        </Grid>
+        <Grid item md={2}>
+          <Item id="profile-item" sx={{ height: 150, textAlign: 'start' }}>
+            <ThumbUpIcon id="profile-icon" className='icon' sx={{ fontSize: 80, marginLeft: 10, marginTop: -4, color: '#FF8383', filter: 'drop-shadow(2px 4px 3px rgba(0, 0, 0, 0.3))' }} />
+            <Typography sx={{ fontWeight: 'bold', fontSize: 14, marginTop: 3.5, marginLeft: 2 }}>ไลค์ทั้งหมด</Typography>
+            <Typography sx={{ textAlign: 'start', fontWeight: 'bold', fontSize: 22, marginLeft: 2, color: '#FF8383' }}>20</Typography>
+          </Item>
+        </Grid>
+
+        <Grid item md={7}>
+          <Item sx={{ height: 450 }}>
+            <ReactECharts option={chartOptions} style={{ height: '350px', width: '100%' }} />
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <div style={{ margin: 0, marginRight: 50, marginTop: 25, fontSize: '16px', fontWeight: 'bold' }}>
+                <p>250</p>
+                <p>ผู้เข้าชมใหม่</p>
+              </div>
+              <div style={{ margin: 0, marginTop: 25, fontSize: '16px', fontWeight: 'bold' }}>
+                <p>567</p>
+                <p>ผู้เข้าชมทั้งหมด</p>
+              </div>
+            </div>
+          </Item>
+        </Grid>
+        <Grid item md={5}>
+          <Item sx={{ height: 450 }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 20px', marginBottom: 10 }}>
+              <p style={{ fontWeight: 'bold', fontSize: '18px' }}>บทความ</p>
+              <Button variant="contained">เพิ่มบทความ +</Button>
+            </div>
+            <Item sx={{ height: 100, textAlign: 'start' }}>
+              <Box sx={{ display: 'flex', alignItems: 'center',}}>
+                <Box
+                  component="img"
+                  src="/next.svg"
+                  alt="Next.js Logo"
+                  sx={{ width: 90, height: 70, mr: 3}}
+                />
+                <Typography noWrap sx={{ fontWeight: 'bold', fontSize: '1rem' }}>
+                  Name article
+                </Typography>
+              </Box>
+
+              <Box
+                sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  mt: -1.5,
+                }}
+              >
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <ChatBubbleIcon sx={{ fontSize: 'small', color: 'gray' }} />
+                  <Typography sx={{ fontSize: '0.7rem', color: 'gray' }}>
+                    325 ความคิดเห็น
+                  </Typography>
+                </Box>
+
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <VisibilityIcon sx={{ fontSize: 'small', color: 'gray' }} />
+                  <Typography sx={{ fontSize: '0.7rem', color: 'gray' }}>
+                    9646 การอ่าน
+                  </Typography>
+                </Box>
+
+                <Button className='btn' variant="text" sx={{ minWidth: 'auto', gap: 0.5, color: 'gray' }}>
+                  <BorderColorIcon sx={{ fontSize: 'small' }} />
+                  แก้ไข
+                </Button>
+              </Box>
+            </Item>
+
+          </Item>
+        </Grid>
+      </Grid>
+    </Container>
+  )
+}

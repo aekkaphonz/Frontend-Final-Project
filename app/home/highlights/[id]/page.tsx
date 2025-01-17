@@ -12,125 +12,59 @@ import {
   IconButton,
   Tooltip,
   TextField,
-  InputAdornment
 } from "@mui/material";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import ShareIcon from "@mui/icons-material/Share";
 import ReplyIcon from "@mui/icons-material/Reply";
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
-import SendIcon from '@mui/icons-material/Send';
 import { useRouter } from "next/navigation";
 import { useParams } from "next/navigation";
 
-interface Attraction {
-  id: string;
-  name: string;
-  detail: string;
-  coverimage: string;
-  likeCount: number;
-}
-
-interface Comment {
-  id: number;
-  name: string;
-  message: string;
-  replies?: Comment[];
+interface Post {
+    _id: string;
+    title: string;
+    content: string;
+    images: string[]; // รูปภาพเป็น array
 }
 
 export default function Page() {
-  const [data, setData] = useState<Attraction | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [comments, setComments] = useState<Comment[]>([]);
-  const [newComment, setNewComment] = useState<string>("");
-  const [replyMessage, setReplyMessage] = useState<string>("");
-  const [replyingToCommentId, setReplyingToCommentId] = useState<number | null>(
-    null
-  );
-  const params: any = useParams();
-  const router = useRouter();
+    const [isSidebarOpen, setIsSidebarOpen] = useState(false); // สำหรับควบคุม Sidebar
+    const [data, setData] = useState<Post | null>(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    async function fetchData(id: string) {
-      try {
-        const res = await fetch(
-          `https://melivecode.com/api/attractions/${id}`
-        );
-        if (!res.ok) {
-          throw new Error("Failed to fetch data");
-        }
-        const result = await res.json();
+    const params = useParams(); // ดึง `id` จาก dynamic route
 
-        setData({
-          ...result.attraction,
-          likeCount: 0,
-        });
+    const toggleSidebar = () => {
+        setIsSidebarOpen(!isSidebarOpen);
+    };
 
-        setComments([]);
-        setLoading(false);
-      } catch (err: any) {
-        console.error(err.message);
-        setError("ไม่สามารถโหลดข้อมูลได้");
-        setLoading(false);
-      }
-    }
-
-    if (params && params.id) {
-      fetchData(params.id);
-    } else {
-      setError("ไม่พบพารามิเตอร์ ID");
-      setLoading(false);
-    }
-  }, [params]);
-
-  const handleAddComment = () => {
-    if (newComment.trim()) {
-      const comment: Comment = {
-        id: comments.length + 1,
-        name: "Anonymous",
-        message: newComment,
-        replies: [],
-      };
-      const updatedComments = [...comments, comment];
-      setComments(updatedComments);
-      setNewComment("");
-    }
-  };
-
-  const handleAddReply = (commentId: number) => {
-    if (replyMessage.trim()) {
-      const updatedComments = comments.map((comment) =>
-        comment.id === commentId
-          ? {
-              ...comment,
-              replies: [
-                ...(comment.replies || []),
-                {
-                  id: (comment.replies?.length || 0) + 1,
-                  name: "Anonymous",
-                  message: replyMessage,
-                },
-              ],
+    useEffect(() => {
+        const fetchData = async (id: string) => {
+            try {
+                const res = await fetch(`http://localhost:3001/posts/${id}`);
+                if (!res.ok) {
+                    throw new Error(`Failed to fetch data with status: ${res.status}`);
+                }
+                const result: Post = await res.json();
+                setData(result);
+            } catch (error: any) {
+                console.error("Error fetching data:", error.message);
+                setError("ไม่สามารถโหลดข้อมูลได้");
+            } finally {
+                setLoading(false);
             }
-          : comment
-      );
+        };
 
-      setComments(updatedComments);
-      setReplyMessage("");
-      setReplyingToCommentId(null);
-    }
-  };
-
-  const handleLike = () => {
-    if (data) {
-      const updatedLikes = data.likeCount + 1;
-      setData({ ...data, likeCount: updatedLikes });
-    }
-  };
-
-  const handleGoBack = () => {
-    router.back();
-  };
+        if (params?.id) {
+            console.log("Fetching data for ID:", params.id);
+            fetchData(params.id);
+        } else {
+            console.error("ไม่พบพารามิเตอร์ ID");
+            setError("ไม่พบพารามิเตอร์ ID");
+            setLoading(false);
+        }
+    }, [params]);
 
   return (
     <Box sx={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
@@ -187,7 +121,6 @@ export default function Page() {
                 backgroundColor: "#f5f5f5",
               }}
             >
-              {/* icon*/}
               <Box>
                 <Tooltip title="แชร์">
                   <IconButton sx={{ color: "#000000" }}>
@@ -239,21 +172,15 @@ export default function Page() {
             value={newComment}
             onChange={(e) => setNewComment(e.target.value)}
             sx={{ mb: 2 }}
-            InputProps={{
-              endAdornment: (
-                <InputAdornment position="end">
-                  <IconButton
-                    color="primary"
-                    onClick={handleAddComment}
-                    edge="end"
-                  >
-                    <SendIcon />
-                  </IconButton>
-                </InputAdornment>
-              ),
-            }}
           />
-
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={handleAddComment}
+            sx={{ mb: 2 }}
+          >
+            ส่ง
+          </Button>
           {comments.map((comment) => (
             <Box
               key={comment.id}
@@ -300,21 +227,13 @@ export default function Page() {
                     value={replyMessage}
                     onChange={(e) => setReplyMessage(e.target.value)}
                     sx={{ mb: 2 }}
-                    InputProps={{
-                      endAdornment: (
-                        <InputAdornment position="end">
-                          <IconButton
-                            color="primary"
-                            variant="contained"
-                            onClick={() => handleAddReply(comment.id)}
-                            edge="end"
-                          >
-                            <SendIcon />
-                          </IconButton>
-                        </InputAdornment>
-                      ),
-                    }}
                   />
+                  <Button
+                    variant="contained"
+                    onClick={() => handleAddReply(comment.id)}
+                  >
+                    ส่ง
+                  </Button>
                 </Box>
               )}
             </Box>
