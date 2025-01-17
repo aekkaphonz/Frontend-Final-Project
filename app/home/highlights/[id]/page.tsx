@@ -56,14 +56,15 @@ export default function Page() {
             }
         };
 
-        if (params?.id) {
-            console.log("Fetching data for ID:", params.id);
-            fetchData(params.id);
-        } else {
-            console.error("ไม่พบพารามิเตอร์ ID");
-            setError("ไม่พบพารามิเตอร์ ID");
-            setLoading(false);
-        }
+         if (params?.id) {
+        const id = Array.isArray(params.id) ? params.id[0] : params.id; // ดึงค่าแรกในกรณีที่เป็น array
+        console.log("Fetching data for ID:", id);
+        fetchData(id);
+    } else {
+        console.error("ไม่พบพารามิเตอร์ ID");
+        setError("ไม่พบพารามิเตอร์ ID");
+        setLoading(false);
+    }
     }, [params]);
 
   return (

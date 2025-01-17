@@ -27,8 +27,6 @@ import Swal from "sweetalert2";
 
 import axios from "axios";
 
-import axios, { AxiosError } from "axios";
-
 
 
 export default function SignUp() {
