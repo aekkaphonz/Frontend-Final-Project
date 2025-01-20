@@ -75,6 +75,7 @@ export default function PopularPage() {
           mt: 10,
           boxShadow: "0px 4px 8px rgba(0,0,0,0.1)",
           flexGrow: 1,
+          border: "2px solid #c9dbc4", // เพิ่มเส้นกรอบสีเขียวอ่อน
         }}
       >
         <Typography

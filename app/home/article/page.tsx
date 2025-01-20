@@ -150,13 +150,13 @@ export default function Page() {
                 onClick={() => setShowMore(!showMore)}
                 sx={{
                   textTransform: "none",
-                  backgroundColor: "#94c379",
+                  backgroundColor: "#98c9a3",
                   color: "#fff",
                   fontWeight: "bold",
                   borderRadius: 2,
                   padding: "8px 150px",
                   "&:hover": {
-                    backgroundColor: "#7cab62",
+                    backgroundColor: "#98c9a3",
                   },
                 }}
               >

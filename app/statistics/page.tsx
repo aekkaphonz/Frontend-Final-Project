@@ -49,10 +49,10 @@ export default function Page() {
                 type: "line",
                 smooth: true, // เส้นโค้ง
                 lineStyle: {
-                    color: "#007bff", // สีของเส้น
+                    color: "#77bfa3", // สีของเส้น
                 },
                 itemStyle: {
-                    color: "#007bff", // สีของจุด
+                    color: "#77bfa3", // สีของจุด
                 },
             },
         ],
@@ -79,12 +79,27 @@ export default function Page() {
                         <Button
                             variant={chartType === "all" ? "contained" : "text"}
                             onClick={() => setChartType("all")}
+                            sx={{
+                            backgroundColor: chartType === "all" ? "#77bfa3" : "transparent", // สีพื้นหลัง
+                            color: chartType === "all" ? "#fff" : "#77bfa3", // สีข้อความ
+                            "&:hover": {
+                                backgroundColor: chartType === "all" ? "#77bfa3" : "#e3f2fd", // สีเมื่อ hover
+                            },
+                            }}
                         >
                             ทั้งหมด
                         </Button>
+
                         <Button
                             variant={chartType === "content" ? "contained" : "text"}
                             onClick={() => setChartType("content")}
+                            sx={{
+                            backgroundColor: chartType === "content" ? "#77bfa3" : "transparent", // สีพื้นหลัง
+                            color: chartType === "content" ? "#fff" : "#77bfa3", // สีข้อความ
+                            "&:hover": {
+                                backgroundColor: chartType === "content" ? "#77bfa3" : "#e3f2fd", // สีเมื่อ hover
+                            },
+                            }}
                         >
                             เนื้อหา
                         </Button>

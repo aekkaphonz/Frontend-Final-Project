@@ -35,7 +35,10 @@ export default function Home() {
             borderRadius: "50%",
             backgroundColor: "#ccffe2", // สีของวงกลม
             position: "absolute",
-            bottom: "-27%",
+
+
+            bottom: "-25%",
+
             left: "-20%",
             zIndex: 0,
           }}
@@ -164,7 +167,7 @@ export default function Home() {
           {/* Service 2 */}
           <Grid item xs={12} sm={6} md={4}>
             <Card sx={{ boxShadow: 2 }}>
-              <Link href="/home/highlights" passHref>
+              <Link href="/home/article" passHref>
                 <CardContent>
                 <Box
                   display="flex"
@@ -192,7 +195,7 @@ export default function Home() {
           {/* Service 3 */}
           <Grid item xs={12} sm={6} md={4}>
             <Card sx={{ boxShadow: 2 }}>
-              <Link href="/home/highlights" passHref>
+              <Link href="/home/popular" passHref>
                 <CardContent>
                 <Box
                   display="flex"
