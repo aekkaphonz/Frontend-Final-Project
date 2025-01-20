@@ -1,6 +1,24 @@
+
   "use client";
 
-  import React, { useEffect, useState } from "react";
+
+
+import React, { useEffect, useState } from "react";
+import Container from "@mui/material/Container";
+import Card from "@mui/material/Card";
+import CardContent from "@mui/material/CardContent";
+import CardMedia from "@mui/material/CardMedia";
+import Typography from "@mui/material/Typography";
+import Button from "@mui/material/Button";
+import CardActionArea from "@mui/material/CardActionArea";
+import CardActions from "@mui/material/CardActions";
+import Box from "@mui/material/Box";
+import IconButton from "@mui/material/IconButton";
+import Tooltip from "@mui/material/Tooltip";
+import Navbar from "@/app/navbar/AfterLogin";
+
+
+interface Post {
   import {
     Container,
     Card,
@@ -22,13 +40,18 @@
   import ReplyIcon from "@mui/icons-material/Reply";
   import MoreVertIcon from "@mui/icons-material/MoreVert";
   import { useRouter } from "next/navigation";
-  import { useParams } from "next/navigation";
+
+
+  import Navbar from "@/app/navbar/page";
+  import Swal from "sweetalert2"; // Import SweetAlert
+  import "./styles.css";
 
   interface Attraction {
-    id: string;
-    name: string;
-    detail: string;
-    coverimage: string;
+
+    _id: string;
+    title: string;
+    content: string;
+    images: string[]; // รูปภาพเป็น array
     likeCount: number;
   }
 
@@ -40,6 +63,9 @@
   }
 
   export default function Page() {
+
+    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
     const [data, setData] = useState<Attraction | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -53,6 +79,7 @@
     const [menuCommentId, setMenuCommentId] = useState<number | null>(null);
     const params: any = useParams();
     const router = useRouter();
+
 
     useEffect(() => {
       async function fetchData(id: string) {
@@ -98,6 +125,8 @@
         setNewComment("");
       }
     };
+
+    const [isLoggedIn, setIsLoggedIn] = useState(false); // เพิ่มสถานะการเข้าสู่ระบบ
 
     const handleAddReply = (commentId: number) => {
       if (replyMessage.trim()) {
@@ -146,6 +175,81 @@
       setEditingReplyId(null);
     };
 
+
+        if (params?.id) {
+            console.log("Fetching data for ID:", params.id);
+            fetchData(params.id);
+        } else {
+            console.error("ไม่พบพารามิเตอร์ ID");
+            setError("ไม่พบพารามิเตอร์ ID");
+            setLoading(false);
+        }
+    }, [params]);    
+
+    const handleAddComment = () => {
+      if (newComment.trim()) {
+        const comment: Comment = {
+          id: comments.length + 1,
+          name: "Anonymous",
+          message: newComment,
+          replies: [],
+        };
+        const updatedComments = [...comments, comment];
+        setComments(updatedComments);
+        setNewComment("");
+      }
+    };
+
+    const handleAddReply = (commentId: number) => {
+      if (replyMessage.trim()) {
+        const updatedComments = comments.map((comment) =>
+          comment.id === commentId
+            ? {
+                ...comment,
+                replies: [
+                  ...(comment.replies || []),
+                  {
+                    id: (comment.replies?.length || 0) + 1,
+                    name: "Anonymous",
+                    message: replyMessage,
+                  },
+                ],
+              }
+            : comment
+        );
+
+        setComments(updatedComments);
+        setReplyMessage("");
+        setReplyingToCommentId(null);
+      }
+    };
+    const toggleSidebar = () => {
+      setIsSidebarOpen(!isSidebarOpen);
+  };
+
+    const handleEditComment = (commentId: number, newMessage: string) => {
+      const updatedComments = comments.map((comment) =>
+        comment.id === commentId ? { ...comment, message: newMessage } : comment
+      );
+      setComments(updatedComments);
+      setEditingCommentId(null);
+    };
+
+    const handleEditReply = (commentId: number, replyId: number, newMessage: string) => {
+      const updatedComments = comments.map((comment) =>
+        comment.id === commentId
+          ? {
+              ...comment,
+              replies: comment.replies?.map((reply) =>
+                reply.id === replyId ? { ...reply, message: newMessage } : reply
+              ),
+            }
+          : comment
+      );
+      setComments(updatedComments);
+      setEditingReplyId(null);
+    };
+
     const handleDeleteComment = (commentId: number) => {
       const updatedComments = comments.filter((comment) => comment.id !== commentId);
       setComments(updatedComments);
@@ -164,11 +268,13 @@
     };
 
     const handleLike = () => {
-      if (data) {
-        const updatedLikes = data.likeCount + 1;
-        setData({ ...data, likeCount: updatedLikes });
-      }
-    };
+
+        if (data) {
+          const updatedLikes = (data.likeCount || 0) + 1; // ตรวจสอบให้แน่ใจว่า likeCount มีค่าเริ่มต้นเป็น 0
+          setData({ ...data, likeCount: updatedLikes });
+        }
+      };
+
 
     const handleMenuOpen = (event: React.MouseEvent<HTMLElement>, commentId: number) => {
       setAnchorEl(event.currentTarget);
@@ -180,12 +286,18 @@
       setMenuCommentId(null);
     };
 
+
     const handleGoBack = () => {
       router.back();
     };
 
+
+
     return (
       <Box sx={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
+        <Navbar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
+
+
         <Container
           maxWidth="md"
           sx={{ mt: 4, textAlign: "center", flexGrow: 1, paddingTop: "80px" }}
@@ -210,8 +322,12 @@
               <CardMedia
                 component="img"
                 sx={{ height: 300 }}
+
                 image={data.coverimage}
-                alt={data.name}
+
+              //  images={data.images}
+                alt={data.title}
+
               />
               <CardContent sx={{ textAlign: "center" }}>
                 <Typography
@@ -220,6 +336,7 @@
                   component="div"
                   sx={{ color: "#77bfa3", fontWeight: "bold" }}
                 >
+
                   {data.name}
                 </Typography>
                 <Typography variant="body1" sx={{ color: "#616161", mt: 2 }}>
@@ -296,6 +413,117 @@
                 ),
               }}
             />
+
+
+                  {data.title}
+                </Typography>
+                <Typography variant="body1" sx={{ color: "#616161", mt: 2 }}>
+                  {data.content}
+                </Typography>
+              </CardContent>
+              <Box
+              sx={{
+                display: "flex",
+                justifyContent: "space-between",
+                padding: 2,
+                backgroundColor: "#f5f5f5",
+              }}
+            >
+              <Box>
+                <Tooltip title="แชร์">
+                  <IconButton sx={{ color: "#000000" }}>
+                    <ShareIcon />
+                  </IconButton>
+                </Tooltip>
+                <Tooltip title="เพิ่มในรายการโปรด">
+                  <IconButton sx={{ color: "#f50057" }}>
+                    <FavoriteIcon />
+                  </IconButton>
+                </Tooltip>
+              </Box>
+
+              {/* แสดงจำนวนคอมเมนต์และการตอบกลับรวมกัน */}
+              <Box sx={{ display: "flex", alignItems: "center" }}>
+                <Typography variant="body2" sx={{ ml: 2 }}>
+                  {comments.length + comments.reduce((acc, comment) => acc + (comment.replies?.length || 0), 0)} ความคิดเห็น
+                </Typography>
+              </Box>
+
+              {/* แสดงจำนวน "ถูกใจ" */}
+              <Box sx={{ display: "flex", alignItems: "center" }}>
+                <IconButton onClick={handleLike}>
+                  <FavoriteBorderIcon />
+                </IconButton>
+                <Typography variant="body2" sx={{ ml: 1 }}>
+                  {data.likeCount} ถูกใจ
+                </Typography>
+              </Box>
+            </Box>
+
+            </Card>
+          ) : (
+            <Typography variant="h5" sx={{ mt: 4, color: "#616161" }}>
+              ไม่พบข้อมูล
+            </Typography>
+          )}
+
+          <Box
+            sx={{
+              mt: 4,
+              p: 2,
+              backgroundColor: "#f5f5f5",
+              borderRadius: 2,
+              boxShadow: 2,
+            }}
+          >
+            <Typography variant="h6" sx={{ mb: 2 }}>
+                แสดงความคิดเห็น
+            </Typography>
+            <TextField
+                fullWidth
+                placeholder="เพิ่มคอมเมนต์..."
+                multiline
+                rows={3}
+                value={newComment}
+                onClick={() => {
+                    if (!isLoggedIn) { // ตรวจสอบว่าผู้ใช้เข้าสู่ระบบหรือยัง 
+                        Swal.fire({
+                            icon: "error",
+                            title: "Oops...",
+                            text: "กรุณาเข้าสู่ระบบเพื่อแสดงความคิดเห็น!",
+                            confirmButtonText: "เข้าสู่ระบบ",
+                            customClass: {
+                                confirmButton: "swal-login-button", // กำหนด class เพื่อลิงก์ปุ่ม
+                            },
+                            didOpen: () => {
+                                const button = document.querySelector(".swal-login-button");
+                                if (button) {
+                                    button.addEventListener("click", () => {
+                                        window.location.href = "/signin"; // ลิงก์ไปยังหน้าสมัคร/เข้าสู่ระบบ
+                                    });
+                                }
+                            },
+                        });
+                    }
+                }}
+                onChange={(e) => setNewComment(e.target.value)}
+                sx={{ mb: 2 }}
+                InputProps={{
+                    endAdornment: (
+                    <InputAdornment position="end">
+                        <IconButton
+                        color="primary"
+                        onClick={handleAddComment}
+                        edge="end"
+                        >
+                        <SendIcon />
+                        </IconButton>
+                    </InputAdornment>
+                    ),
+                }}
+            />
+
+
 
             {comments.map((comment) => (
               <Box
@@ -413,6 +641,7 @@
                           onClick={() =>
                             setEditingReplyId({ commentId: comment.id, replyId: reply.id })
                           }
+
                         >
                           แก้ไข
                         </MenuItem>
@@ -422,6 +651,7 @@
                             handleMenuClose();
                           }}
                         >
+
                           ลบ
                         </MenuItem>
                       </Menu>
@@ -484,4 +714,7 @@
         </Container>
       </Box>
     );
+
+
   }
+

@@ -30,9 +30,10 @@ export default function Page() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   // ตัวแปรรับข้อมูล
-  const [nameAuthor, setNameAuthor] = useState(""); // ชื่อผู้เขียน
-  const [subscriber, setSubscriber] = useState(0); // จำนวนผู้ติดตาม
-  const [postCount, setPostCount] = useState(0); // จำนวนบทความ
+  const [userId, setUserId] = useState(""); // เก็บ userId
+  const [nameAuthor, setNameAuthor] = useState(""); // เก็บชื่อผู้เขียน
+  const [subscriber, setSubscriber] = useState(0); // เก็บจำนวนผู้ติดตาม
+  const [postCount, setPostCount] = useState(0); // เก็บจำนวนโพสต์ทั้งหมด
   const [viewAll, setViewAll] = useState(0); // จำนวนการอ่านทั้งหมด
   const [commentCount, setCommentCount] = useState(0); // จำนวนความคิดเห็นทั้งหมด
   const [like, setLike] = useState(0); // ไลค์ทั้งหมด
@@ -42,26 +43,37 @@ export default function Page() {
     setIsSidebarOpen(!isSidebarOpen);
   };
 
-  // ดึงข้อมูลจาก backend
   const fetchDashboardData = async () => {
     try {
-      const response = await fetch("#"); // URL backend
-      const data = await response.json();
-      setNameAuthor(data.nameAuthor);
-      setSubscriber(data.subscriber);
-      setPostCount(data.postCount);
-      setViewAll(data.viewAll);
-      setCommentCount(data.commentCount);
-      setLike(data.like);
-      setPopularPosts(data.popularPosts); // สมมติ popularPosts เป็น array ของ { postName, viewCount }
+      if (!userId) throw new Error("User ID is not set");
+  
+      const userResponse = await fetch(`http://localhost:3001/user/${userId}`);
+      if (!userResponse.ok) throw new Error("Failed to fetch user data");
+      const userData = await userResponse.json();
+      setNameAuthor(userData.userName || "ไม่ทราบชื่อ");
+      setSubscriber(userData.subscriber || 0);
+  
+      const postResponse = await fetch(`http://localhost:3001/posts/count/${userId}`);
+      if (!postResponse.ok) throw new Error("Failed to fetch post count");
+      const postData = await postResponse.json();
+      setPostCount(postData.count || 0);
+  
+      console.log("Fetched dashboard data successfully");
     } catch (error) {
-      console.error("Error fetching dashboard data:", error);
+      console.error("Error fetching dashboard data:",);
+      alert("ไม่สามารถโหลดข้อมูลแดชบอร์ดได้");
     }
   };
 
   useEffect(() => {
-    fetchDashboardData();
-  }, []);
+    const currentUserId = "USER_ID_FROM_AUTH";
+    setUserId(currentUserId);
+  
+    if (currentUserId) {
+      fetchDashboardData();
+    }
+  }, [userId]);
+  
 
   return (
     <Container

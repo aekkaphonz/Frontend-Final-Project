@@ -32,17 +32,31 @@ function Sb({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: () => v
             >
               <MenuIcon />
             </IconButton>
-            <Typography variant="h6" noWrap component="div" sx={{ color: "#000", fontWeight: 700 }}>
-              Web Blog
-            </Typography>
+
+        
+
+            <Link href="/statistics" >
+
+              <img
+                src="/images/logo-blogs.png"
+                alt="Cleaning Illustration"
+                style={{ maxWidth: "142px", height: "auto" }} // ขนาดโลโก้
+              />
+            </Link>
+
+
+
           </Box>
 
           {/* ปุ่มเขียน */}
           <Button href="/createBlog"
             sx={{
-              color: "#000",
-              backgroundColor: "#fff", 
-              "&:hover": { backgroundColor: "#F7F7F7" },
+              color: "#ffffff",
+              backgroundColor: "#77bfa3", 
+              "&:hover": { 
+                backgroundColor: "#F7F7F7" ,
+                color: "#77bfa3"
+              },
               borderRadius: "20px",
               padding: "6px 16px",
               textTransform: "none",
