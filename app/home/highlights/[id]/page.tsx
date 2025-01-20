@@ -3,6 +3,7 @@
 
 
 
+
 import React, { useEffect, useState } from "react";
 import Container from "@mui/material/Container";
 import Card from "@mui/material/Card";
@@ -15,19 +16,9 @@ import CardActions from "@mui/material/CardActions";
 import Box from "@mui/material/Box";
 import IconButton from "@mui/material/IconButton";
 import Tooltip from "@mui/material/Tooltip";
-import Navbar from "@/app/navbar/AfterLogin";
 
 
-interface Post {
-  import {
-    Container,
-    Card,
-    CardContent,
-    CardMedia,
-    Typography,
-    Box,
-    IconButton,
-    Tooltip,
+import {
     TextField,
     InputAdornment,
     Menu,
@@ -39,15 +30,13 @@ interface Post {
   import SendIcon from "@mui/icons-material/Send";
   import ReplyIcon from "@mui/icons-material/Reply";
   import MoreVertIcon from "@mui/icons-material/MoreVert";
-  import { useParams, useRouter } from "next/navigation";
 
-
-  import Navbar from "@/app/navbar/page";
+  import { useRouter } from "next/navigation";
+  import { useParams } from "next/navigation";
   import Swal from "sweetalert2"; // Import SweetAlert
   import "./styles.css";
 
   interface Attraction {
-
     _id: string;
     title: string;
     content: string;
@@ -176,15 +165,17 @@ interface Post {
     };
 
 
-        if (params?.id) {
-            console.log("Fetching data for ID:", params.id);
-            fetchData(params.id);
-        } else {
-            console.error("ไม่พบพารามิเตอร์ ID");
-            setError("ไม่พบพารามิเตอร์ ID");
-            setLoading(false);
-        }
-    }, [params]);    
+    useEffect(() => {
+      if (params?.id) {
+          console.log("Fetching data for ID:", params.id);
+          fetchData(params.id);
+      } else {
+          console.error("ไม่พบพารามิเตอร์ ID");
+          setError("ไม่พบพารามิเตอร์ ID");
+          setLoading(false);
+      }
+  }, [params]);    
+  
 
     const handleAddComment = () => {
       if (newComment.trim()) {

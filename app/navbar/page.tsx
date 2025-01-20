@@ -1,5 +1,7 @@
 
+
   "use client";
+
 
 
 import React from "react";
@@ -246,5 +248,7 @@ function Sb({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: () => v
   );
 }
 
+
 export default Sb;
+
 
