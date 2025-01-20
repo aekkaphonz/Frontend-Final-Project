@@ -32,7 +32,11 @@ function Sb({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: () => v
             >
               <MenuIcon />
             </IconButton>
-            <Link href="/" >
+
+        
+
+            <Link href="/statistics" >
+
               <img
                 src="/images/logo-blogs.png"
                 alt="Cleaning Illustration"
@@ -40,14 +44,19 @@ function Sb({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: () => v
               />
             </Link>
 
+
+
           </Box>
 
           {/* ปุ่มเขียน */}
           <Button href="/createBlog"
             sx={{
-              color: "#000",
-              backgroundColor: "#fff", 
-              "&:hover": { backgroundColor: "#F7F7F7" },
+              color: "#ffffff",
+              backgroundColor: "#77bfa3", 
+              "&:hover": { 
+                backgroundColor: "#F7F7F7" ,
+                color: "#77bfa3"
+              },
               borderRadius: "20px",
               padding: "6px 16px",
               textTransform: "none",
