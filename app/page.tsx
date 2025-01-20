@@ -13,6 +13,7 @@ import HomeNavbarAfterLogin from "@/app/navbar/homeNavbarAfterLogin"; // Navbar 
 
 
 
+
 export default function Home() {
   const { isLoggedIn } = useAuth();
   return (

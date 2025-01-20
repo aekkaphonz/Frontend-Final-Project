@@ -1,4 +1,6 @@
-"use client";
+
+  "use client";
+
 
 import React from "react";
 import { Box, List, ListItem, ListItemIcon, ListItemText, AppBar, Toolbar, IconButton, Typography, Button, TextField, Tooltip, } from "@mui/material";
@@ -244,4 +246,5 @@ function Sb({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: () => v
   );
 }
 
-export default Sb; 
+export default Sb;
+
