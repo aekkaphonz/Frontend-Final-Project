@@ -6,6 +6,10 @@
 import React from "react";
 import { Box, Button, Container, Typography, Grid, Card, CardContent } from "@mui/material";
 import Navbar from "@/app/navbar/homeNavbar";
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
+import Link from "next/link";
+
+
 
 export default function Home() {
   return (
@@ -28,7 +32,7 @@ export default function Home() {
             borderRadius: "50%",
             backgroundColor: "#ccffe2", // สีของวงกลม
             position: "absolute",
-            bottom: "-20%",
+            bottom: "-25%",
             left: "-20%",
             zIndex: 0,
           }}
@@ -44,8 +48,9 @@ export default function Home() {
               marginBottom: "1rem",
             }}
           >
-            เขียน แบ่งปัน และค้นพบเรื่องราวใหม่
+            แบ่งปันเรื่องราวที่น่าจดจำของคุณ!
           </Typography>
+
           <Typography
             variant="h6"
             sx={{
@@ -72,8 +77,9 @@ export default function Home() {
                 },
               }}
             >
-              อ่าน
+              สำรวจบทความ
             </Button>
+
             <Button
               href="/signin"
               variant="contained"
@@ -87,7 +93,7 @@ export default function Home() {
                 },
               }}
             >
-              เขียน
+              สร้างสรรค์บทความ
             </Button>
           </Box>
         </Box>
@@ -98,7 +104,7 @@ export default function Home() {
             display: "flex",
             justifyContent: "flex-end",
             alignItems: "center",
-            width: "100%",
+            width: "75%",
           }}
         >
           <img
@@ -120,46 +126,91 @@ export default function Home() {
             marginBottom: "2rem",
           }}
         >
-          Popular
+          แนะนำ
         </Typography>
         <Grid container spacing={4}>
           {/* Service 1 */}
           <Grid item xs={12} sm={6} md={4}>
             <Card sx={{ boxShadow: 2 }}>
-              <CardContent>
-                <Typography variant="h6" sx={{ fontWeight: "bold", marginBottom: "0.5rem" }}>
-                  Home Cleaning
-                </Typography>
-                <Typography variant="body2" color="textSecondary">
-                  Professional home cleaning services to make your house spotless.
-                </Typography>
-              </CardContent>
+              <Link href="/home/highlights" passHref>
+                <CardContent>
+                <Box
+                  display="flex"
+                  justifyContent="space-between"
+                  alignItems="center"
+                  sx={{ marginBottom: "0.5rem" }}
+                >
+                  <Typography variant="h6" sx={{ fontWeight: "bold" }}>
+                    บทความทั้งหมด
+                  </Typography>
+                  <ArrowForwardIcon 
+                    href="/home/highlights"
+                    sx={{ 
+                      fontSize: "30px",
+                    }} 
+                  />
+                </Box>
+                  <Typography variant="body2" color="textSecondary">
+                    พบกับบทความและไอเดียสร้างแรงบันดาลใจใหม่ ๆ ที่ช่วยเติมเต็มความคิดสร้างสรรค์และเป้าหมายในชีวิตของคุณ.
+                  </Typography>
+                </CardContent>
+              </Link>
             </Card>
           </Grid>
+
           {/* Service 2 */}
           <Grid item xs={12} sm={6} md={4}>
             <Card sx={{ boxShadow: 2 }}>
-              <CardContent>
-                <Typography variant="h6" sx={{ fontWeight: "bold", marginBottom: "0.5rem" }}>
-                  Office Cleaning
-                </Typography>
-                <Typography variant="body2" color="textSecondary">
-                  Keep your office clean and professional with our expert team.
-                </Typography>
-              </CardContent>
+              <Link href="/home/article" passHref>
+                <CardContent>
+                <Box
+                  display="flex"
+                  justifyContent="space-between"
+                  alignItems="center"
+                  sx={{ marginBottom: "0.5rem" }}
+                >
+                  <Typography variant="h6" sx={{ fontWeight: "bold" }}>
+                    บทความที่น่าสนใจ
+                  </Typography>
+                  <ArrowForwardIcon 
+                    sx={{ 
+                      fontSize: "30px",
+                    }} 
+                  />
+                </Box>
+                  <Typography variant="body2" color="textSecondary">
+                    บทความที่คัดสรรมาเพื่อเสริมสร้างแรงบันดาลใจและมุมมองใหม่ ๆ ในการพัฒนาตนเองและการใช้ชีวิต.
+                  </Typography>
+                </CardContent>
+              </Link>
             </Card>
           </Grid>
+
           {/* Service 3 */}
           <Grid item xs={12} sm={6} md={4}>
             <Card sx={{ boxShadow: 2 }}>
-              <CardContent>
-                <Typography variant="h6" sx={{ fontWeight: "bold", marginBottom: "0.5rem" }}>
-                  Carpet Cleaning
-                </Typography>
-                <Typography variant="body2" color="textSecondary">
-                  Deep cleaning for carpets to make them look as good as new.
-                </Typography>
-              </CardContent>
+              <Link href="/home/popular" passHref>
+                <CardContent>
+                <Box
+                  display="flex"
+                  justifyContent="space-between"
+                  alignItems="center"
+                  sx={{ marginBottom: "0.5rem" }}
+                >
+                  <Typography variant="h6" sx={{ fontWeight: "bold" }}>
+                    บทความใหม่ล่าสุด
+                  </Typography>
+                  <ArrowForwardIcon 
+                    sx={{ 
+                      fontSize: "30px",
+                    }} 
+                  />
+                </Box>
+                  <Typography variant="body2" color="textSecondary">
+                    ติดตามบทความใหม่ล่าสุดที่นำเสนอเรื่องราวและแนวคิดที่ช่วยให้คุณเริ่มต้นวันใหม่อย่างสดใส.
+                  </Typography>
+                </CardContent>
+              </Link>
             </Card>
           </Grid>
         </Grid>
