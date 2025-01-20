@@ -12,12 +12,16 @@ import {
 } from "@mui/material";
 import { useRouter } from "next/navigation";
 import Navbar from "@/app/navbar/page";
+import { Visibility, Comment, ThumbUp } from "@mui/icons-material"; // Import icons
 
 interface Post {
   _id: string;
   title: string;
   content: string;
   images: string[];
+  views: number;
+  comments: number;
+  likes: number;
 }
 
 export default function Page() {
@@ -150,6 +154,30 @@ function RegionCard({ post }: { post: Post }) {
             </Typography>
           </CardContent>
         </CardActionArea>
+
+        {/* New section for Views, Comments, and Likes with icons */}
+        <Box sx={{ display: "flex", justifyContent: "space-between", padding: "10px" }}>
+          <Box sx={{ display: "flex", alignItems: "center" }}>
+            <Visibility sx={{ marginRight: "5px" }} />
+            <Typography variant="body2" sx={{ color: "#333", fontWeight: "bold" }}>
+              {post.views}
+            </Typography>
+          </Box>
+
+          <Box sx={{ display: "flex", alignItems: "center" }}>
+            <Comment sx={{ marginRight: "5px" }} />
+            <Typography variant="body2" sx={{ color: "#333", fontWeight: "bold" }}>
+              {post.comments}
+            </Typography>
+          </Box>
+
+          <Box sx={{ display: "flex", alignItems: "center" }}>
+            <ThumbUp sx={{ marginRight: "5px" }} />
+            <Typography variant="body2" sx={{ color: "#333", fontWeight: "bold" }}>
+              {post.likes}
+            </Typography>
+          </Box>
+        </Box>
       </Card>
     </Grid>
   );
