@@ -71,8 +71,16 @@ export default function SignUp() {
       ? dayjs(data.dateOfBirth).format("DD/MM/YYYY")
       : "ยังไม่กำหนด";
 
+    console.log({
+      userName: data.userName,
+      email: data.email,
+      password: data.password,
+      gender,
+      dateOfBirth,
+    });
+
     try {
-      const response = await axios.post("http://localhost:3001/user/register", {
+      const response = await axios.post("http://localhost:3001/auth/register", {
         userName: data.userName,
         email: data.email,
         password: data.password,

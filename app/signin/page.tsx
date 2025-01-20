@@ -36,11 +36,13 @@ function signin() {
 
   const handleGoogleLogin = async () => {
     try {
+     
       window.location.href = "http://localhost:3001/auth/google";
     } catch (error) {
       console.error("Login failed:", error);
     }
   };
+  
 
   const handleFormSubmit = async (formData: any) => {
     try {
@@ -51,8 +53,10 @@ function signin() {
           headers: {
             "Content-Type": "application/json",
           },
+          withCredentials: true,
         }
       );
+      
 
       console.log("Response data:", response.data);
       console.log("Response status:", response.status);
@@ -94,13 +98,11 @@ function signin() {
             maxWidth="500px"
             mx="auto"
           >
-
             <div
               className="font-bold text-3xl text-center flex items-center justify-center "
             >
               เข้าสู่ระบบ
             </div>
-
             
             <div className="w-full">
               <TextField
