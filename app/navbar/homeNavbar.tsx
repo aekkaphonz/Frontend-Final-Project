@@ -1,9 +1,10 @@
 "use client";
 
 import React from "react";
-import SearchIcon from "@mui/icons-material/Search"; 
-import AddIcon from "@mui/icons-material/Add"; 
-import { AppBar, Toolbar, Button, Box, TextField, InputAdornment, Typography} from "@mui/material";
+import SearchIcon from "@mui/icons-material/Search";
+import AddIcon from "@mui/icons-material/Add";
+import { AppBar, Toolbar, Button, Box, TextField, InputAdornment, Typography } from "@mui/material";
+import Link from "next/link";
 
 
 const themeColors = {
@@ -28,7 +29,7 @@ export default function HomeNavbar() {
                 <Box
                     sx={{
                         display: "flex",
-                        alignItems: "center", 
+                        alignItems: "center",
                         gap: "10px",
                     }}
                 >
@@ -48,37 +49,6 @@ export default function HomeNavbar() {
                     </Typography>
                 </Box>
 
-
-                {/* Search Field */}
-                <TextField
-                    variant="outlined"
-                    placeholder="ค้นหา"
-                    size="small"
-                    InputProps={{
-                        startAdornment: (
-                            <InputAdornment position="start">
-                                <SearchIcon sx={{ color: themeColors.buttonGreen }} />
-                            </InputAdornment>
-                        ),
-                    }}
-                    sx={{
-                        width: "450px",
-                        backgroundColor: "#f5f5f5",
-                        borderRadius: "5px",
-                        "& .MuiOutlinedInput-root": {
-                            "& fieldset": {
-                                borderColor: themeColors.buttonGreen,
-                            },
-                            "&:hover fieldset": {
-                                borderColor: themeColors.buttonGreen,
-                            },
-                            "&.Mui-focused fieldset": {
-                                borderColor: themeColors.buttonGreen,
-                            },
-                        },
-                    }}
-                />
-
                 {/* Call to Action Buttons */}
                 <Box
                     sx={{
@@ -86,33 +56,34 @@ export default function HomeNavbar() {
                         gap: "20px", // ระยะห่างระหว่างปุ่ม
                     }}
                 >
-
                     {/* ไอคอนและข้อความ "สร้าง" */}
                     <Box
                         sx={{
                             display: "flex",
                             alignItems: "center",
-                            gap: "5px", // ระยะห่างระหว่างไอคอนและข้อความ
+                            gap: "15px", // ระยะห่างระหว่างไอคอนและข้อความ
                         }}
                     >
-                        <AddIcon 
-                            sx={{ 
-                                color: themeColors.buttonGreen,
-                                fontWeight: "bold",
-                                boxShadow: "0px 2px 5px rgba(0,0,0,0.2)", // เพิ่มเงา
-                            }} 
-                        />
-                        <Typography
-                            variant="h6"
-                            sx={{
-                                fontWeight: "bold",
-                                color: themeColors.text,
-                            }}
-                        >
-                            สร้าง
-                        </Typography>
+                        <Link href="/signin" >
+                            <Typography
+                                variant="h6"
+                                sx={{
+                                    color: themeColors.text,
+                                }}
+                            >
+                                <AddIcon
+                                    sx={{
+                                        color: themeColors.buttonGreen,
+                                        fontWeight: "bold",
+                                        boxShadow: "0px 2px 5px rgba(0,0,0,0.2)", // เพิ่มเงา
+                                        marginRight: "10px"
+                                    }}
+                                />
+                                สร้าง
+                            </Typography>
+                        </Link>
                     </Box>
-                    
+
                     {/* Signin Button */}
                     <Button
                         href="/signin"

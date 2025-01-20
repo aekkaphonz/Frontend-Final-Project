@@ -19,6 +19,7 @@ import GoogleIcon from "@mui/icons-material/Google";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import axios from "axios";
+
 function signin() {
   const [isFormSubmitted, setIsFormSubmitted] = useState(false);
 
@@ -33,25 +34,27 @@ function signin() {
 
   const handleGoogleLogin = async () => {
     try {
-     
       window.location.href = "http://localhost:3001/auth/google";
     } catch (error) {
       console.error("Login failed:", error);
     }
   };
-  
 
   const handleFormSubmit = async (formData: any) => {
     try {
-      const response = await axios.post("http://localhost:3001/auth/login", formData, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-  
+      const response = await axios.post(
+        "http://localhost:3001/auth/login",
+        formData,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
       console.log("Response data:", response.data);
       console.log("Response status:", response.status);
-  
+
       if (response.data) {
         router.push("/");
       } else {
@@ -60,7 +63,9 @@ function signin() {
     } catch (error: any) {
       if (error.response && error.response.data) {
         console.error("Backend error:", error.response.data);
-        alert(`Error: ${error.response.data.message || "การเข้าสู่ระบบล้มเหลว"}`);
+        alert(
+          `Error: ${error.response.data.message || "การเข้าสู่ระบบล้มเหลว"}`
+        );
       } else {
         console.error("Error login:", error);
         alert("An error occurred. Please try again later.");
@@ -88,6 +93,7 @@ function signin() {
             mx="auto"
           >
             <div className="font-bold text-3xl">เข้าสู่ระบบ</div>
+            
             <div className="w-full">
               <TextField
                 id="Email"
@@ -177,10 +183,7 @@ function signin() {
             </div>
             <div className="flex justify-center items-center gap-2 ">
               <a className="text-right  ">ยังไม่เป็นสมาชิก?</a>
-              <a 
-                href="http://localhost:3000/signup" 
-                className="text-blue-500"
-              >
+              <a href="http://localhost:3000/signup" className="text-blue-500">
                 ลงทะเบียนสมัครสมาชิก
               </a>
             </div>
@@ -192,7 +195,6 @@ function signin() {
               <Button
                 variant="contained"
                 sx={{
-
                   backgroundColor: "#ffffff",
                   gap: "10px",
                   fontWeight: "bold",
@@ -201,25 +203,21 @@ function signin() {
                   },
                   "&:focus": {
                     backgroundColor: "#ffffff",
-
                   },
                   "&.MuiButton-root": {
                     outline: "none",
                   },
                 }}
-
                 className="w-4/6 text-[#77bfa3] p-2 text-sm "
                 type="button"
                 onClick={handleGoogleLogin}
-                
-
               >
                 <img
                   src="/images/google-logo.png"
                   alt="Cleaning Illustration"
-                  style={{ 
-                    maxWidth: "25px", 
-                    height: "auto" 
+                  style={{
+                    maxWidth: "25px",
+                    height: "auto",
                   }}
                 />
                 Login with Google

@@ -1,21 +1,24 @@
-
-
 "use client";
 
 
 import React from "react";
 import { Box, Button, Container, Typography, Grid, Card, CardContent } from "@mui/material";
-import Navbar from "@/app/navbar/homeNavbar";
+// import Navbar from "@/app/navbar/homeNavbarAfterLogin";
+// import Navbar from "@/app/navbar/homeNavbar";
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import Link from "next/link";
+import { useAuth } from "@/app/contexts/AuthContext"; // ใช้ AuthContext
+import HomeNavbar from "@/app/navbar/homeNavbar"; // Navbar ก่อน Login
+import HomeNavbarAfterLogin from "@/app/navbar/homeNavbarAfterLogin"; // Navbar หลัง Login
 
 
 
 export default function Home() {
+  const { isLoggedIn } = useAuth();
   return (
 
     <>
-      <Navbar />
+       {isLoggedIn ? <HomeNavbarAfterLogin /> : <HomeNavbar />}
       <Container
         sx={{
           display: "flex",
@@ -32,7 +35,7 @@ export default function Home() {
             borderRadius: "50%",
             backgroundColor: "#ccffe2", // สีของวงกลม
             position: "absolute",
-            bottom: "-20%",
+            bottom: "-27%",
             left: "-20%",
             zIndex: 0,
           }}
