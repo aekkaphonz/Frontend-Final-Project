@@ -1,4 +1,4 @@
- "use client";
+"use client";
 
 import React from "react";
 import { Box, List, ListItem, ListItemIcon, ListItemText, AppBar, Toolbar, IconButton, Typography, Button, TextField, Tooltip, } from "@mui/material";
@@ -32,11 +32,11 @@ function Sb({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: () => v
       >
         <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
           {/* Sidebar Menu */}
-          <Box sx={{ 
-            display: "flex", 
-            alignItems: "center" ,
+          <Box sx={{
+            display: "flex",
+            alignItems: "center",
             gap: "10px",
-            }}
+          }}
           >
             <IconButton
               size="large"
@@ -60,7 +60,7 @@ function Sb({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: () => v
               sx={{ color: "#000", fontWeight: 700, cursor: "pointer" }}
             >
               <Link href="/" style={{ textDecoration: "none" }}>
-              Blogger DeeDee
+                Blogger DeeDee
               </Link>
             </Typography>
           </Box>
@@ -73,7 +73,7 @@ function Sb({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: () => v
               size="small"
               sx={{
                 width: "80%",
-                backgroundColor: "#f6f6f6", 
+                backgroundColor: "#f6f6f6",
               }}
               InputProps={{
                 endAdornment: (
@@ -121,7 +121,7 @@ function Sb({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: () => v
             >
               เข้าสู่ระบบ
             </Button>
-            
+
             {/* Signup Button */}
             <Button
               href="/signup"
@@ -162,66 +162,73 @@ function Sb({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: () => v
       >
         <List>
           <Link href="/home/highlights">
-            <ListItem
+            <Tooltip title="หน้าหลัก" placement="right">
+              <ListItem
 
-              component="button"
+                component="button"
 
-              sx={{
-                display: "flex",
-                flexDirection: isOpen ? "row" : "column",
-                alignItems: "center",
-                justifyContent: isOpen ? "flex-start" : "center",
-                padding: isOpen ? "12px 20px" : "12px 0",
-                "&:hover": {
-                  backgroundColor: "rgba(0, 0, 0, 0.08)",
-                },
-              }}
-            >
-              <ListItemIcon sx={{ justifyContent: "center", color: "#000", minWidth: "40px" }}>
-                <HomeIcon />
-              </ListItemIcon>
-              {isOpen && <ListItemText primary="หน้าหลัก" sx={{ color: "#000" }} />}
-            </ListItem>
+                sx={{
+                  display: "flex",
+                  flexDirection: isOpen ? "row" : "column",
+                  alignItems: "center",
+                  justifyContent: isOpen ? "flex-start" : "center",
+                  padding: isOpen ? "12px 20px" : "12px 0",
+                  "&:hover": {
+                    backgroundColor: "rgba(0, 0, 0, 0.08)",
+                  },
+                }}
+              >
+                <ListItemIcon sx={{ justifyContent: "center", color: "#000", minWidth: "40px" }}>
+                  <HomeIcon />
+                </ListItemIcon>
+                {isOpen && <ListItemText primary="หน้าหลัก" sx={{ color: "#000" }} />}
+              </ListItem>
+            </Tooltip>
           </Link>
           <Link href="/home/article">
-            <ListItem
-              component="button"
-              sx={{
-                display: "flex",
-                flexDirection: isOpen ? "row" : "column",
-                alignItems: "center",
-                justifyContent: isOpen ? "flex-start" : "center",
-                padding: isOpen ? "12px 20px" : "12px 0",
-                "&:hover": {
-                  backgroundColor: "rgba(0, 0, 0, 0.08)",
-                },
-              }}
-            >
-              <ListItemIcon sx={{ justifyContent: "center", color: "#000", minWidth: "40px" }}>
-                <ArticleIcon />
-              </ListItemIcon>
-              {isOpen && <ListItemText primary="น่าสนใจ" sx={{ color: "#000" }} />}
-            </ListItem>
+            <Tooltip title="สนใจ" placement="right">
+              <ListItem
+                component="button"
+                sx={{
+                  display: "flex",
+                  flexDirection: isOpen ? "row" : "column",
+                  alignItems: "center",
+                  justifyContent: isOpen ? "flex-start" : "center",
+                  padding: isOpen ? "12px 20px" : "12px 0",
+                  "&:hover": {
+                    backgroundColor: "rgba(0, 0, 0, 0.08)",
+                  },
+                }}
+              >
+                <ListItemIcon sx={{ justifyContent: "center", color: "#000", minWidth: "40px" }}>
+                  <ArticleIcon />
+                </ListItemIcon>
+                {isOpen && <ListItemText primary="น่าสนใจ" sx={{ color: "#000" }} />}
+              </ListItem>
+            </Tooltip>
           </Link>
           <Link href="/home/popular">
-            <ListItem
-              component="button"
-              sx={{
-                display: "flex",
-                flexDirection: isOpen ? "row" : "column",
-                alignItems: "center",
-                justifyContent: isOpen ? "flex-start" : "center",
-                padding: isOpen ? "12px 20px" : "12px 0",
-                "&:hover": {
-                  backgroundColor: "rgba(0, 0, 0, 0.08)",
-                },
-              }}
-            >
-              <ListItemIcon sx={{ justifyContent: "center", color: "#000", minWidth: "40px" }}>
-                <WhatshotIcon />
-              </ListItemIcon>
-              {isOpen && <ListItemText primary="มาเเรง" sx={{ color: "#000" }} />}
-            </ListItem>
+            <Tooltip title="มาเเรง" placement="right">
+
+              <ListItem
+                component="button"
+                sx={{
+                  display: "flex",
+                  flexDirection: isOpen ? "row" : "column",
+                  alignItems: "center",
+                  justifyContent: isOpen ? "flex-start" : "center",
+                  padding: isOpen ? "12px 20px" : "12px 0",
+                  "&:hover": {
+                    backgroundColor: "rgba(0, 0, 0, 0.08)",
+                  },
+                }}
+              >
+                <ListItemIcon sx={{ justifyContent: "center", color: "#000", minWidth: "40px" }}>
+                  <WhatshotIcon />
+                </ListItemIcon>
+                {isOpen && <ListItemText primary="มาเเรง" sx={{ color: "#000" }} />}
+              </ListItem>
+            </Tooltip>
           </Link>
         </List>
       </Box>

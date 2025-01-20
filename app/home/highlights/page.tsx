@@ -45,7 +45,7 @@ export default function Page() {
   }, []);
 
   return (
-    <Box sx={{ display: "flex", minHeight: "100vh", backgroundColor: "#f6f6e7" }}>
+    <Box sx={{ display: "flex", minHeight: "100vh", backgroundColor: "#fff" }}>
       {/* Navbar */}
       <Navbar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
 
