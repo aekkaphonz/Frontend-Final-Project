@@ -6,6 +6,7 @@ import { Box, Typography, List, ListItem, ListItemIcon, ListItemText, IconButton
 export default function page() {
     return (
         <>
+        
             <Typography variant="h6" gutterBottom sx={{
                 mb: 2, mt: 4,
                 borderBottom: "1px solid #176B87",
