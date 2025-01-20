@@ -49,10 +49,10 @@ export default function Page() {
                 type: "line",
                 smooth: true, // เส้นโค้ง
                 lineStyle: {
-                    color: "#007bff", // สีของเส้น
+                    color: "#77bfa3", // สีของเส้น
                 },
                 itemStyle: {
-                    color: "#007bff", // สีของจุด
+                    color: "#77bfa3", // สีของจุด
                 },
             },
         ],

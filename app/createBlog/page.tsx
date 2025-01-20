@@ -88,7 +88,20 @@ export default function Page() {
       }}
     >
       <Sb isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
-      <Grid container spacing={2} sx={{ marginLeft: isSidebarOpen ? "240px" : "72px", marginTop: "72px", transition: "margin-left 0.3s" }}>
+      <Grid 
+        container spacing={3} 
+        sx={{ 
+          marginLeft: isSidebarOpen ? "240px" : "72px",
+          marginTop: "72px",
+          transition: "margin-left 0.3s",
+          padding: "16px", // ปรับ padding ด้านใน
+          maxWidth: {
+            xs: "100%", // สำหรับหน้าจอมือถือ
+            sm: isSidebarOpen ? "calc(100% - 240px)" : "calc(100% - 72px)", // สำหรับหน้าจอเล็กขึ้นไป
+            md: isSidebarOpen ? "calc(100% - 240px)" : "calc(100% - 72px)", // สำหรับหน้าจอ Desktop
+          },
+        }}
+      >
         <Grid item md={12} sx={{ boxShadow: "0px 2px 1px rgba(0, 0, 0, 0.1)" }}>
           <Typography sx={{ fontWeight: "bold", fontSize: 26, mb: 1 }}>เขียนบทความ</Typography>
         </Grid>
@@ -110,7 +123,7 @@ export default function Page() {
           <Typography sx={{ fontWeight: "bold", fontSize: 18, mb: 1 }}>เนื้อหา</Typography>
           <Box sx={{ display: "flex", alignItems: "center", gap: 2, mb: 1 }}>
             <IconButton component="label" title="เพิ่มรูป">
-              <ImageIcon sx={{ fontSize: 28, color: "#007bff" }} />
+              <ImageIcon sx={{ fontSize: 28, color: "#98c9a3" }} />
               <input
                 type="file"
                 hidden
@@ -168,14 +181,44 @@ export default function Page() {
         </Grid>
 
         {/* ปุ่มบันทึก */}
-        <Grid item md={12} sx={{ textAlign: "center", mt: 2 }}>
+        <Grid 
+          item md={12} 
+          sx={{ 
+            textAlign: "center", 
+            mt: 2 ,
+            display: "flex", 
+            alignItems: "end", 
+            justifyContent: "flex-end", // ชิดขวา
+            gap: 2 
+            }}
+        >
           <Button
             variant="contained"
             color="primary"
             onClick={handleSave}
-            sx={{ fontWeight: "bold", fontSize: 16 }}
+            sx={{ 
+              fontWeight: "bold", 
+              fontSize: 16 ,
+              color: "#ffffff",
+              backgroundColor: "#77bfa3", 
+            }}
           >
             บันทึก
+          </Button>
+
+          {/* ปุ่มยกเลิก */}
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={handleSave}
+            sx={{ 
+              fontWeight: "bold", 
+              fontSize: 16 ,
+              color: "#ffffff",
+              backgroundColor: "#FF3366", 
+            }}
+          >
+            ยกเลิก
           </Button>
         </Grid>
       </Grid>
