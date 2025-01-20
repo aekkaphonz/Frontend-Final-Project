@@ -1,711 +1,165 @@
+"use client";
 
-  "use client";
-
-
-
-
-import React, { useEffect, useState } from "react";
-import Container from "@mui/material/Container";
-import Card from "@mui/material/Card";
-import CardContent from "@mui/material/CardContent";
-import CardMedia from "@mui/material/CardMedia";
-import Typography from "@mui/material/Typography";
-import Button from "@mui/material/Button";
-import CardActionArea from "@mui/material/CardActionArea";
-import CardActions from "@mui/material/CardActions";
-import Box from "@mui/material/Box";
-import IconButton from "@mui/material/IconButton";
-import Tooltip from "@mui/material/Tooltip";
-
-
+import React, { useState, useEffect } from "react";
 import {
-    TextField,
-    InputAdornment,
-    Menu,
-    MenuItem,
-  } from "@mui/material";
-  import FavoriteIcon from "@mui/icons-material/Favorite";
-  import ShareIcon from "@mui/icons-material/Share";
-  import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
-  import SendIcon from "@mui/icons-material/Send";
-  import ReplyIcon from "@mui/icons-material/Reply";
-  import MoreVertIcon from "@mui/icons-material/MoreVert";
+  Box,
+  Typography,
+  Grid,
+  Card,
+  CardMedia,
+  CardContent,
+  CardActionArea,
+} from "@mui/material";
+import { useRouter } from "next/navigation";
+import Navbar from "@/app/navbar/page";
 
-  import { useRouter } from "next/navigation";
-  import { useParams } from "next/navigation";
-  import Swal from "sweetalert2"; // Import SweetAlert
-  import "./styles.css";
+interface Post {
+  _id: string;
+  title: string;
+  content: string;
+  images: string[];
+}
 
-  interface Attraction {
-    _id: string;
-    title: string;
-    content: string;
-    images: string[]; // รูปภาพเป็น array
-    likeCount: number;
-  }
+export default function Page() {
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [data, setData] = useState<Post[]>([]);
 
-  interface Comment {
-    id: number;
-    name: string;
-    message: string;
-    replies?: Comment[];
-  }
-
-  export default function Page() {
-
-    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-
-    const [data, setData] = useState<Attraction | null>(null);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
-    const [comments, setComments] = useState<Comment[]>([]);
-    const [newComment, setNewComment] = useState<string>("");
-    const [replyMessage, setReplyMessage] = useState<string>("");
-    const [replyingToCommentId, setReplyingToCommentId] = useState<number | null>(null);
-    const [editingCommentId, setEditingCommentId] = useState<number | null>(null);
-    const [editingReplyId, setEditingReplyId] = useState<{commentId: number; replyId: number | null} | null>(null);
-    const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-    const [menuCommentId, setMenuCommentId] = useState<number | null>(null);
-    const params: any = useParams();
-    const router = useRouter();
-
-
-    useEffect(() => {
-      async function fetchData(id: string) {
-        try {
-          const res = await fetch(`https://melivecode.com/api/attractions/${id}`);
-          if (!res.ok) {
-            throw new Error("Failed to fetch data");
-          }
-          const result = await res.json();
-
-          setData({
-            ...result.attraction,
-            likeCount: 0,
-          });
-
-          setComments([]);
-          setLoading(false);
-        } catch (err: any) {
-          console.error(err.message);
-          setError("ไม่สามารถโหลดข้อมูลได้");
-          setLoading(false);
-        }
-      }
-
-      if (params && params.id) {
-        fetchData(params.id);
-      } else {
-        setError("ไม่พบพารามิเตอร์ ID");
-        setLoading(false);
-      }
-    }, [params]);
-
-    const handleAddComment = () => {
-      if (newComment.trim()) {
-        const comment: Comment = {
-          id: comments.length + 1,
-          name: "Anonymous",
-          message: newComment,
-          replies: [],
-        };
-        const updatedComments = [...comments, comment];
-        setComments(updatedComments);
-        setNewComment("");
-      }
-    };
-
-    const [isLoggedIn, setIsLoggedIn] = useState(false); // เพิ่มสถานะการเข้าสู่ระบบ
-
-    const handleAddReply = (commentId: number) => {
-      if (replyMessage.trim()) {
-        const updatedComments = comments.map((comment) =>
-          comment.id === commentId
-            ? {
-                ...comment,
-                replies: [
-                  ...(comment.replies || []),
-                  {
-                    id: (comment.replies?.length || 0) + 1,
-                    name: "Anonymous",
-                    message: replyMessage,
-                  },
-                ],
-              }
-            : comment
-        );
-
-        setComments(updatedComments);
-        setReplyMessage("");
-        setReplyingToCommentId(null);
-      }
-    };
-
-    const handleEditComment = (commentId: number, newMessage: string) => {
-      const updatedComments = comments.map((comment) =>
-        comment.id === commentId ? { ...comment, message: newMessage } : comment
-      );
-      setComments(updatedComments);
-      setEditingCommentId(null);
-    };
-
-    const handleEditReply = (commentId: number, replyId: number, newMessage: string) => {
-      const updatedComments = comments.map((comment) =>
-        comment.id === commentId
-          ? {
-              ...comment,
-              replies: comment.replies?.map((reply) =>
-                reply.id === replyId ? { ...reply, message: newMessage } : reply
-              ),
-            }
-          : comment
-      );
-      setComments(updatedComments);
-      setEditingReplyId(null);
-    };
-
-
-    useEffect(() => {
-      if (params?.id) {
-          console.log("Fetching data for ID:", params.id);
-          fetchData(params.id);
-      } else {
-          console.error("ไม่พบพารามิเตอร์ ID");
-          setError("ไม่พบพารามิเตอร์ ID");
-          setLoading(false);
-      }
-  }, [params]);    
-  
-
-    const handleAddComment = () => {
-      if (newComment.trim()) {
-        const comment: Comment = {
-          id: comments.length + 1,
-          name: "Anonymous",
-          message: newComment,
-          replies: [],
-        };
-        const updatedComments = [...comments, comment];
-        setComments(updatedComments);
-        setNewComment("");
-      }
-    };
-
-    const handleAddReply = (commentId: number) => {
-      if (replyMessage.trim()) {
-        const updatedComments = comments.map((comment) =>
-          comment.id === commentId
-            ? {
-                ...comment,
-                replies: [
-                  ...(comment.replies || []),
-                  {
-                    id: (comment.replies?.length || 0) + 1,
-                    name: "Anonymous",
-                    message: replyMessage,
-                  },
-                ],
-              }
-            : comment
-        );
-
-        setComments(updatedComments);
-        setReplyMessage("");
-        setReplyingToCommentId(null);
-      }
-    };
-    const toggleSidebar = () => {
-      setIsSidebarOpen(!isSidebarOpen);
+  const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen);
   };
 
-    const handleEditComment = (commentId: number, newMessage: string) => {
-      const updatedComments = comments.map((comment) =>
-        comment.id === commentId ? { ...comment, message: newMessage } : comment
-      );
-      setComments(updatedComments);
-      setEditingCommentId(null);
-    };
-
-    const handleEditReply = (commentId: number, replyId: number, newMessage: string) => {
-      const updatedComments = comments.map((comment) =>
-        comment.id === commentId
-          ? {
-              ...comment,
-              replies: comment.replies?.map((reply) =>
-                reply.id === replyId ? { ...reply, message: newMessage } : reply
-              ),
-            }
-          : comment
-      );
-      setComments(updatedComments);
-      setEditingReplyId(null);
-    };
-
-    const handleDeleteComment = (commentId: number) => {
-      const updatedComments = comments.filter((comment) => comment.id !== commentId);
-      setComments(updatedComments);
-    };
-
-    const handleDeleteReply = (commentId: number, replyId: number) => {
-      const updatedComments = comments.map((comment) =>
-        comment.id === commentId
-          ? {
-              ...comment,
-              replies: comment.replies?.filter((reply) => reply.id !== replyId),
-            }
-          : comment
-      );
-      setComments(updatedComments);
-    };
-
-    const handleLike = () => {
-
-        if (data) {
-          const updatedLikes = (data.likeCount || 0) + 1; // ตรวจสอบให้แน่ใจว่า likeCount มีค่าเริ่มต้นเป็น 0
-          setData({ ...data, likeCount: updatedLikes });
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const res = await fetch("http://localhost:3001/posts");
+        if (!res.ok) {
+          throw new Error("Failed to fetch data");
         }
-      };
+        const result: Post[] = await res.json();
+        setData(result);
+      } catch (error) {
+        console.error("Error fetching posts:", error);
+      }
+    }
+    fetchData();
+  }, []);
 
+  return (
+    <Box sx={{ display: "flex", minHeight: "100vh", backgroundColor: "#f9f9f9" }}>
+      {/* Navbar */}
+      <Navbar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
 
-    const handleMenuOpen = (event: React.MouseEvent<HTMLElement>, commentId: number) => {
-      setAnchorEl(event.currentTarget);
-      setMenuCommentId(commentId);
-    };
-
-    const handleMenuClose = () => {
-      setAnchorEl(null);
-      setMenuCommentId(null);
-    };
-
-
-    const handleGoBack = () => {
-      router.back();
-    };
-
-
-
-    return (
-      <Box sx={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
-        <Navbar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
-
-
-        <Container
-          maxWidth="md"
-          sx={{ mt: 4, textAlign: "center", flexGrow: 1, paddingTop: "80px" }}
+      {/* Main Content */}
+      <Box
+        component="main"
+        sx={{
+          flexGrow: 1,
+          marginLeft: isSidebarOpen ? "240px" : "72px",
+          transition: "margin-left 0.3s",
+          paddingTop: "80px",
+          paddingX: 2,
+          paddingBottom: 2,
+        }}
+      >
+        <Box
+          sx={{
+            backgroundColor: "#f6f6e7",
+            borderRadius: 2,
+            border: "2px solid #c9dbc4",
+            padding: 3,
+          }}
         >
-          {loading ? (
-            <Typography variant="h5" sx={{ mt: 4, color: "#616161" }}>
-              กำลังโหลด...
-            </Typography>
-          ) : error ? (
-            <Typography variant="h5" sx={{ mt: 4, color: "#f44336" }}>
-              {error}
-            </Typography>
-          ) : data ? (
-            <Card
-              sx={{
-                borderRadius: 3,
-                boxShadow: 4,
-                overflow: "hidden",
-                backgroundColor: "#f9fbe7",
-              }}
-            >
-              <CardMedia
-                component="img"
-                sx={{ height: 300 }}
-
-                image={data.coverimage}
-
-              //  images={data.images}
-                alt={data.title}
-
-              />
-              <CardContent sx={{ textAlign: "center" }}>
-                <Typography
-                  gutterBottom
-                  variant="h4"
-                  component="div"
-                  sx={{ color: "#77bfa3", fontWeight: "bold" }}
-                >
-
-                  {data.name}
-                </Typography>
-                <Typography variant="body1" sx={{ color: "#616161", mt: 2 }}>
-                  {data.detail}
-                </Typography>
-              </CardContent>
-              <Box
-                sx={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  padding: 2,
-                  backgroundColor: "#f5f5f5",
-                }}
-              >
-                <Box>
-                  <Tooltip title="แชร์">
-                    <IconButton sx={{ color: "#000000" }}>
-                      <ShareIcon />
-                    </IconButton>
-                  </Tooltip>
-                  <Tooltip title="เพิ่มในรายการโปรด">
-                    <IconButton sx={{ color: "#f50057" }}>
-                      <FavoriteIcon />
-                    </IconButton>
-                  </Tooltip>
-                </Box>
-                <Box sx={{ display: "flex", alignItems: "center" }}>
-                  <IconButton onClick={handleLike}>
-                    <FavoriteBorderIcon />
-                  </IconButton>
-                  <Typography variant="body2" sx={{ ml: 1 }}>
-                    {data.likeCount} ถูกใจ
-                  </Typography>
-                </Box>
-              </Box>
-            </Card>
-          ) : (
-            <Typography variant="h5" sx={{ mt: 4, color: "#616161" }}>
-              ไม่พบข้อมูล
-            </Typography>
-          )}
-
-          <Box
+          {/* Header */}
+          <Typography
+            variant="h5"
+            gutterBottom
             sx={{
-              mt: 4,
-              p: 2,
-              backgroundColor: "#f5f5f5",
-              borderRadius: 2,
-              boxShadow: 2,
+              fontWeight: "bold",
+              textAlign: "center",
+              color: "#98c9a3",
+              marginBottom: "30px",
+              borderBottom: "2px solid #c9dbc4",
+              display: "inline-block",
+              paddingBottom: "5px",
             }}
           >
-            <Typography variant="h6" sx={{ mb: 2 }}>
-              แสดงความคิดเห็น
-            </Typography>
-            <TextField
-              fullWidth
-              placeholder="เพิ่มคอมเมนต์..."
-              multiline
-              rows={3}
-              value={newComment}
-              onChange={(e) => setNewComment(e.target.value)}
-              sx={{ mb: 2 }}
-              InputProps={{
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <IconButton
-                      color="primary"
-                      onClick={handleAddComment}
-                      edge="end"
-                    >
-                      <SendIcon />
-                    </IconButton>
-                  </InputAdornment>
-                ),
-              }}
-            />
+            บทความทั้งหมด
+          </Typography>
 
-
-                  {data.title}
-                </Typography>
-                <Typography variant="body1" sx={{ color: "#616161", mt: 2 }}>
-                  {data.content}
-                </Typography>
-              </CardContent>
-              <Box
-              sx={{
-                display: "flex",
-                justifyContent: "space-between",
-                padding: 2,
-                backgroundColor: "#f5f5f5",
-              }}
-            >
-              <Box>
-                <Tooltip title="แชร์">
-                  <IconButton sx={{ color: "#000000" }}>
-                    <ShareIcon />
-                  </IconButton>
-                </Tooltip>
-                <Tooltip title="เพิ่มในรายการโปรด">
-                  <IconButton sx={{ color: "#f50057" }}>
-                    <FavoriteIcon />
-                  </IconButton>
-                </Tooltip>
-              </Box>
-
-              {/* แสดงจำนวนคอมเมนต์และการตอบกลับรวมกัน */}
-              <Box sx={{ display: "flex", alignItems: "center" }}>
-                <Typography variant="body2" sx={{ ml: 2 }}>
-                  {comments.length + comments.reduce((acc, comment) => acc + (comment.replies?.length || 0), 0)} ความคิดเห็น
-                </Typography>
-              </Box>
-
-              {/* แสดงจำนวน "ถูกใจ" */}
-              <Box sx={{ display: "flex", alignItems: "center" }}>
-                <IconButton onClick={handleLike}>
-                  <FavoriteBorderIcon />
-                </IconButton>
-                <Typography variant="body2" sx={{ ml: 1 }}>
-                  {data.likeCount} ถูกใจ
-                </Typography>
-              </Box>
-            </Box>
-
-            </Card>
-          ) : (
-            <Typography variant="h5" sx={{ mt: 4, color: "#616161" }}>
-              ไม่พบข้อมูล
-            </Typography>
-          )}
-
-          <Box
-            sx={{
-              mt: 4,
-              p: 2,
-              backgroundColor: "#f5f5f5",
-              borderRadius: 2,
-              boxShadow: 2,
-            }}
-          >
-            <Typography variant="h6" sx={{ mb: 2 }}>
-                แสดงความคิดเห็น
-            </Typography>
-            <TextField
-                fullWidth
-                placeholder="เพิ่มคอมเมนต์..."
-                multiline
-                rows={3}
-                value={newComment}
-                onClick={() => {
-                    if (!isLoggedIn) { // ตรวจสอบว่าผู้ใช้เข้าสู่ระบบหรือยัง 
-                        Swal.fire({
-                            icon: "error",
-                            title: "Oops...",
-                            text: "กรุณาเข้าสู่ระบบเพื่อแสดงความคิดเห็น!",
-                            confirmButtonText: "เข้าสู่ระบบ",
-                            customClass: {
-                                confirmButton: "swal-login-button", // กำหนด class เพื่อลิงก์ปุ่ม
-                            },
-                            didOpen: () => {
-                                const button = document.querySelector(".swal-login-button");
-                                if (button) {
-                                    button.addEventListener("click", () => {
-                                        window.location.href = "/signin"; // ลิงก์ไปยังหน้าสมัคร/เข้าสู่ระบบ
-                                    });
-                                }
-                            },
-                        });
-                    }
-                }}
-                onChange={(e) => setNewComment(e.target.value)}
-                sx={{ mb: 2 }}
-                InputProps={{
-                    endAdornment: (
-                    <InputAdornment position="end">
-                        <IconButton
-                        color="primary"
-                        onClick={handleAddComment}
-                        edge="end"
-                        >
-                        <SendIcon />
-                        </IconButton>
-                    </InputAdornment>
-                    ),
-                }}
-            />
-
-
-
-            {comments.map((comment) => (
-              <Box
-                key={comment.id}
-                sx={{
-                  mt: 3,
-                  p: 2,
-                  backgroundColor: "#fff",
-                  borderRadius: 1,
-                  textAlign: "left",
-                }}
-              >
-                <Box
-                  sx={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                  }}
-                >
-                  <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                    <Typography variant="body1">
-                      <strong>{comment.name}:</strong> {comment.message}
-                    </Typography>
-                    <IconButton
-                      onClick={(e) => handleMenuOpen(e, comment.id)}
-                      size="small"
-                    >
-                      <MoreVertIcon />
-                    </IconButton>
-                  </Box>
-                </Box>
-
-                <Menu
-                  anchorEl={anchorEl}
-                  open={menuCommentId === comment.id}
-                  onClose={handleMenuClose}
-                >
-                  <MenuItem onClick={() => setEditingCommentId(comment.id)}>
-                    แก้ไข
-                  </MenuItem>
-                  <MenuItem
-                    onClick={() => {
-                      handleDeleteComment(comment.id);
-                      handleMenuClose();
-                    }}
-                  >
-                    ลบ
-                  </MenuItem>
-                </Menu>
-
-                {editingCommentId === comment.id && (
-                  <Box sx={{ mt: 2 }}>
-                    <TextField
-                fullWidth
-                multiline
-                rows={2}
-                defaultValue={comment.message}
-                onChange={(e) => setReplyMessage(e.target.value)}
-                InputProps={{
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      <IconButton
-                        color="primary"
-                        onClick={() => handleEditComment(comment.id, replyMessage.trim())}
-                        edge="end"
-                      >
-                        <SendIcon />
-                      </IconButton>
-                    </InputAdornment>
-                  ),
-                }}
-                autoFocus
-              />
-
-                  </Box>
-                )}
-
-                {comment.replies &&
-                  comment.replies.map((reply) => (
-                    <Box
-                      key={reply.id}
-                      sx={{
-                        mt: 1,
-                        pl: 2,
-                        borderLeft: "2px solid #ccc",
-                        textAlign: "left",
-                      }}
-                    >
-                      <Box
-                        sx={{
-                          display: "flex",
-                          justifyContent: "space-between",
-                          alignItems: "center",
-                        }}
-                      >
-                        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                          <Typography>
-                            <strong>{reply.name}:</strong> {reply.message}
-                          </Typography>
-                          <IconButton
-                            onClick={(e) => handleMenuOpen(e, reply.id)}
-                            size="small"
-                          >
-                            <MoreVertIcon />
-                          </IconButton>
-                        </Box>
-                      </Box>
-
-                      <Menu
-                        anchorEl={anchorEl}
-                        open={menuCommentId === reply.id}
-                        onClose={handleMenuClose}
-                      >
-                        <MenuItem
-                          onClick={() =>
-                            setEditingReplyId({ commentId: comment.id, replyId: reply.id })
-                          }
-
-                        >
-                          แก้ไข
-                        </MenuItem>
-                        <MenuItem
-                          onClick={() => {
-                            handleDeleteReply(comment.id, reply.id);
-                            handleMenuClose();
-                          }}
-                        >
-
-                          ลบ
-                        </MenuItem>
-                      </Menu>
-
-                      {editingReplyId?.replyId === reply.id && (
-                        <Box sx={{ mt: 2 }}>
-                          <TextField
-                            fullWidth
-                            multiline
-                            rows={2}
-                            defaultValue={reply.message}
-                            onBlur={(e) =>
-                              handleEditReply(comment.id, reply.id, e.target.value.trim())
-                            }
-                            autoFocus
-                          />
-                        </Box>
-                      )}
-                    </Box>
-                  ))}
-
-                <Box sx={{ display: "flex", justifyContent: "flex-start", mt: 1 }}>
-                  <IconButton
-                    size="small"
-                    onClick={() => setReplyingToCommentId(comment.id)}
-                  >
-                    <ReplyIcon /> ตอบกลับ
-                  </IconButton>
-                </Box>
-
-                {replyingToCommentId === comment.id && (
-                  <Box sx={{ mt: 2 }}>
-                    <TextField
-                      fullWidth
-                      multiline
-                      rows={2}
-                      placeholder="ตอบกลับ..."
-                      value={replyMessage}
-                      onChange={(e) => setReplyMessage(e.target.value)}
-                      sx={{ mb: 2 }}
-                      InputProps={{
-                        endAdornment: (
-                          <InputAdornment position="end">
-                            <IconButton
-                              color="primary"
-                              onClick={() => handleAddReply(comment.id)}
-                              edge="end"
-                            >
-                              <SendIcon />
-                            </IconButton>
-                          </InputAdornment>
-                        ),
-                      }}
-                    />
-                  </Box>
-                )}
-              </Box>
+          {/* Regions Grid */}
+          <Grid container spacing={3} justifyContent="center">
+            {data.map((post) => (
+              <RegionCard key={post._id} post={post} />
             ))}
-          </Box>
-        </Container>
+          </Grid>
+        </Box>
       </Box>
-    );
-  
+    </Box>
+  );
+}
 
-  }
+function RegionCard({ post }: { post: Post }) {
+  const router = useRouter();
 
+  const handleCardClick = () => {
+    router.push(`/home/highlights/${post._id}`);
+  };
+
+  return (
+    <Grid item xs={12} sm={6} md={4} lg={3}>
+      <Card
+        sx={{
+          borderRadius: "15px",
+          overflow: "hidden",
+          boxShadow: "0 4px 10px rgba(0, 0, 0, 0.1)",
+          position: "relative",
+          transition: "transform 0.2s",
+          "&:hover": {
+            transform: "scale(1.05)",
+            boxShadow: "0 6px 15px rgba(0, 0, 0, 0.2)",
+          },
+          backgroundColor: "#f6f6e7",
+        }}
+      >
+        <CardActionArea onClick={handleCardClick}>
+          <CardMedia
+            component="img"
+            height="150"
+            image={post.images.length > 0 ? post.images[0] : ""}
+            alt="ยังม้ายยยมีรูป"
+            sx={{
+              backgroundColor: post.images.length > 0 ? "transparent" : "#f0f0f0",
+            }}
+          />
+          <CardContent
+            sx={{
+              backgroundColor: "#ffffff",
+              textAlign: "center",
+              padding: "10px",
+              borderTop: "3px solid #bfd8bd",
+            }}
+          >
+            <Typography
+              variant="h6"
+              sx={{
+                fontWeight: "bold",
+                color: "#333",
+                marginBottom: "5px",
+              }}
+            >
+              {post.title}
+            </Typography>
+            <Typography
+              variant="body2"
+              sx={{
+                color: "#353c41",
+              }}
+            >
+              {post.content.substring(0, 100)}...
+            </Typography>
+          </CardContent>
+        </CardActionArea>
+      </Card>
+    </Grid>
+  );
+}
