@@ -11,8 +11,7 @@ import {
   CardActionArea,
   IconButton,
 } from "@mui/material";
-import { Favorite, Visibility, ChatBubbleOutline } from "@mui/icons-material";
-import { useRouter } from "next/navigation";
+import { useRouter } from "next/navigation"; // ใช้สำหรับนำทางใน Next.js
 import Navbar from "@/app/navbar/page";
 
 interface Attraction {
@@ -20,13 +19,10 @@ interface Attraction {
   coverimage: string;
   name: string;
   detail: string;
-  viewCount: number;
-  likeCount: number;
-  commentCount: number;
 }
 
 export default function Page() {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false); // สำหรับควบคุม Sidebar
   const [data, setData] = useState<Attraction[]>([]);
 
   const toggleSidebar = () => {
@@ -36,31 +32,14 @@ export default function Page() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const res = await fetch("https://melivecode.com/api/attractions");
+        const res = await fetch("http://localhost:3001/posts");
         if (!res.ok) {
           throw new Error("Failed to fetch data");
         }
         const result: Attraction[] = await res.json();
-
-        const enhancedData = await Promise.all(
-          result.map(async (item) => {
-            const detailsRes = await fetch(
-              `https://melivecode.com/api/attractions/${item.id}`
-            );
-            const details = await detailsRes.json();
-
-            return {
-              ...item,
-              viewCount: details.attraction.viewCount || 0,
-              likeCount: details.attraction.likeCount || 0,
-              commentCount: details.attraction.commentCount || 0,
-            };
-          })
-        );
-
-        setData(enhancedData);
+        setData(result);
       } catch (error) {
-        console.error("Error fetching data:", error);
+        console.error(error);
       }
     }
 
@@ -99,8 +78,8 @@ export default function Page() {
         </Typography>
 
         <Grid container spacing={3} justifyContent="center">
-          {data.map((item) => (
-            <RegionCard key={item.id} attraction={item} />
+          {data.map((post) => (
+            <RegionCard key={post._id} post={post} />
           ))}
         </Grid>
       </Box>
@@ -108,28 +87,11 @@ export default function Page() {
   );
 }
 
-function RegionCard({ attraction }: { attraction: Attraction }) {
+function RegionCard({ post }: { post: Post }) {
   const router = useRouter();
 
-  const handleCardClick = async () => {
-    try {
-      // อัปเดต viewCount ใน backend
-      await fetch(`https://melivecode.com/api/attractions/update/${attraction.id}`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ viewCount: attraction.viewCount + 1 }),
-      });
-
-      // เพิ่ม viewCount ใน frontend
-      attraction.viewCount += 1;
-
-      // นำทางไปยังหน้ารายละเอียด
-      router.push(`/home/highlights/${attraction.id}`);
-    } catch (error) {
-      console.error("Error updating view count:", error);
-    }
+  const handleCardClick = () => {
+    router.push(`/home/highlights/${attraction.id}`); // นำทางไปยังหน้ารายละเอียด
   };
 
   return (
@@ -152,8 +114,11 @@ function RegionCard({ attraction }: { attraction: Attraction }) {
           <CardMedia
             component="img"
             height="150"
-            image={attraction.coverimage}
-            alt={attraction.name}
+            image={post.images.length > 0 ? post.images[0] : ""}
+            alt="ยังม้ายยยมีรูป"
+            sx={{
+              backgroundColor: post.images.length > 0 ? "transparent" : "#f0f0f0",
+            }}
           />
           <CardContent
             sx={{
@@ -171,7 +136,7 @@ function RegionCard({ attraction }: { attraction: Attraction }) {
                 marginBottom: "5px",
               }}
             >
-              {attraction.name}
+              {post.title}
             </Typography>
             <Typography
               variant="body2"
@@ -179,7 +144,7 @@ function RegionCard({ attraction }: { attraction: Attraction }) {
                 color: "#353c41",
               }}
             >
-              {attraction.detail.substring(0, 50)}...
+              {post.content.substring(0, 100)}...
             </Typography>
           </CardContent>
         </CardActionArea>

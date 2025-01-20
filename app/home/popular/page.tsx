@@ -16,10 +16,10 @@ import axios from "axios";
 import Navbar from "@/app/navbar/page";
 
 const themeColors = {
-  primary: "#77bfa3",
+  primary: "#98c9a3",
   secondary: "#98c9a3",
-  background: "#dde7c7",
-  hover: "#bfd8bd",
+  background: "#f6f6e7",
+  hover: "#F0FFFF",
   text: "#edeec9",
   border: "#b0bec5",
 };
@@ -36,18 +36,19 @@ export default function PopularPage() {
 
   // ดึงข้อมูลจาก API
   const fetchPosts = async (pageNumber = 1) => {
+    setLoading(true);
     try {
-      setLoading(true);
-      const response = await axios.get(
-        `https://jsonplaceholder.typicode.com/posts?_page=${pageNumber}&_limit=5`
-      );
-      setPosts((prevPosts) => [...prevPosts, ...response.data]);
-      setLoading(false);
+        const response = await axios.get(
+            `https://jsonplaceholder.typicode.com/posts?_page=${pageNumber}&_limit=5`
+        );
+        setPosts((prevPosts) => [...prevPosts, ...response.data]);
     } catch (error) {
-      console.error("Error fetching posts:", error);
-      setLoading(false);
+        console.error("Error fetching posts:", error);
+    } finally {
+        setLoading(false);
     }
-  };
+};
+
 
   useEffect(() => {
     fetchPosts();
@@ -78,14 +79,16 @@ export default function PopularPage() {
       >
         <Typography
           variant="h5"
-          sx={{
-            backgroundColor: themeColors.primary,
-            color: "#fff",
-            padding: 2,
-            borderRadius: "4px",
-            fontWeight: "bold",
-            mb: 2,
-          }}
+          gutterBottom
+              sx={{
+                fontWeight: "bold",
+                textAlign: "center",
+                color: "#98c9a3",
+                marginBottom: "20px",
+                borderBottom: "2px solid #c9dbc4",
+                display: "inline-block",
+                paddingBottom: "5px",
+              }}
         >
           ยอดนิยม
         </Typography>
@@ -151,6 +154,7 @@ export default function PopularPage() {
               backgroundColor: themeColors.primary,
               color: "#fff",
               fontWeight: "bold",
+              padding: "8px 150px",
               "&:hover": {
                 backgroundColor: themeColors.secondary,
               },

@@ -81,12 +81,13 @@ export default function Page() {
               variant="h5"
               gutterBottom
               sx={{
-                mb: 3,
                 fontWeight: "bold",
-                borderBottom: "3px solid #94c379",
-                color: "#94c379",
                 textAlign: "center",
-                pb: 1,
+                color: "#98c9a3",
+                marginBottom: "20px",
+                borderBottom: "2px solid #c9dbc4",
+                display: "inline-block",
+                paddingBottom: "5px",
               }}
             >
               บทความที่น่าสนใจ
@@ -108,7 +109,7 @@ export default function Page() {
                     boxShadow: "0 2px 6px rgba(0, 0, 0, 0.1)",
                     transition: "transform 0.2s",
                     "&:hover": {
-                      backgroundColor: "#f6f6e7",
+                      backgroundColor: "#F0FFFF",
                       transform: "scale(1.02)",
                     },
                   }}
@@ -116,7 +117,7 @@ export default function Page() {
                   <Box>
                     <Typography
                       variant="subtitle1"
-                      sx={{ color: "#94c379", fontWeight: "bold" }}
+                      sx={{ color: "#98c9a3", fontWeight: "bold" }}
                     >
                       {article.title}
                     </Typography>
@@ -125,7 +126,7 @@ export default function Page() {
                     </Typography>
                   </Box>
                   <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                    <IconButton sx={{ color: "#94c379" }}>
+                    <IconButton sx={{ color: "#98c9a3" }}>
                       <CommentIcon />
                     </IconButton>
                     <IconButton sx={{ color: "#f44336" }}>
@@ -153,7 +154,7 @@ export default function Page() {
                   color: "#fff",
                   fontWeight: "bold",
                   borderRadius: 2,
-                  padding: "8px 16px",
+                  padding: "8px 150px",
                   "&:hover": {
                     backgroundColor: "#7cab62",
                   },
