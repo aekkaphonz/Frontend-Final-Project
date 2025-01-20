@@ -9,21 +9,20 @@ import {
   CardMedia,
   CardContent,
   CardActionArea,
-  IconButton,
 } from "@mui/material";
-import { useRouter } from "next/navigation"; // ใช้สำหรับนำทางใน Next.js
+import { useRouter } from "next/navigation";
 import Navbar from "@/app/navbar/page";
 
-interface Attraction {
-  id: string;
-  coverimage: string;
-  name: string;
-  detail: string;
+interface Post {
+  _id: string;
+  title: string;
+  content: string;
+  images: string[];
 }
 
 export default function Page() {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false); // สำหรับควบคุม Sidebar
-  const [data, setData] = useState<Attraction[]>([]);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [data, setData] = useState<Post[]>([]);
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
@@ -36,20 +35,21 @@ export default function Page() {
         if (!res.ok) {
           throw new Error("Failed to fetch data");
         }
-        const result: Attraction[] = await res.json();
+        const result: Post[] = await res.json();
         setData(result);
       } catch (error) {
-        console.error(error);
+        console.error("Error fetching posts:", error);
       }
     }
-
     fetchData();
   }, []);
 
   return (
-    <Box sx={{ display: "flex", minHeight: "100vh", backgroundColor: "#f6f6e7" }}>
+    <Box sx={{ display: "flex", minHeight: "100vh", backgroundColor: "#fff" }}>
+      {/* Navbar */}
       <Navbar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
 
+      {/* Main Content */}
       <Box
         component="main"
         sx={{
@@ -61,6 +61,7 @@ export default function Page() {
           paddingBottom: 2,
         }}
       >
+        {/* Header */}
         <Typography
           variant="h4"
           gutterBottom
@@ -77,6 +78,7 @@ export default function Page() {
           บทความ
         </Typography>
 
+        {/* Regions Grid */}
         <Grid container spacing={3} justifyContent="center">
           {data.map((post) => (
             <RegionCard key={post._id} post={post} />
@@ -91,7 +93,7 @@ function RegionCard({ post }: { post: Post }) {
   const router = useRouter();
 
   const handleCardClick = () => {
-    router.push(`/home/highlights/${attraction.id}`); // นำทางไปยังหน้ารายละเอียด
+    router.push(`/home/highlights/${post._id}`);
   };
 
   return (
@@ -148,34 +150,6 @@ function RegionCard({ post }: { post: Post }) {
             </Typography>
           </CardContent>
         </CardActionArea>
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            padding: "10px 20px",
-            backgroundColor: "#fff",
-          }}
-        >
-          <Box sx={{ display: "flex", alignItems: "center" }}>
-            <Visibility sx={{ fontSize: 18, color: "#666" }} />
-            <Typography sx={{ ml: 1, fontSize: 14, color: "#666" }}>
-              {attraction.viewCount}
-            </Typography>
-          </Box>
-          <Box sx={{ display: "flex", alignItems: "center" }}>
-            <ChatBubbleOutline sx={{ fontSize: 18, color: "#666" }} />
-            <Typography sx={{ ml: 1, fontSize: 14, color: "#666" }}>
-              {attraction.commentCount}
-            </Typography>
-          </Box>
-          <Box sx={{ display: "flex", alignItems: "center" }}>
-            <Favorite sx={{ fontSize: 18, color: "red" }} />
-            <Typography sx={{ ml: 1, fontSize: 14, color: "#666" }}>
-              {attraction.likeCount}
-            </Typography>
-          </Box>
-        </Box>
       </Card>
     </Grid>
   );

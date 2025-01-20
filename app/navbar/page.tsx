@@ -1,8 +1,4 @@
-<<<<<<< HEAD
   "use client";
-=======
- "use client";
->>>>>>> 1ddefb906989637cd4778e894fa9a900dc5f99fc
 
 import React from "react";
 import { Box, List, ListItem, ListItemIcon, ListItemText, AppBar, Toolbar, IconButton, Typography, Button, TextField, Tooltip, } from "@mui/material";
