@@ -7,17 +7,27 @@ import HomeIcon from '@mui/icons-material/Home';
 import ArticleIcon from '@mui/icons-material/Article';
 import WhatshotIcon from '@mui/icons-material/Whatshot';
 import Link from "next/link";
-import AddIcon from "@mui/icons-material/Add"; 
+import AddIcon from "@mui/icons-material/Add";
 import SearchIcon from '@mui/icons-material/Search';
+import LogoutIcon from "@mui/icons-material/Logout";
+import { useAuth } from "@/app/contexts/AuthContext";
 
-const themeColors = {
-  primary: "#ffffff",
-  text: "#000000",
-  buttonBorder: "#000000",
-  buttonGreen: "#77bfa3",
-};
+
 
 function Sb({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: () => void }) {
+  const { setIsLoggedIn } = useAuth(); // ใช้ setIsLoggedIn เพื่อเปลี่ยนสถานะ
+
+  const themeColors = {
+    primary: "#ffffff",
+    text: "#000000",
+    buttonBorder: "#000000",
+    buttonGreen: "#77bfa3",
+  };
+
+  const handleLogout = () => {
+    setIsLoggedIn(false); // ออกจากระบบ
+  };
+
   return (
     <>
       {/* Navbar */}
@@ -32,11 +42,11 @@ function Sb({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: () => v
       >
         <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
           {/* Sidebar Menu */}
-          <Box sx={{ 
-            display: "flex", 
-            alignItems: "center" ,
+          <Box sx={{
+            display: "flex",
+            alignItems: "center",
             gap: "10px",
-            }}
+          }}
           >
             <IconButton
               size="large"
@@ -64,7 +74,7 @@ function Sb({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: () => v
               size="small"
               sx={{
                 width: "60%",
-                backgroundColor: "#f6f6f6", 
+                backgroundColor: "#f6f6f6",
               }}
               InputProps={{
                 endAdornment: (
@@ -87,73 +97,58 @@ function Sb({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: () => v
                 color: "#000000",
               }}
             >
-               {/* ไอคอนและข้อความ*/}
+              {/* ไอคอนและข้อความ*/}
               <Box
                 sx={{
                   display: "flex",
-                    alignItems: "center",
-                    gap: "5px", // ระยะห่างระหว่างไอคอนและข้อความ
-                   }}
+                  alignItems: "center",
+                  gap: "5px", // ระยะห่างระหว่างไอคอนและข้อความ
+                }}
               >
-                
-                  <AddIcon 
-                    sx={{ 
-                      color: themeColors.buttonGreen,
-                      fontWeight: "bold",
-                      boxShadow: "0px 2px 5px rgba(0,0,0,0.2)", // เพิ่มเงา
-                    }} 
-                  />
-                 <Link href="/signin" >
-                    <Typography
-                      variant="h6"
+
+                <Link href="/createBlog" >
+
+                  <Typography
+                    variant="h6"
+                    sx={{
+                      color: themeColors.text,
+                    }}
+                  >
+                    <AddIcon
                       sx={{
-                       color: themeColors.text,
+                        color: themeColors.buttonGreen,
+                        fontWeight: "bold",
+                        boxShadow: "0px 2px 5px rgba(0,0,0,0.2)", // เพิ่มเงา
+                        marginRight: "10px",
+                        marginLeft: "120px",
                       }}
-                    >
-                       สร้าง
-                    </Typography>
+                    />
+                    สร้าง
+                  </Typography>
                 </Link>
 
               </Box>
             </Typography>
-
-            {/* Signin Button */}
+            {/* ปุ่ม Logout */}
             <Button
-              href="/signin"
-              variant="outlined"
-              sx={{
-                backgroundColor: "#ffffff",
-                color: themeColors.buttonGreen,
-                borderColor: themeColors.buttonGreen,
-                fontWeight: "bold",
-                textTransform: "none",
-                "&:hover": {
-                  backgroundColor: themeColors.buttonGreen,
-                  borderColor: themeColors.buttonGreen,
-                  color: "#ffffff",
-                },
-              }}
-            >
-              เข้าสู่ระบบ
-            </Button>
-            
-            {/* Signup Button */}
-            <Button
-              href="/signup"
               variant="contained"
+              onClick={handleLogout}
               sx={{
-                backgroundColor: themeColors.buttonGreen,
-                color: "#ffffff",
+                backgroundColor: "#e91e63",
+                color: "#fff",
                 fontWeight: "bold",
                 textTransform: "none",
+                borderRadius: "8px",
+                display: "flex",
+                alignItems: "center",
+                gap: "8px",
                 "&:hover": {
-                  backgroundColor: "#ffffff",
-                  borderColor: themeColors.buttonGreen,
-                  color: themeColors.buttonGreen,
+                  backgroundColor: "#ec407a",
                 },
               }}
             >
-              ลงทะเบียน
+              <LogoutIcon />
+              Logout
             </Button>
           </Box>
         </Toolbar>
@@ -244,4 +239,4 @@ function Sb({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: () => v
   );
 }
 
-export default Sb; 
+export default Sb;

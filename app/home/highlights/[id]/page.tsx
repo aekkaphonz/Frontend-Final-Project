@@ -1,5 +1,25 @@
 "use client";
 
+
+import React, { useEffect, useState } from "react";
+import Container from "@mui/material/Container";
+import Card from "@mui/material/Card";
+import CardContent from "@mui/material/CardContent";
+import CardMedia from "@mui/material/CardMedia";
+import Typography from "@mui/material/Typography";
+import Button from "@mui/material/Button";
+import CardActionArea from "@mui/material/CardActionArea";
+import CardActions from "@mui/material/CardActions";
+import Box from "@mui/material/Box";
+import FavoriteIcon from "@mui/icons-material/Favorite";
+import ShareIcon from "@mui/icons-material/Share";
+import IconButton from "@mui/material/IconButton";
+import Tooltip from "@mui/material/Tooltip";
+import Navbar from "@/app/navbar/AfterLogin";
+
+
+interface Post {
+
   import React, { useEffect, useState } from "react";
   import {
     Container,
@@ -22,12 +42,13 @@
   import ReplyIcon from "@mui/icons-material/Reply";
   import MoreVertIcon from "@mui/icons-material/MoreVert";
   import { useRouter } from "next/navigation";
-  import { useParams } from "next/navigation";
+
   import Navbar from "@/app/navbar/page";
   import Swal from "sweetalert2"; // Import SweetAlert
   import "./styles.css";
 
   interface Attraction {
+
     _id: string;
     title: string;
     content: string;

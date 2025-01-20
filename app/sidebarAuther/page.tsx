@@ -32,13 +32,20 @@ function Sb({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: () => v
             >
               <MenuIcon />
             </IconButton>
+
+        
+
             <Link href="/statistics" >
+
               <img
                 src="/images/logo-blogs.png"
                 alt="Cleaning Illustration"
                 style={{ maxWidth: "142px", height: "auto" }} // ขนาดโลโก้
               />
             </Link>
+
+
+
           </Box>
 
           {/* ปุ่มเขียน */}
