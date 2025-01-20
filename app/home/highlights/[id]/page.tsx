@@ -39,7 +39,7 @@ interface Post {
   import SendIcon from "@mui/icons-material/Send";
   import ReplyIcon from "@mui/icons-material/Reply";
   import MoreVertIcon from "@mui/icons-material/MoreVert";
-  import { useRouter } from "next/navigation";
+  import { useParams, useRouter } from "next/navigation";
 
 
   import Navbar from "@/app/navbar/page";
@@ -714,7 +714,7 @@ interface Post {
         </Container>
       </Box>
     );
-
+  
 
   }
 
