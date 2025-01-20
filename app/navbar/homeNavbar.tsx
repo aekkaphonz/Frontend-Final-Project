@@ -57,11 +57,11 @@ export default function HomeNavbar() {
                     }}
                 >
                     {/* ไอคอนและข้อความ "สร้าง" */}
-                    <Box
+                    <Box 
                         sx={{
                             display: "flex",
                             alignItems: "center",
-                            gap: "5px", // ระยะห่างระหว่างไอคอนและข้อความ
+                            gap: "15px", // ระยะห่างระหว่างไอคอนและข้อความ
                         }}
                     >
                         <AddIcon 

@@ -1,23 +1,20 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import {
-  Container,
-  Card,
-  CardContent,
-  CardMedia,
-  Typography,
-  Button,
-  Box,
-  IconButton,
-  Tooltip,
-  TextField,
-} from "@mui/material";
+import Container from "@mui/material/Container";
+import Card from "@mui/material/Card";
+import CardContent from "@mui/material/CardContent";
+import CardMedia from "@mui/material/CardMedia";
+import Typography from "@mui/material/Typography";
+import Button from "@mui/material/Button";
+import CardActionArea from "@mui/material/CardActionArea";
+import CardActions from "@mui/material/CardActions";
+import Box from "@mui/material/Box";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import ShareIcon from "@mui/icons-material/Share";
-import ReplyIcon from "@mui/icons-material/Reply";
-import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
-import { useRouter } from "next/navigation";
+import IconButton from "@mui/material/IconButton";
+import Tooltip from "@mui/material/Tooltip";
+import Navbar from "@/app/navbar/page";
 import { useParams } from "next/navigation";
 
 interface Post {
@@ -39,33 +36,87 @@ export default function Page() {
         setIsSidebarOpen(!isSidebarOpen);
     };
 
-    useEffect(() => {
-        const fetchData = async (id: string) => {
-            try {
-                const res = await fetch(`http://localhost:3001/posts/${id}`);
-                if (!res.ok) {
-                    throw new Error(`Failed to fetch data with status: ${res.status}`);
-                }
-                const result: Post = await res.json();
-                setData(result);
-            } catch (error: any) {
-                console.error("Error fetching data:", error.message);
-                setError("ไม่สามารถโหลดข้อมูลได้");
-            } finally {
-                setLoading(false);
-            }
-        };
+  useEffect(() => {
+    async function fetchData(id: string) {
+      try {
+        const res = await fetch(
+          `https://melivecode.com/api/attractions/${id}`
+        );
+        if (!res.ok) {
+          throw new Error("Failed to fetch data");
+        }
+        const result = await res.json();
 
-         if (params?.id) {
-        const id = Array.isArray(params.id) ? params.id[0] : params.id; // ดึงค่าแรกในกรณีที่เป็น array
-        console.log("Fetching data for ID:", id);
-        fetchData(id);
-    } else {
-        console.error("ไม่พบพารามิเตอร์ ID");
-        setError("ไม่พบพารามิเตอร์ ID");
+        setData({
+          ...result.attraction,
+          likeCount: 0,
+        });
+
+        setComments([]);
         setLoading(false);
+      } catch (err: any) {
+        console.error(err.message);
+        setError("ไม่สามารถโหลดข้อมูลได้");
+        setLoading(false);
+      }
     }
-    }, [params]);
+
+    if (params && params.id) {
+      fetchData(params.id);
+    } else {
+      setError("ไม่พบพารามิเตอร์ ID");
+      setLoading(false);
+    }
+  }, [params]);
+
+  const handleAddComment = () => {
+    if (newComment.trim()) {
+      const comment: Comment = {
+        id: comments.length + 1,
+        name: "Anonymous",
+        message: newComment,
+        replies: [],
+      };
+      const updatedComments = [...comments, comment];
+      setComments(updatedComments);
+      setNewComment("");
+    }
+  };
+
+  const handleAddReply = (commentId: number) => {
+    if (replyMessage.trim()) {
+      const updatedComments = comments.map((comment) =>
+        comment.id === commentId
+          ? {
+              ...comment,
+              replies: [
+                ...(comment.replies || []),
+                {
+                  id: (comment.replies?.length || 0) + 1,
+                  name: "Anonymous",
+                  message: replyMessage,
+                },
+              ],
+            }
+          : comment
+      );
+
+      setComments(updatedComments);
+      setReplyMessage("");
+      setReplyingToCommentId(null);
+    }
+  };
+
+  const handleLike = () => {
+    if (data) {
+      const updatedLikes = data.likeCount + 1;
+      setData({ ...data, likeCount: updatedLikes });
+    }
+  };
+
+  const handleGoBack = () => {
+    router.back();
+  };
 
   return (
     <Box sx={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>

@@ -27,6 +27,8 @@ import Swal from "sweetalert2";
 
 import axios from "axios";
 
+import axios, { AxiosError } from "axios";
+
 
 
 export default function SignUp() {
@@ -402,6 +404,7 @@ export default function SignUp() {
                   รีเซ็ต
                 </Button>
               </div>
+
             </div>
           </Box>
         </CardContent>
