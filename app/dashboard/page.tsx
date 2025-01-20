@@ -191,29 +191,6 @@ export default function Page() {
             />
           </Item>
         </Grid>
-
-        <Grid item md={4}>
-          <Item sx={{ height: 450, textAlign: "start", padding: 3 }}>
-            <Typography sx={{ fontWeight: "bold", fontSize: 18, color: "black" }}>บทความยอดนิยม</Typography>
-            <Box sx={{ display: "flex", justifyContent: "space-between", my: 1 }}>
-              <Typography>บทความ</Typography>
-              <Typography>การอ่าน</Typography>
-            </Box>
-            {popularPosts.map((post, index) => (
-              <Box key={index} sx={{ display: "flex", alignItems: "center", height: 80 }}>
-                <Box
-                  component="img"
-                  src={post.image}
-                  alt={post.title}
-                  sx={{ width: 80, height: 64, my: 1, mx: 1 }}
-                />
-                <Typography sx={{ fontSize: 14 }}>{post.title}</Typography>
-                <Typography sx={{ fontSize: 14, ml: 21 }}>{post.viewCount}</Typography>
-                {/* ขึ้นแดงแต่รันได้ปกติ */}
-              </Box>
-            ))}
-          </Item>
-        </Grid>
       </Grid>
     </Container>
   );
