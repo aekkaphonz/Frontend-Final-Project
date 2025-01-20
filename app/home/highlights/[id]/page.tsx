@@ -1,4 +1,6 @@
-"use client";
+
+  "use client";
+
 
 
 import React, { useEffect, useState } from "react";
@@ -11,16 +13,12 @@ import Button from "@mui/material/Button";
 import CardActionArea from "@mui/material/CardActionArea";
 import CardActions from "@mui/material/CardActions";
 import Box from "@mui/material/Box";
-import FavoriteIcon from "@mui/icons-material/Favorite";
-import ShareIcon from "@mui/icons-material/Share";
 import IconButton from "@mui/material/IconButton";
 import Tooltip from "@mui/material/Tooltip";
 import Navbar from "@/app/navbar/AfterLogin";
 
 
 interface Post {
-
-  import React, { useEffect, useState } from "react";
   import {
     Container,
     Card,
@@ -43,6 +41,7 @@ interface Post {
   import MoreVertIcon from "@mui/icons-material/MoreVert";
   import { useRouter } from "next/navigation";
 
+
   import Navbar from "@/app/navbar/page";
   import Swal from "sweetalert2"; // Import SweetAlert
   import "./styles.css";
@@ -64,7 +63,9 @@ interface Post {
   }
 
   export default function Page() {
+
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
     const [data, setData] = useState<Attraction | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -78,24 +79,102 @@ interface Post {
     const [menuCommentId, setMenuCommentId] = useState<number | null>(null);
     const params: any = useParams();
     const router = useRouter();
-    const [isLoggedIn, setIsLoggedIn] = useState(false); // เพิ่มสถานะการเข้าสู่ระบบ
+
 
     useEffect(() => {
-        const fetchData = async (id: string) => {
-            try {
-                const res = await fetch(`http://localhost:3001/posts/${id}`);
-                if (!res.ok) {
-                    throw new Error(`Failed to fetch data with status: ${res.status}`);
-                }
-                const result: Post = await res.json();
-                setData(result);
-            } catch (error: any) {
-                console.error("Error fetching data:", error.message);
-                setError("ไม่สามารถโหลดข้อมูลได้");
-            } finally {
-                setLoading(false);
-            }
+      async function fetchData(id: string) {
+        try {
+          const res = await fetch(`https://melivecode.com/api/attractions/${id}`);
+          if (!res.ok) {
+            throw new Error("Failed to fetch data");
+          }
+          const result = await res.json();
+
+          setData({
+            ...result.attraction,
+            likeCount: 0,
+          });
+
+          setComments([]);
+          setLoading(false);
+        } catch (err: any) {
+          console.error(err.message);
+          setError("ไม่สามารถโหลดข้อมูลได้");
+          setLoading(false);
+        }
+      }
+
+      if (params && params.id) {
+        fetchData(params.id);
+      } else {
+        setError("ไม่พบพารามิเตอร์ ID");
+        setLoading(false);
+      }
+    }, [params]);
+
+    const handleAddComment = () => {
+      if (newComment.trim()) {
+        const comment: Comment = {
+          id: comments.length + 1,
+          name: "Anonymous",
+          message: newComment,
+          replies: [],
         };
+        const updatedComments = [...comments, comment];
+        setComments(updatedComments);
+        setNewComment("");
+      }
+    };
+
+    const [isLoggedIn, setIsLoggedIn] = useState(false); // เพิ่มสถานะการเข้าสู่ระบบ
+
+    const handleAddReply = (commentId: number) => {
+      if (replyMessage.trim()) {
+        const updatedComments = comments.map((comment) =>
+          comment.id === commentId
+            ? {
+                ...comment,
+                replies: [
+                  ...(comment.replies || []),
+                  {
+                    id: (comment.replies?.length || 0) + 1,
+                    name: "Anonymous",
+                    message: replyMessage,
+                  },
+                ],
+              }
+            : comment
+        );
+
+        setComments(updatedComments);
+        setReplyMessage("");
+        setReplyingToCommentId(null);
+      }
+    };
+
+    const handleEditComment = (commentId: number, newMessage: string) => {
+      const updatedComments = comments.map((comment) =>
+        comment.id === commentId ? { ...comment, message: newMessage } : comment
+      );
+      setComments(updatedComments);
+      setEditingCommentId(null);
+    };
+
+    const handleEditReply = (commentId: number, replyId: number, newMessage: string) => {
+      const updatedComments = comments.map((comment) =>
+        comment.id === commentId
+          ? {
+              ...comment,
+              replies: comment.replies?.map((reply) =>
+                reply.id === replyId ? { ...reply, message: newMessage } : reply
+              ),
+            }
+          : comment
+      );
+      setComments(updatedComments);
+      setEditingReplyId(null);
+    };
+
 
         if (params?.id) {
             console.log("Fetching data for ID:", params.id);
@@ -189,11 +268,13 @@ interface Post {
     };
 
     const handleLike = () => {
+
         if (data) {
           const updatedLikes = (data.likeCount || 0) + 1; // ตรวจสอบให้แน่ใจว่า likeCount มีค่าเริ่มต้นเป็น 0
           setData({ ...data, likeCount: updatedLikes });
         }
       };
+
 
     const handleMenuOpen = (event: React.MouseEvent<HTMLElement>, commentId: number) => {
       setAnchorEl(event.currentTarget);
@@ -205,9 +286,17 @@ interface Post {
       setMenuCommentId(null);
     };
 
+
+    const handleGoBack = () => {
+      router.back();
+    };
+
+
+
     return (
       <Box sx={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
         <Navbar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
+
 
         <Container
           maxWidth="md"
@@ -233,8 +322,12 @@ interface Post {
               <CardMedia
                 component="img"
                 sx={{ height: 300 }}
+
+                image={data.coverimage}
+
               //  images={data.images}
                 alt={data.title}
+
               />
               <CardContent sx={{ textAlign: "center" }}>
                 <Typography
@@ -243,6 +336,85 @@ interface Post {
                   component="div"
                   sx={{ color: "#77bfa3", fontWeight: "bold" }}
                 >
+
+                  {data.name}
+                </Typography>
+                <Typography variant="body1" sx={{ color: "#616161", mt: 2 }}>
+                  {data.detail}
+                </Typography>
+              </CardContent>
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  padding: 2,
+                  backgroundColor: "#f5f5f5",
+                }}
+              >
+                <Box>
+                  <Tooltip title="แชร์">
+                    <IconButton sx={{ color: "#000000" }}>
+                      <ShareIcon />
+                    </IconButton>
+                  </Tooltip>
+                  <Tooltip title="เพิ่มในรายการโปรด">
+                    <IconButton sx={{ color: "#f50057" }}>
+                      <FavoriteIcon />
+                    </IconButton>
+                  </Tooltip>
+                </Box>
+                <Box sx={{ display: "flex", alignItems: "center" }}>
+                  <IconButton onClick={handleLike}>
+                    <FavoriteBorderIcon />
+                  </IconButton>
+                  <Typography variant="body2" sx={{ ml: 1 }}>
+                    {data.likeCount} ถูกใจ
+                  </Typography>
+                </Box>
+              </Box>
+            </Card>
+          ) : (
+            <Typography variant="h5" sx={{ mt: 4, color: "#616161" }}>
+              ไม่พบข้อมูล
+            </Typography>
+          )}
+
+          <Box
+            sx={{
+              mt: 4,
+              p: 2,
+              backgroundColor: "#f5f5f5",
+              borderRadius: 2,
+              boxShadow: 2,
+            }}
+          >
+            <Typography variant="h6" sx={{ mb: 2 }}>
+              แสดงความคิดเห็น
+            </Typography>
+            <TextField
+              fullWidth
+              placeholder="เพิ่มคอมเมนต์..."
+              multiline
+              rows={3}
+              value={newComment}
+              onChange={(e) => setNewComment(e.target.value)}
+              sx={{ mb: 2 }}
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton
+                      color="primary"
+                      onClick={handleAddComment}
+                      edge="end"
+                    >
+                      <SendIcon />
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              }}
+            />
+
+
                   {data.title}
                 </Typography>
                 <Typography variant="body1" sx={{ color: "#616161", mt: 2 }}>
@@ -350,6 +522,7 @@ interface Post {
                     ),
                 }}
             />
+
 
 
             {comments.map((comment) => (
@@ -468,6 +641,7 @@ interface Post {
                           onClick={() =>
                             setEditingReplyId({ commentId: comment.id, replyId: reply.id })
                           }
+
                         >
                           แก้ไข
                         </MenuItem>
@@ -477,6 +651,7 @@ interface Post {
                             handleMenuClose();
                           }}
                         >
+
                           ลบ
                         </MenuItem>
                       </Menu>
@@ -539,4 +714,7 @@ interface Post {
         </Container>
       </Box>
     );
+
+
   }
+
