@@ -209,8 +209,6 @@ function signin() {
                 className="w-4/6 text-[#77bfa3] p-2 text-sm "
                 type="button"
                 onClick={handleGoogleLogin}
-                startIcon={<GoogleIcon />}
-
               >
                 <img
                   src="/images/google-logo.png"
