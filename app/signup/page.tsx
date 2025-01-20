@@ -27,8 +27,6 @@ import Swal from "sweetalert2";
 
 import axios from "axios";
 
-import axios, { AxiosError } from "axios";
-
 
 
 export default function SignUp() {
@@ -222,7 +220,7 @@ export default function SignUp() {
             {/* ยืนยันรหัสผ่าน */}
             <div className="w-full">
               <TextField
-                type="confirmpassword"
+                type="password"
                 id="confirmpassword"
                 label={
                   <span>
@@ -406,8 +404,8 @@ export default function SignUp() {
               </div>
             </div>
             <div className="flex justify-center items-center gap-2 ">
-              <a className="text-right  ">เป็นสมากชิกแล้ว !</a>
-              <a href="http://localhost:3000/signup" className="text-blue-500">
+              <a className="text-right  ">เป็นสมาชิกแล้ว !</a>
+              <a href="http://localhost:3000/signin" className="text-blue-500">
                 เข้าสู่ระบบ
               </a>
             </div>
