@@ -206,8 +206,8 @@ export default function Page() {
           </Item>
         </Grid>
 
-        <Grid item md={6}>
-          <Item sx={{ height: 350, textAlign: "start", padding: 3 }}>
+        <Grid item md={4}>
+          <Item sx={{ height: 450, textAlign: "start", padding: 3 }}>
             <Typography sx={{ fontWeight: "bold", fontSize: 18, color: "black" }}>บทความยอดนิยม</Typography>
             <Box sx={{ display: "flex", justifyContent: "space-between", my: 1 }}>
               <Typography>บทความ</Typography>
