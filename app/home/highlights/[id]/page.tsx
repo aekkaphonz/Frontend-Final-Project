@@ -15,6 +15,7 @@ import ShareIcon from "@mui/icons-material/Share";
 import IconButton from "@mui/material/IconButton";
 import Tooltip from "@mui/material/Tooltip";
 import Navbar from "@/app/navbar/AfterLogin";
+
 import { useParams } from "next/navigation";
 
 interface Post {

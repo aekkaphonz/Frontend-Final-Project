@@ -6,7 +6,6 @@ import AddIcon from "@mui/icons-material/Add";
 import LogoutIcon from "@mui/icons-material/Logout"; // ไอคอน Logout
 import { AppBar, Toolbar, Button, Box, TextField, Typography, Tooltip } from "@mui/material";
 import Link from "next/link";
-import { useAuth } from "@/app/contexts/AuthContext";
 import IconButton from '@mui/material/IconButton';
 import Avatar from '@mui/material/Avatar';
 import Menu from '@mui/material/Menu';
