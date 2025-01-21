@@ -6,6 +6,7 @@ import AddIcon from "@mui/icons-material/Add";
 import LogoutIcon from "@mui/icons-material/Logout"; // ไอคอน Logout
 import { AppBar, Toolbar, Button, Box, TextField, Typography, Tooltip } from "@mui/material";
 import Link from "next/link";
+
 import IconButton from '@mui/material/IconButton';
 import Avatar from '@mui/material/Avatar';
 import Menu from '@mui/material/Menu';
@@ -21,12 +22,8 @@ const themeColors = {
 export default function HomeNavbarAfterLogin() {
   const settings = ['Profile', 'Dashboard', 'Logout'];
 
-  const { setIsLoggedIn } = useAuth(); // ใช้ setIsLoggedIn เพื่อเปลี่ยนสถานะ
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
 
-  const handleLogout = () => {
-    setIsLoggedIn(false); // ออกจากระบบ
-  };
 
   const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElUser(event.currentTarget);

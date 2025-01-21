@@ -10,7 +10,6 @@ import Link from "next/link";
 import AddIcon from "@mui/icons-material/Add";
 import SearchIcon from '@mui/icons-material/Search';
 import LogoutIcon from "@mui/icons-material/Logout";
-import { useAuth } from "@/app/contexts/AuthContext";
 import Avatar from '@mui/material/Avatar';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
@@ -18,7 +17,6 @@ import MenuItem from '@mui/material/MenuItem';
 
 
 function Sb({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: () => void }) {
-  const { setIsLoggedIn } = useAuth(); // ใช้ setIsLoggedIn เพื่อเปลี่ยนสถานะ
   const settings = ['Profile', 'Dashboard', 'Logout'];
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
 
@@ -30,9 +28,7 @@ function Sb({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: () => v
     buttonGreen: "#77bfa3",
   };
 
-  const handleLogout = () => {
-    setIsLoggedIn(false); // ออกจากระบบ
-  };
+
   
     const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
       setAnchorElUser(event.currentTarget);

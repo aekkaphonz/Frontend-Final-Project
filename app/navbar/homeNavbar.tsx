@@ -114,23 +114,6 @@ export default function HomeNavbar() {
                     >
                         ลงทะเบียน
                     </Button>
-                    <Button
-                        href="/dashboard"
-                        variant="contained"
-                        sx={{
-                            backgroundColor: themeColors.buttonGreen,
-                            color: "#ffffff",
-                            fontWeight: "bold",
-                            textTransform: "none",
-                            "&:hover": {
-                                backgroundColor: "#ffffff",
-                                borderColor: themeColors.buttonGreen,
-                                color: themeColors.buttonGreen,
-                            },
-                        }}
-                    >
-                        หน้า DashBoard
-                    </Button>
                 </Box>
             </Toolbar>
         </AppBar>
