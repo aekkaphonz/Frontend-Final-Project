@@ -67,15 +67,6 @@ export default function HomeNavbar() {
                         }}
                     >
 
-
-                        <AddIcon 
-                            sx={{ 
-                                color: themeColors.buttonGreen,
-                                fontWeight: "bold",
-                                boxShadow: "0px 2px 5px rgba(0,0,0,0.2)", // เพิ่มเงา
-                            }} 
-                        />
-
                         <Link href="/signin" >
                             <Typography
                                 variant="h6"

@@ -11,11 +11,17 @@ import AddIcon from "@mui/icons-material/Add";
 import SearchIcon from '@mui/icons-material/Search';
 import LogoutIcon from "@mui/icons-material/Logout";
 import { useAuth } from "@/app/contexts/AuthContext";
+import Avatar from '@mui/material/Avatar';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
 
 
 
 function Sb({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: () => void }) {
   const { setIsLoggedIn } = useAuth(); // ใช้ setIsLoggedIn เพื่อเปลี่ยนสถานะ
+  const settings = ['Profile', 'Dashboard', 'Logout'];
+  const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
+
 
   const themeColors = {
     primary: "#ffffff",
@@ -26,6 +32,14 @@ function Sb({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: () => v
 
   const handleLogout = () => {
     setIsLoggedIn(false); // ออกจากระบบ
+  };
+  
+    const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
+      setAnchorElUser(event.currentTarget);
+    };
+    
+  const handleCloseUserMenu = () => {
+    setAnchorElUser(null);
   };
 
   return (
@@ -129,27 +143,35 @@ function Sb({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: () => v
 
               </Box>
             </Typography>
-            {/* ปุ่ม Logout */}
-            <Button
-              variant="contained"
-              onClick={handleLogout}
-              sx={{
-                backgroundColor: "#e91e63",
-                color: "#fff",
-                fontWeight: "bold",
-                textTransform: "none",
-                borderRadius: "8px",
-                display: "flex",
-                alignItems: "center",
-                gap: "8px",
-                "&:hover": {
-                  backgroundColor: "#ec407a",
-                },
+            <Box sx={{ flexGrow: 0 }}>
+            <Tooltip title="Profile">
+              <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+                <Avatar />
+              </IconButton>
+            </Tooltip>
+            <Menu
+              sx={{ mt: '45px' }}
+              id="menu-appbar"
+              anchorEl={anchorElUser}
+              anchorOrigin={{
+                vertical: 'top',
+                horizontal: 'right',
               }}
+              keepMounted
+              transformOrigin={{
+                vertical: 'top',
+                horizontal: 'right',
+              }}
+              open={Boolean(anchorElUser)}
+              onClose={handleCloseUserMenu}
             >
-              <LogoutIcon />
-              Logout
-            </Button>
+              {settings.map((setting) => (
+                <MenuItem key={setting} onClick={handleCloseUserMenu}>
+                  <Typography sx={{ textAlign: 'center' }}>{setting}</Typography>
+                </MenuItem>
+              ))}
+            </Menu>
+          </Box>
           </Box>
         </Toolbar>
       </AppBar>
