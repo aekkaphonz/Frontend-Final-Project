@@ -27,8 +27,6 @@ import Swal from "sweetalert2";
 
 import axios from "axios";
 
-
-
 export default function SignUp() {
   const [isFormSubmitted, setIsFormSubmitted] = useState(false);
   const router = useRouter();
@@ -127,9 +125,7 @@ export default function SignUp() {
             gap="2rem"
             padding="2rem"
           >
-            <div
-              className="font-bold text-3xl text-center flex items-center justify-center "
-            >
+            <div className="font-bold text-3xl text-center flex items-center justify-center ">
               สมัครสมาชิก
             </div>
 
@@ -226,31 +222,34 @@ export default function SignUp() {
             </div>
 
             {/* ยืนยันรหัสผ่าน */}
-            <div className="w-full">
-              <TextField
-                type="password"
-                id="confirmpassword"
-                label={
-                  <span>
-                      ยืนยันรหัสผ่าน <span style={{ color: "red" }}>*</span>
-                  </span>
-                }
-                variant="outlined"
-                fullWidth
-                {...register("confirmpassword", {
-                  required: "กรุณายืนยันรหัสผ่าน",
-                  minLength: {
-                    value: 6,
-                    message: "รหัสผ่านต้องมีอย่างน้อย 6 ตัว",
-                  },
-                  validate: (value) =>
-                    value === ("password") || "รหัสผ่านไม่ตรงกัน",
-                })}
-              />
-              {errors.confirmpassword && (
-                <p className="text-red-500 text-sm">{`${errors.confirmpassword.message}`}</p>
-              )}
-            </div>
+            <TextField
+              type="password"
+              id="confirmpassword"
+              label={
+                <span>
+                  ยืนยันรหัสผ่าน <span style={{ color: "red" }}>*</span>
+                </span>
+              }
+              variant="outlined"
+              fullWidth
+              {...register("confirmpassword", {
+                required: "กรุณายืนยันรหัสผ่าน",
+                minLength: {
+                  value: 6,
+                  message: "รหัสผ่านต้องมีอย่างน้อย 6 ตัว",
+                },
+                validate: (value) => {
+                  const password = getValues("password");
+                  if (value !== password) {
+                    return "รหัสผ่านไม่ตรงกัน";
+                  }
+                  return true;
+                },
+              })}
+            />
+            {errors.confirmpassword && (
+              <p className="text-red-500 text-sm">{`${errors.confirmpassword.message}`}</p>
+            )}
 
             {/* เพศ */}
             <div className="flex gap-4">
