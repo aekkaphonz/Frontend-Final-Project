@@ -37,25 +37,22 @@ export default function Page() {
     setIsSidebarOpen(!isSidebarOpen);
   };
 
-  const fetchPosts = async (userId: string) => {
+  const fetchPosts = async () => {
     try {
-      const response = await fetch(`http://localhost:3001/posts?userId=${userId}`);
+      const response = await fetch(`http://localhost:3001/posts`); // เรียก API โดยไม่ต้องใช้ userId
       if (!response.ok) throw new Error("Failed to fetch posts");
   
       const data = await response.json();
-      setRows(data);
+      setRows(data); // ตั้งค่าข้อมูลที่ดึงมา
     } catch (error) {
       console.error("Error fetching posts:", error);
-      setRows([]);
+      setRows([]); // รีเซ็ตข้อมูลหากมีข้อผิดพลาด
     }
   };
-
+  
   useEffect(() => {
-    const storedUserId = localStorage.getItem("userId"); // ดึง userId จาก localStorage
-    if (storedUserId) {
-      fetchPosts(storedUserId);
-    }
-  }, []);  
+    fetchPosts(); // เรียกฟังก์ชันเมื่อ component โหลด
+  }, []);
 
   const handleEdit = (post: any) => {
     const queryString = `/editBlog?id=${post._id}&title=${encodeURIComponent(post.title)}&content=${encodeURIComponent(post.content)}&images=${encodeURIComponent(JSON.stringify(post.images))}&tags=${encodeURIComponent(post.tags.join(", "))}`;

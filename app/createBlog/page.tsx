@@ -24,14 +24,13 @@ const Item = styled(Paper)(({ theme }) => ({
 
 export default function Page() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-
-  // ตัวแปรเก็บข้อมูล
-  const [title, setTitle] = useState(""); // เก็บหัวข้อ
-  const [content, setContent] = useState(""); // เก็บเนื้อหา
-  const [tags, setTags] = useState(""); // เก็บแท็ก
-  const [images, setImages] = useState<File[]>([]); // เก็บไฟล์รูปภาพ
-  const [imagePreviews, setImagePreviews] = useState<string[]>([]); // เก็บ URL รูปสำหรับแสดงตัวอย่าง
-  const [createdAt, setCreatedAt] = useState(new Date().toISOString()); // เก็บวันที่การสร้าง
+  
+  const [title, setTitle] = useState("");
+  const [content, setContent] = useState("");
+  const [tags, setTags] = useState("");
+  const [images, setImages] = useState<string[]>([]);
+  const [imagePreviews, setImagePreviews] = useState<string[]>([]);
+  const [createdAt, setCreatedAt] = useState(new Date().toISOString());
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
@@ -40,23 +39,65 @@ export default function Page() {
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files) {
       const filesArray = Array.from(event.target.files);
-      setImages([...images, ...filesArray]);
-
-      const previews = filesArray.map((file) => URL.createObjectURL(file));
-      setImagePreviews([...imagePreviews, ...previews]);
+  
+      const promises = filesArray.map((file) => {
+        return new Promise<string>((resolve, reject) => {
+          const reader = new FileReader();
+          reader.readAsDataURL(file);
+          reader.onloadend = () => {
+            const img = new Image();
+            img.src = reader.result as string;
+            img.onload = () => {
+              const canvas = document.createElement("canvas");
+              const ctx = canvas.getContext("2d");
+              const maxSize = 800;
+  
+              let width = img.width;
+              let height = img.height;
+  
+              if (width > height) {
+                if (width > maxSize) {
+                  height *= maxSize / width;
+                  width = maxSize;
+                }
+              } else {
+                if (height > maxSize) {
+                  width *= maxSize / height;
+                  height = maxSize;
+                }
+              }
+  
+              canvas.width = width;
+              canvas.height = height;
+              ctx?.drawImage(img, 0, 0, width, height);
+  
+              resolve(canvas.toDataURL("image/jpeg", 0.8));
+            };
+          };
+          reader.onerror = reject;
+        });
+      });
+  
+      Promise.all(promises)
+        .then((base64Images) => {
+          setImages((prevImages) => [...prevImages, ...base64Images]);
+          setImagePreviews((prevPreviews) => [...prevPreviews, ...base64Images]);
+        })
+        .catch((error) => console.error("Error converting images:", error));
     }
-  };
+  };    
 
   const handleSave = async () => {
-    // เตรียมข้อมูลในรูปแบบ JSON
     const payload = {
       title,
       content,
-      tags: tags.split(",").map((tag) => tag.trim()), // แปลงแท็กเป็น array
+      tags: tags.split(",").map((tag) => tag.trim()),
       createdAt,
-      images: images.map((image) => image.name), // ในกรณี backend เก็บชื่อรูป
+      images, // ✅ ต้องแน่ใจว่า images เป็น string[]
     };
-
+  
+    console.log("🚀 ส่งข้อมูลไป Backend:", payload); // ✅ ดูว่าโครงสร้างถูกต้องไหม
+  
     try {
       const response = await fetch("http://localhost:3001/posts", {
         method: "POST",
@@ -65,19 +106,20 @@ export default function Page() {
         },
         body: JSON.stringify(payload),
       });
-
+  
+      console.log("🔍 Response status:", response.status);
+      console.log("🔍 Response data:", await response.json());
+  
       if (!response.ok) {
         throw new Error("การส่งข้อมูลล้มเหลว");
       }
-
-      const result = await response.json();
-      console.log("ผลลัพธ์จาก backend:", result);
-      alert("บทความและข้อมูลถูกบันทึกเรียบร้อย!");
+  
+      alert("บทความและรูปภาพถูกบันทึกเรียบร้อย!");
     } catch (error) {
       console.error("เกิดข้อผิดพลาด:", error);
       alert("เกิดข้อผิดพลาดในการบันทึกบทความ");
     }
-  };
+  };      
 
   return (
     <Container

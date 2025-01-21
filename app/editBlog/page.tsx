@@ -75,7 +75,7 @@ export default function EditBlog() {
 
     const handleSave = async () => {
         const payload = {
-            title,
+            title, 
             content,
             tags: tags.split(",").map((tag) => tag.trim()), // แปลงแท็กเป็น array
             createdAt,

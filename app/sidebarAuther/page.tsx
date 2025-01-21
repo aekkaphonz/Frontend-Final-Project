@@ -7,7 +7,8 @@ import MenuIcon from "@mui/icons-material/Menu";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import CollectionsBookmarkIcon from "@mui/icons-material/CollectionsBookmark";
 import InsertChartIcon from "@mui/icons-material/InsertChart";
-import EditNoteOutlinedIcon from "@mui/icons-material/EditNoteOutlined";
+import AddIcon from '@mui/icons-material/Add';
+import PersonIcon from '@mui/icons-material/Person';
 
 function Sb({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: () => void }) {
   return (
@@ -32,16 +33,19 @@ function Sb({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: () => v
             >
               <MenuIcon />
             </IconButton>
-            <Typography variant="h6" noWrap component="div" sx={{ color: "#000", fontWeight: 700 }}>
-              Web Blog
-            </Typography>
+            <Box component="img"
+              src="/images/logo-blogs.png"
+              alt="Web Blog Logo"
+              sx={{ height: 60, width: "auto" }}
+            />
+
           </Box>
 
           {/* ปุ่มเขียน */}
           <Button href="/createBlog"
             sx={{
               color: "#000",
-              backgroundColor: "#fff", 
+              backgroundColor: "#fff",
               "&:hover": { backgroundColor: "#F7F7F7" },
               borderRadius: "20px",
               padding: "6px 16px",
@@ -50,8 +54,8 @@ function Sb({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: () => v
             }}
             variant="contained"
           >
-            <EditNoteOutlinedIcon sx={{ marginRight: 1 }} />
-            เขียน
+            <AddIcon sx={{ marginRight: 1 }} />
+            สร้าง
           </Button>
         </Toolbar>
       </AppBar>
@@ -98,8 +102,8 @@ function Sb({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: () => v
           <Tooltip title="เนื้อหา" placement="right">
             <Link href="/blog" passHref>
               <ListItem
-                component="button"   
-                
+                component="button"
+
                 sx={{
                   display: "flex",
                   flexDirection: isOpen ? "row" : "column",
@@ -138,6 +142,29 @@ function Sb({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: () => v
                   <InsertChartIcon />
                 </ListItemIcon>
                 {isOpen && <ListItemText primary="สถิติ" sx={{ color: "#000" }} />}
+              </ListItem>
+            </Link>
+          </Tooltip>
+
+          <Tooltip title="โปรไฟล์" placement="right">
+            <Link href="/profile" passHref>
+              <ListItem
+                component="button"
+                sx={{
+                  display: "flex",
+                  flexDirection: isOpen ? "row" : "column",
+                  alignItems: "center",
+                  justifyContent: isOpen ? "flex-start" : "center",
+                  padding: isOpen ? "12px 20px" : "12px 0",
+                  "&:hover": {
+                    backgroundColor: "rgba(0, 0, 0, 0.08)",
+                  },
+                }}
+              >
+                <ListItemIcon sx={{ justifyContent: "center", color: "#000", minWidth: "40px" }}>
+                  <PersonIcon />
+                </ListItemIcon>
+                {isOpen && <ListItemText primary="โปรไฟล์" sx={{ color: "#000" }} />}
               </ListItem>
             </Link>
           </Tooltip>

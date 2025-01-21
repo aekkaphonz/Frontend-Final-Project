@@ -45,34 +45,29 @@ export default function Page() {
 
   const fetchDashboardData = async () => {
     try {
-      if (!userId) throw new Error("User ID is not set");
-  
-      const userResponse = await fetch(`http://localhost:3001/user/${userId}`);
-      if (!userResponse.ok) throw new Error("Failed to fetch user data");
-      const userData = await userResponse.json();
-      setNameAuthor(userData.userName || "ไม่ทราบชื่อ");
-      setSubscriber(userData.subscriber || 0);
-  
-      const postResponse = await fetch(`http://localhost:3001/posts/count/${userId}`);
-      if (!postResponse.ok) throw new Error("Failed to fetch post count");
-      const postData = await postResponse.json();
-      setPostCount(postData.count || 0);
-  
-      console.log("Fetched dashboard data successfully");
-    } catch (error) {
-      console.error("Error fetching dashboard data:",);
-      alert("ไม่สามารถโหลดข้อมูลแดชบอร์ดได้");
-    }
-  };
+        const userId = "YOUR_FIXED_USER_ID"; // ใส่ userId แบบคงที่ที่ต้องการดึงข้อมูล
 
-  useEffect(() => {
-    const currentUserId = "USER_ID_FROM_AUTH";
-    setUserId(currentUserId);
-  
-    if (currentUserId) {
-      fetchDashboardData();
+        const userResponse = await fetch(`http://localhost:3001/user/${userId}`);
+        if (!userResponse.ok) throw new Error("Failed to fetch user data");
+        const userData = await userResponse.json();
+        setNameAuthor(userData.userName || "ไม่ทราบชื่อ");
+        setSubscriber(userData.subscriber || 0);
+
+        const postResponse = await fetch(`http://localhost:3001/posts/count/${userId}`);
+        if (!postResponse.ok) throw new Error("Failed to fetch post count");
+        const postData = await postResponse.json();
+        setPostCount(postData.count || 0);
+
+        console.log("Fetched dashboard data successfully");
+    } catch (error) {
+        console.error("Error fetching dashboard data:", error);
+        alert("ไม่สามารถโหลดข้อมูลแดชบอร์ดได้");
     }
-  }, [userId]);
+};
+
+useEffect(() => {
+    fetchDashboardData();
+}, []);
   
 
   return (
@@ -199,7 +194,8 @@ export default function Page() {
               <Typography>บทความ</Typography>
               <Typography>การอ่าน</Typography>
             </Box>
-            {popularPosts.map((post, index) => (
+
+            {/* {popularPosts.map((post, index) => (
               <Box key={index} sx={{ display: "flex", alignItems: "center", height: 80 }}>
                 <Box
                   component="img"
@@ -209,9 +205,9 @@ export default function Page() {
                 />
                 <Typography sx={{ fontSize: 14 }}>{post.title}</Typography>
                 <Typography sx={{ fontSize: 14, ml: 21 }}>{post.viewCount}</Typography>
-                {/* ขึ้นแดงแต่รันได้ปกติ */}
               </Box>
-            ))}
+            ))} */}
+            
           </Item>
         </Grid>
       </Grid>
