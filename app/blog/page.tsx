@@ -131,7 +131,7 @@ export default function Page() {
       >
         <Grid item md={12}>
           <Typography sx={{ fontWeight: "bold", fontSize: 26, mb: 1 }}>
-            เนื้อหาบทความ
+            บทความของฉัน
           </Typography>
         </Grid>
         <Grid item md={12}>
@@ -153,7 +153,7 @@ export default function Page() {
               <TableHead>
                 <TableRow
                   sx={{
-                    backgroundColor: "#dde7c7", // สีพื้นหลังของหัวตาราง
+                    backgroundColor: "#ccffe2", // สีพื้นหลังของหัวตาราง
                     "& th": { color: "#000000", fontWeight: "bold" }, // สีและน้ำหนักของข้อความ
                   }}
                 >
