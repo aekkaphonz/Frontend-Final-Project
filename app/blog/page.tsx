@@ -19,8 +19,8 @@ import {
   TableRow,
 } from "@mui/material";
 import FilterAltOutlinedIcon from "@mui/icons-material/FilterAltOutlined";
-import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
-import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
+import BorderColorIcon from '@mui/icons-material/BorderColor';
+import DeleteIcon from '@mui/icons-material/Delete';
 
 import Sb from "@/app/sidebarAuther/page";
 
@@ -116,12 +116,17 @@ export default function Page() {
       <Sb isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
 
       <Grid
-        container
-        spacing={2}
-        sx={{
+        container spacing={3} 
+        sx={{ 
           marginLeft: isSidebarOpen ? "240px" : "72px",
           marginTop: "72px",
           transition: "margin-left 0.3s",
+          padding: "16px", // ปรับ padding ด้านใน
+          maxWidth: {
+            xs: "100%", // สำหรับหน้าจอมือถือ
+            sm: isSidebarOpen ? "calc(100% - 240px)" : "calc(100% - 72px)", // สำหรับหน้าจอเล็กขึ้นไป
+            md: isSidebarOpen ? "calc(100% - 240px)" : "calc(100% - 72px)", // สำหรับหน้าจอ Desktop
+          },
         }}
       >
         <Grid item md={12}>
@@ -146,7 +151,12 @@ export default function Page() {
           <TableContainer component={Paper}>
             <Table sx={{ minWidth: 650 }} aria-label="simple table">
               <TableHead>
-                <TableRow>
+                <TableRow
+                  sx={{
+                    backgroundColor: "#dde7c7", // สีพื้นหลังของหัวตาราง
+                    "& th": { color: "#000000", fontWeight: "bold" }, // สีและน้ำหนักของข้อความ
+                  }}
+                >
                   <TableCell sx={{ fontWeight: "bold" }}>บทความ</TableCell>
                   <TableCell sx={{ fontWeight: "bold" }} align="right">
                     วันที่
@@ -158,10 +168,10 @@ export default function Page() {
                     ความคิดเห็น
                   </TableCell>
                   <TableCell sx={{ fontWeight: "bold" }} align="right">
-                    <EditOutlinedIcon />
+                    <BorderColorIcon />
                   </TableCell>
                   <TableCell sx={{ fontWeight: "bold" }} align="right">
-                    <DeleteOutlineOutlinedIcon />
+                    <DeleteIcon />
                   </TableCell>
                 </TableRow>
               </TableHead>

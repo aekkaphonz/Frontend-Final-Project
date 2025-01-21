@@ -15,8 +15,7 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 
 
-
-function Sb({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: () => void }) {
+function NavLogIn({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: () => void }) {
   const settings = ['Profile', 'Dashboard', 'Logout'];
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
 
@@ -258,4 +257,4 @@ function Sb({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: () => v
   );
 }
 
-export default Sb;
+export default NavLogIn;
