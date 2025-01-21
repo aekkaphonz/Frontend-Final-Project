@@ -85,12 +85,24 @@ export default function Page() {
     >
       <Sb isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
 
-      <Grid container spacing={2} sx={{ marginLeft: isSidebarOpen ? "240px" : "72px", marginTop: "72px", transition: "margin-left 0.3s" }}>
-        <Grid item md={12}>
+      <Grid container spacing={3} 
+        sx={{ 
+          marginLeft: isSidebarOpen ? "240px" : "72px",
+          marginTop: "72px",
+          transition: "margin-left 0.3s",
+          padding: "16px", // ปรับ padding ด้านใน
+          maxWidth: {
+            xs: "100%", // สำหรับหน้าจอมือถือ
+            sm: isSidebarOpen ? "calc(100% - 240px)" : "calc(100% - 72px)", // สำหรับหน้าจอเล็กขึ้นไป
+            md: isSidebarOpen ? "calc(100% - 240px)" : "calc(100% - 72px)", // สำหรับหน้าจอ Desktop
+          },
+        }}
+      >
+        <Grid item md={8}>
           <Typography sx={{ fontWeight: "bold", fontSize: 26, mb: 1 }}>แดชบอร์ดผู้เขียน</Typography>
         </Grid>
 
-        <Grid item md={4}>
+        <Grid item md={12}>
           <Item sx={{ height: 150, textAlign: "start", padding: 3 }}>
             <Typography sx={{ fontWeight: "bold", fontSize: 18, color: "black" }}>
               ข้อมูลช่องนักเขียน
@@ -100,15 +112,17 @@ export default function Page() {
                 <Typography sx={{ fontSize: 18, color: "black" }}>{nameAuthor}</Typography>
                 <Typography>ผู้เขียน/นักเขียน</Typography>
               </Box>
-              <Box sx={{ my: 1, ml: 8 }}>
-                <Typography sx={{ fontSize: 14 }}>จำนวนผู้ติดตาม</Typography>
+                  
+              <Box sx={{ my: 1, textAlign: "right", ml: "auto" }}>
+                <Typography sx={{ fontSize: 14, color: "gray" }}>จำนวนผู้ติดตาม</Typography>
                 <Typography sx={{ fontSize: 18, color: "black" }}>{subscriber}</Typography>
               </Box>
             </Box>
           </Item>
         </Grid>
 
-        <Grid item md={2}>
+
+        <Grid item md={3}>
           <Item id="profile-item" sx={{ height: 150, textAlign: "start" }}>
             <Typography sx={{ fontWeight: "bold", fontSize: 14, marginTop: 3.5, ml: 1, mt: 8 }}>
               จำนวนบทความ
@@ -129,7 +143,7 @@ export default function Page() {
           </Item>
         </Grid>
 
-        <Grid item md={2}>
+        <Grid item md={3}>
           <Item id="profile-item" sx={{ height: 150, textAlign: "start" }}>
             <Typography sx={{ fontWeight: "bold", fontSize: 14, marginTop: 3.5, ml: 1, mt: 8 }}>
               จำนวนการอ่าน
@@ -150,7 +164,7 @@ export default function Page() {
           </Item>
         </Grid>
 
-        <Grid item md={2}>
+        <Grid item md={3}>
           <Item id="profile-item" sx={{ height: 150, textAlign: "start" }}>
             <Typography sx={{ fontWeight: "bold", fontSize: 14, marginTop: 3.5, ml: 1, mt: 8 }}>
               คอมเมนท์
@@ -171,7 +185,7 @@ export default function Page() {
           </Item>
         </Grid>
 
-        <Grid item md={2}>
+        <Grid item md={3}>
           <Item id="profile-item" sx={{ height: 150, textAlign: "start" }}>
             <Typography sx={{ fontWeight: "bold", fontSize: 14, marginTop: 3.5, ml: 1, mt: 8 }}>
               ไลค์ทั้งหมด
@@ -189,6 +203,29 @@ export default function Page() {
                 filter: "drop-shadow(2px 4px 3px rgba(0, 0, 0, 0.3))",
               }}
             />
+          </Item>
+        </Grid>
+
+        <Grid item md={4}>
+          <Item sx={{ height: 450, textAlign: "start", padding: 3 }}>
+            <Typography sx={{ fontWeight: "bold", fontSize: 18, color: "black" }}>บทความยอดนิยม</Typography>
+            <Box sx={{ display: "flex", justifyContent: "space-between", my: 1 }}>
+              <Typography>บทความ</Typography>
+              <Typography>การอ่าน</Typography>
+            </Box>
+            {popularPosts.map((post, index) => (
+              <Box key={index} sx={{ display: "flex", alignItems: "center", height: 80 }}>
+                <Box
+                  component="img"
+                  src={post.image}
+                  alt={post.title}
+                  sx={{ width: 80, height: 64, my: 1, mx: 1 }}
+                />
+                <Typography sx={{ fontSize: 14 }}>{post.title}</Typography>
+                <Typography sx={{ fontSize: 14, ml: 21 }}>{post.viewCount}</Typography>
+                {/* ขึ้นแดงแต่รันได้ปกติ */}
+              </Box>
+            ))}
           </Item>
         </Grid>
       </Grid>
