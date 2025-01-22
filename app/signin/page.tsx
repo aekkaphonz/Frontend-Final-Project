@@ -26,11 +26,6 @@ function signin() {
   const [isFormSubmitted, setIsFormSubmitted] = useState(false);
 
   const router = useRouter();
-  // useEffect(() => {
-  //   if (isFormSubmitted) {
-  //     router.push("/");
-  //   }
-  // }, [isFormSubmitted, router]);
 
   const { register, handleSubmit, control } = useForm();
 
@@ -62,7 +57,7 @@ function signin() {
       console.log("Response status:", response.status);
 
       if (response.data) {
-        router.push("/");
+        router.push("http://localhost:3000/test");
       } else {
         alert("การเข้าสู่ระบบล้มเหลว");
       }
@@ -158,7 +153,7 @@ function signin() {
               <div className="text-right">
                 <a 
                   href="http://localhost:3000/signup" 
-                  className="text-red-500 underline" // เส้นใต้
+                  className="text-red-500 underline" 
                 >
                   ลืมรหัสผ่าน? 
                 </a>

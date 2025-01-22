@@ -243,6 +243,8 @@ export default function SignUp() {
                     value: 6,
                     message: "รหัสผ่านต้องมีอย่างน้อย 6 ตัว",
                   },
+                  validate: (value) =>
+                    value === ("password") || "รหัสผ่านไม่ตรงกัน",
                 })}
               />
               {errors.confirmpassword && (
