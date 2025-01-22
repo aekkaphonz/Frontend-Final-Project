@@ -24,7 +24,7 @@ const Item = styled(Paper)(({ theme }) => ({
 
 export default function Page() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  
+
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [tags, setTags] = useState("");
@@ -50,10 +50,10 @@ export default function Page() {
               const canvas = document.createElement("canvas");
               const ctx = canvas.getContext("2d");
               const maxSize = 800;
-  
+
               let width = img.width;
               let height = img.height;
-  
+
               if (width > height && width > maxSize) {
                 height = (height * maxSize) / width;
                 width = maxSize;
@@ -61,18 +61,18 @@ export default function Page() {
                 width = (width * maxSize) / height;
                 height = maxSize;
               }
-  
+
               canvas.width = width;
               canvas.height = height;
               ctx?.drawImage(img, 0, 0, width, height);
-  
+
               resolve(canvas.toDataURL("image/jpeg", 0.8)); // ลดคุณภาพรูปเป็น 80%
             };
           };
           reader.onerror = reject;
         });
       });
-  
+
       Promise.all(promises)
         .then((base64Images) => {
           setImages((prevImages) => [...prevImages, ...base64Images]);
@@ -80,7 +80,7 @@ export default function Page() {
         })
         .catch((error) => console.error("Error converting images:", error));
     }
-  };      
+  };
 
   const handleSave = async () => {
     const payload = {
@@ -102,29 +102,25 @@ export default function Page() {
         body: JSON.stringify(payload),
       });
   
-      console.log("🔍 Response status:", response.status);
-  
-      if (!response.ok) {
-        const errorData = await response.json();
-        console.error("❌ ข้อผิดพลาดจาก Backend:", errorData);
-        throw new Error(`Error ${response.status}: ${errorData.message || "Unknown error"}`);
-      }
-  
       const result = await response.json();
       console.log("✅ บันทึกข้อมูลสำเร็จ:", result);
-      alert("บทความและรูปภาพถูกบันทึกเรียบร้อย!");
+  
+      if (response.ok) {
+        alert("บทความและรูปภาพถูกบันทึกเรียบร้อย!");
+      } else {
+        alert("เกิดข้อผิดพลาดจากการบันทึกข้อมูล");
+      }
     } catch (error) {
-      console.error("❌ เกิดข้อผิดพลาด:", error.message);
+      console.error(" เกิดข้อผิดพลาด:", error);
       alert("เกิดข้อผิดพลาดในการบันทึกบทความ");
     }
-  };      
+  };  
 
-  //ยกเลิก
   const handleCancel = () => {
-    setTitle(""); // รีเซ็ตค่า title
-    setContent(""); // รีเซ็ตค่า content
-    setTags(""); // รีเซ็ตค่า tags
-    setImages([]); // รีเซ็ตค่า images
+    setTitle("");
+    setContent("");
+    setTags("");
+    setImages([]);
   };
 
   return (
@@ -136,9 +132,9 @@ export default function Page() {
       }}
     >
       <Sb isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
-      <Grid 
-        container spacing={3} 
-        sx={{ 
+      <Grid
+        container spacing={3}
+        sx={{
           marginLeft: isSidebarOpen ? "240px" : "72px",
           marginTop: "72px",
           transition: "margin-left 0.3s",
@@ -229,26 +225,26 @@ export default function Page() {
         </Grid>
 
         {/* ปุ่มบันทึก */}
-        <Grid 
-          item md={12} 
-          sx={{ 
-            textAlign: "center", 
-            mt: 2 ,
-            display: "flex", 
-            alignItems: "end", 
+        <Grid
+          item md={12}
+          sx={{
+            textAlign: "center",
+            mt: 2,
+            display: "flex",
+            alignItems: "end",
             justifyContent: "flex-end", // ชิดขวา
-            gap: 2 
-            }}
+            gap: 2
+          }}
         >
           <Button
             variant="contained"
             color="primary"
             onClick={handleSave}
-            sx={{ 
-              fontWeight: "bold", 
-              fontSize: 16 ,
+            sx={{
+              fontWeight: "bold",
+              fontSize: 16,
               color: "#ffffff",
-              backgroundColor: "#77bfa3", 
+              backgroundColor: "#77bfa3",
             }}
           >
             บันทึก
@@ -259,11 +255,11 @@ export default function Page() {
             variant="contained"
             color="primary"
             // onClick={handleCancel}
-            sx={{ 
-              fontWeight: "bold", 
-              fontSize: 16 ,
+            sx={{
+              fontWeight: "bold",
+              fontSize: 16,
               color: "#ffffff",
-              backgroundColor: "#FF3366", 
+              backgroundColor: "#FF3366",
             }}
           >
             ยกเลิก

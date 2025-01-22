@@ -48,22 +48,22 @@ export default function Page() {
     setIsSidebarOpen(!isSidebarOpen);
   };
 
-  const fetchPosts = async () => {
+  const fetchPosts = async (userId: string) => {
     try {
       const response = await fetch(
         `http://localhost:3001/posts?userId=${userId}`
       );
-      
+  
       if (!response.ok) throw new Error("Failed to fetch posts");
-
+  
       const data = await response.json();
       setRows(data); // ตั้งค่าข้อมูลที่ดึงมา
     } catch (error) {
       console.error("Error fetching posts:", error);
-
+  
       setRows([]);
     }
-  };
+  };  
   
   useEffect(() => {
     const storedUserId = localStorage.getItem("userId"); // ดึง userId จาก localStorage
