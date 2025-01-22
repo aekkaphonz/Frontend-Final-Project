@@ -38,7 +38,7 @@ interface Comment {
   name: string;
   message: string;
   replies?: Comment[];
- 
+  timestamp: string;
 }
 
 export default function Page() {
@@ -166,6 +166,7 @@ async function toggleLike(postId: string) {
         id: comments.length + 1,
         name: "Anonymous",
         message: newComment,
+        timestamp: new Date().toLocaleString(),
         replies: [],
       };
       const updatedComments = [...comments, comment];
