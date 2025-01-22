@@ -23,21 +23,21 @@ import { useForm } from "react-hook-form";
 import axios from "axios";
 
 function signin() {
-  const [isFormSubmitted, setIsFormSubmitted] = useState(false);
-
   const router = useRouter();
-
-  const { register, handleSubmit, control } = useForm();
+  const {
+    register,
+    handleSubmit,
+    control,
+    formState: { errors },
+  } = useForm();
 
   const handleGoogleLogin = async () => {
     try {
-     
       window.location.href = "http://localhost:3001/auth/google";
     } catch (error) {
       console.error("Login failed:", error);
     }
   };
-  
 
   const handleFormSubmit = async (formData: any) => {
     try {
@@ -50,8 +50,7 @@ function signin() {
           },
           withCredentials: true,
         }
-      );
-      
+      );      
 
       console.log("Response data:", response.data);
       console.log("Response status:", response.status);
@@ -93,19 +92,23 @@ function signin() {
             maxWidth="500px"
             mx="auto"
           >
-            <div
-              className="font-bold text-3xl text-center flex items-center justify-center "
-            >
+            <div className="font-bold text-3xl text-center flex items-center justify-center ">
               เข้าสู่ระบบ
             </div>
-            
+
             <div className="w-full">
               <TextField
                 id="Email"
                 label="อีเมล"
                 variant="outlined"
                 fullWidth
-                {...register("email")}
+                {...register("email", {
+                  required: "กรุณากรอกอีเมล",
+                  pattern: {
+                    value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+                    message: "รูปแบบอีเมลไม่ถูกต้อง",
+                  },
+                })}
                 InputProps={{
                   endAdornment: (
                     <InputAdornment position="end">
@@ -114,6 +117,11 @@ function signin() {
                   ),
                 }}
               />
+              {errors.email && (
+                <p className="text-red-500 text-sm">
+                  {errors.email.message as string}
+                </p>
+              )}
             </div>
             <div className="w-full">
               <TextField
@@ -122,7 +130,13 @@ function signin() {
                 label="รหัสผ่าน"
                 variant="outlined"
                 fullWidth
-                {...register("password")}
+                {...register("password", {
+                  required: "กรุณากรอกรหัสผ่าน",
+                  minLength: {
+                    value: 6,
+                    message: "รหัสผ่านต้องมีอย่างน้อย 6 ตัว",
+                  },
+                })}
                 InputProps={{
                   endAdornment: (
                     <IconButton
@@ -135,6 +149,11 @@ function signin() {
                   ),
                 }}
               />
+              {errors.password && (
+                <p className="text-red-500 text-sm">
+                  {errors.password.message as string}
+                </p>
+              )}
             </div>
 
             <div className="grid grid-cols-2 justify-between items-center">
@@ -151,11 +170,11 @@ function signin() {
                 />
               </div>
               <div className="text-right">
-                <a 
-                  href="http://localhost:3000/signup" 
-                  className="text-red-500 underline" 
+                <a
+                  href="http://localhost:3000/signup"
+                  className="text-red-500 underline"
                 >
-                  ลืมรหัสผ่าน? 
+                  ลืมรหัสผ่าน?
                 </a>
               </div>
             </div>
@@ -181,7 +200,7 @@ function signin() {
                 เข้าสู่ระบบ
               </Button>
             </div>
-            
+
             <div className="flex justify-center items-center gap-2 ">
               <a className="text-right  ">ยังไม่เป็นสมาชิก?</a>
               <a href="http://localhost:3000/signup" className="text-blue-500">

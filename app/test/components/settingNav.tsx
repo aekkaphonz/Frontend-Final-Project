@@ -35,7 +35,7 @@ function SettingNav() {
         }
       );
 
-      window.location.href = "http://localhost:3000/";
+       window.location.href = "http://localhost:3000/";
     } catch (err) {
       console.error("Logout failed:", err);
     }
