@@ -6,10 +6,12 @@ import {
   CardContent,
   InputAdornment,
   TextField,
+  IconButton,
 } from "@mui/material";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import React from "react";
+import EditIcon from '@mui/icons-material/Edit'; 
 
 type User = {
   _id: string;
@@ -26,7 +28,7 @@ const EditPage = () => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [file, setFile] = useState<File | null>(null); 
+  const [file, setFile] = useState<File | null>(null);
 
   const fetchUserData = async () => {
     try {
@@ -64,7 +66,7 @@ const EditPage = () => {
   const handleProfileUpdate = async () => {
     try {
       const formData = new FormData();
-      formData.append("profileImage", file as Blob); 
+      formData.append("profileImage", file as Blob);
       formData.append("userName", user.userName);
       formData.append("email", user.email);
       formData.append("gender", user.gender);
@@ -75,18 +77,20 @@ const EditPage = () => {
         formData,
         {
           headers: {
-            "Content-Type": "multipart/form-data", 
+            "Content-Type": "multipart/form-data",
           },
           withCredentials: true,
         }
       );
       console.log("Updated user data:", response.data);
+      alert("Profile updated successfully!");
     } catch (error) {
       console.error("Failed to update user data", error);
       alert("Error updating profile");
     }
   };
-
+ 
+  
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files ? e.target.files[0] : null;
@@ -111,21 +115,27 @@ const EditPage = () => {
             <div className="flex justify-center">
               <strong>User profile</strong>
             </div>
-
-            {user.profileImage && (
-              <div className="flex justify-center">
+            <div className="flex justify-center items-center relative">
+              {user.profileImage && (
                 <img
                   src={user.profileImage}
                   alt="Profile Image"
-                  style={{
-                    width: "100px",
-                    height: "100px",
-                    borderRadius: "50%",
-                    objectFit: "cover",
-                  }}
+                  className="w-24 h-24 rounded-full object-cover"
                 />
-              </div>
-            )}
+              )}
+              <label htmlFor="file-input" className="absolute right-0 bottom-0">
+                <IconButton component="span">
+                  <EditIcon />
+                </IconButton>
+              </label>
+            </div>
+            <input
+              id="file-input"
+              type="file"
+              onChange={handleFileChange}
+              accept="image/*"
+              className="hidden"
+            />
 
             <div className="flex items-center gap-1">
               <div className="w-1/5">
@@ -197,18 +207,9 @@ const EditPage = () => {
               </div>
             </div>
 
-          
-            <div>
-              <input
-                type="file"
-                onChange={handleFileChange}
-                accept="image/*"
-              />
-            </div>
-
             <Box display="flex" justifyContent="center" mt={2}>
               <Button variant="contained" color="primary" onClick={handleProfileUpdate}>
-                Update Profile
+              บันทึกการเปลี่ยนแปลง
               </Button>
             </Box>
           </Box>
