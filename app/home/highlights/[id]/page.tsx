@@ -29,10 +29,9 @@ interface Attraction {
   _id: string;
   title: string;
   content: string;
-  images: string[]; // รูปภาพเป็น array
+  images: string[];
   likeCount: number;
 }
-
 interface Comment {
   id: number;
   name: string;
@@ -54,28 +53,56 @@ export default function Page() {
   const [editingReplyId, setEditingReplyId] = useState<{ commentId: number; replyId: number | null } | null>(null);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [menuCommentId, setMenuCommentId] = useState<number | null>(null);
+  const [menuReplyId, setMenuReplyId] = useState<{ commentId: number; replyId: number } | null>(null);
+  const [anchorReplyEl, setAnchorReplyEl] = useState<null | HTMLElement>(null);
   const params: any = useParams();
   const router = useRouter();
 
-  useEffect(() => {
-    async function fetchData(id: string) {
+   // ดึงความคิดเห็น
+   useEffect(() => {
+    async function fetchComments(postId: string) {
       try {
-        const res = await fetch(`http://localhost:3001/posts/${id}`);
-        if (!res.ok) {
-          throw new Error("Failed to fetch data");
-        }
+        const res = await fetch(`http://localhost:3001/comments/content/${postId}`);
+        if (!res.ok) throw new Error("Failed to fetch comments");
+  
+        const result = await res.json();
+        const mappedComments = result.map((comment: any) => ({
+          id: comment._id,
+          name: "Anonymous", // หรือดึงชื่อผู้ใช้จาก comment.userId
+          message: comment.comment,
+          timestamp: new Date(comment.createdAt).toLocaleString(),
+          replies: comment.replies || [],
+        }));
+        setComments(mappedComments);
+      } catch (error) {
+        console.error("Error fetching comments:", error);
+      }
+    }
+  
+    if (data) {
+      fetchComments(data._id);
+    }
+  }, [data]);
+    
+  
+   // ดึงข้อมูลโพสต์
+   useEffect(() => {
+    async function fetchData(postId: string) {
+      try {
+        const res = await fetch(`http://localhost:3001/posts/${postId}`);
+        if (!res.ok) throw new Error("Failed to fetch post data");
         const result = await res.json();
 
         setData({
-          ...result.attraction,
-          likeCount: 0,
+          _id: result._id,
+          title: result.title,
+          content: result.content,
+          images: result.images || [],
+          likeCount: result.likeCount || 0,
         });
-
-        setComments([]);
         setLoading(false);
-      } catch (err: any) {
-        console.error(err.message);
-        setError("ไม่สามารถโหลดข้อมูลได้");
+      } catch (error: any) {
+        setError(error.message || "Failed to load post data");
         setLoading(false);
       }
     }
@@ -88,20 +115,66 @@ export default function Page() {
     }
   }, [params]);
 
-  const handleAddComment = () => {
-    if (newComment.trim()) {
-      const comment: Comment = {
-        id: comments.length + 1,
-        name: "Anonymous",
-        message: newComment,
-        timestamp: new Date().toLocaleString(), // เพิ่ม timestamp
-        replies: [],
-      };
-      const updatedComments = [...comments, comment];
-      setComments(updatedComments);
+ // เพิ่มความคิดเห็นใหม่
+ const handleAddComment = async () => {
+  if (newComment.trim() && data?._id) {
+    try {
+      const userId = "678db93685adc7405e8fd97"; // ระบุ userId (ในระบบจริงควรดึงจาก context หรือ state)
+      const res = await fetch("http://localhost:3001/comments/addComment", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          userId,
+          postId: data._id,
+          comment: newComment,
+        }),
+      });
+
+      if (!res.ok) throw new Error("Failed to add comment");
+
+      const addedComment = await res.json();
+      setComments((prevComments) => [
+        ...prevComments,
+        {
+          id: addedComment._id,
+          name: "Anonymous", // หรือแสดงชื่อผู้ใช้จริงจาก Backend
+          message: addedComment.comment,
+          timestamp: new Date(addedComment.createdAt).toLocaleString(),
+          replies: addedComment.replies || [],
+        },
+      ]);
       setNewComment("");
+    } catch (error) {
+      console.error("Error adding comment:", error);
     }
-  };
+  }
+};
+
+async function deleteComment(commentId: string) {
+  const res = await fetch(`http://localhost:3001/comments/${commentId}`, {
+    method: "DELETE",
+  });
+  if (!res.ok) throw new Error("Failed to delete comment");
+  return res.json();
+}
+
+async function editComment(commentId: string, newMessage: string) {
+  const res = await fetch(`http://localhost:3001/comments/${commentId}`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ message: newMessage }),
+  });
+  if (!res.ok) throw new Error("Failed to edit comment");
+  return res.json();
+}
+
+async function toggleLike(postId: string) {
+  const res = await fetch(`http://localhost:3001/posts/${postId}/like`, {
+    method: "PATCH",
+  });
+  if (!res.ok) throw new Error("Failed to toggle like");
+  return res.json();
+}
 
   const handleAddReply = (commentId: number) => {
     if (replyMessage.trim()) {
@@ -115,19 +188,18 @@ export default function Page() {
                   id: (comment.replies?.length || 0) + 1,
                   name: "Anonymous",
                   message: replyMessage,
-                  timestamp: new Date().toLocaleString(), // กำหนด timestamp
+                  timestamp: new Date().toLocaleString(),
                 },
               ],
             }
           : comment
       );
-  
+
       setComments(updatedComments);
       setReplyMessage("");
       setReplyingToCommentId(null);
     }
   };
-  
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
@@ -145,11 +217,11 @@ export default function Page() {
     const updatedComments = comments.map((comment) =>
       comment.id === commentId
         ? {
-          ...comment,
-          replies: comment.replies?.map((reply) =>
-            reply.id === replyId ? { ...reply, message: newMessage } : reply
-          ),
-        }
+            ...comment,
+            replies: comment.replies?.map((reply) =>
+              reply.id === replyId ? { ...reply, message: newMessage } : reply
+            ),
+          }
         : comment
     );
     setComments(updatedComments);
@@ -165,9 +237,9 @@ export default function Page() {
     const updatedComments = comments.map((comment) =>
       comment.id === commentId
         ? {
-          ...comment,
-          replies: comment.replies?.filter((reply) => reply.id !== replyId),
-        }
+            ...comment,
+            replies: comment.replies?.filter((reply) => reply.id !== replyId),
+          }
         : comment
     );
     setComments(updatedComments);
@@ -189,11 +261,6 @@ export default function Page() {
     setAnchorEl(null);
     setMenuCommentId(null);
   };
-
-  const handleGoBack = () => {
-    router.back();
-  };
-
 
   return (
     <Box sx={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
@@ -223,7 +290,6 @@ export default function Page() {
             <CardMedia
               component="img"
               sx={{ height: 300 }}
-              //  images={data.images}
               alt={data.title}
             />
             <CardContent sx={{ textAlign: "center" }}>
@@ -260,14 +326,12 @@ export default function Page() {
                 </Tooltip>
               </Box>
 
-              {/* แสดงจำนวนคอมเมนต์และการตอบกลับรวมกัน */}
               <Box sx={{ display: "flex", alignItems: "center" }}>
                 <Typography variant="body2" sx={{ ml: 2 }}>
                   {comments.length + comments.reduce((acc, comment) => acc + (comment.replies?.length || 0), 0)} ความคิดเห็น
                 </Typography>
               </Box>
 
-              {/* แสดงจำนวน "ถูกใจ" */}
               <Box sx={{ display: "flex", alignItems: "center" }}>
                 <IconButton onClick={handleLike}>
                   <FavoriteBorderIcon />
@@ -277,8 +341,6 @@ export default function Page() {
                 </Typography>
               </Box>
             </Box>
-
-
           </Card>
         ) : (
           <Typography variant="h5" sx={{ mt: 4, color: "#616161" }}>
@@ -344,9 +406,15 @@ export default function Page() {
                     <strong>{comment.name}:</strong> {comment.message}
                   </Typography>
                   <Typography variant="caption" sx={{ color: "#888" }}>
-                    {comment.timestamp} {/* แสดง timestamp */}
+                    {comment.timestamp}
                   </Typography>
                 </Box>
+                <IconButton
+                  onClick={(e) => handleMenuOpen(e, comment.id)}
+                  size="small"
+                >
+                  <MoreVertIcon />
+                </IconButton>
               </Box>
 
               <Menu
@@ -416,31 +484,41 @@ export default function Page() {
                         <Typography>
                           <strong>{reply.name}:</strong> {reply.message}
                         </Typography>
-                        <IconButton
-                          onClick={(e) => handleMenuOpen(e, reply.id)}
-                          size="small"
-                        >
-                          <MoreVertIcon />
-                        </IconButton>
+                        <Typography variant="caption" sx={{ color: "#888" }}>
+                          {reply.timestamp}
+                        </Typography>
                       </Box>
+                      <IconButton
+                        onClick={(e) => {
+                          setAnchorReplyEl(e.currentTarget);
+                          setMenuReplyId({ commentId: comment.id, replyId: reply.id });
+                        }}
+                        size="small"
+                      >
+                        <MoreVertIcon />
+                      </IconButton>
                     </Box>
 
                     <Menu
-                      anchorEl={anchorEl}
-                      open={menuCommentId === reply.id}
-                      onClose={handleMenuClose}
+                      anchorEl={anchorReplyEl}
+                      open={menuReplyId?.replyId === reply.id && menuReplyId?.commentId === comment.id}
+                      onClose={() => {
+                        setAnchorReplyEl(null);
+                        setMenuReplyId(null);
+                      }}
                     >
                       <MenuItem
-                        onClick={() =>
-                          setEditingReplyId({ commentId: comment.id, replyId: reply.id })
-                        }
+                        onClick={() => {
+                          setEditingReplyId({ commentId: comment.id, replyId: reply.id });
+                          setAnchorReplyEl(null);
+                        }}
                       >
                         แก้ไข
                       </MenuItem>
                       <MenuItem
                         onClick={() => {
                           handleDeleteReply(comment.id, reply.id);
-                          handleMenuClose();
+                          setAnchorReplyEl(null);
                         }}
                       >
                         ลบ
@@ -490,7 +568,6 @@ export default function Page() {
                   }}
                 />
               )}
-
             </Box>
           ))}
         </Box>

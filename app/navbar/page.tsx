@@ -1,14 +1,26 @@
 "use client";
 
-import React from "react";
-import { Box, List, ListItem, ListItemIcon, ListItemText, AppBar, Toolbar, IconButton, Typography, Button, TextField, Tooltip, } from "@mui/material";
+import {
+  Box,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  AppBar,
+  Toolbar,
+  IconButton,
+  TextField,
+  Button,
+  Typography,
+} from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
-import HomeIcon from '@mui/icons-material/Home';
-import ArticleIcon from '@mui/icons-material/Article';
-import WhatshotIcon from '@mui/icons-material/Whatshot';
+import SearchIcon from "@mui/icons-material/Search";
+import AddIcon from "@mui/icons-material/Add";
+import HomeIcon from "@mui/icons-material/Home";
+import ArticleIcon from "@mui/icons-material/Article";
+import WhatshotIcon from "@mui/icons-material/Whatshot";
 import Link from "next/link";
-import AddIcon from "@mui/icons-material/Add"; 
-import SearchIcon from '@mui/icons-material/Search';
+import React, { useState, useEffect } from "react";
 
 const themeColors = {
   primary: "#ffffff",
@@ -18,24 +30,72 @@ const themeColors = {
 };
 
 function Sb({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: () => void }) {
+  const [searchQuery, setSearchQuery] = useState<string>("");
+  const [filteredData, setFilteredData] = useState<any[]>([]);
+  const [data, setData] = useState<any[]>([]);
+
+  // Fetch all data on load
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const res = await fetch("http://localhost:3001/posts");
+        if (!res.ok) throw new Error("Failed to fetch data");
+        const result = await res.json();
+        setData(result);
+        setFilteredData(result); // Initialize with all data
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    }
+    fetchData();
+  }, []);
+
+  // Handle search functionality
+  const handleSearch = async (query: string) => {
+    setSearchQuery(query);
+
+    if (query.trim() === "") {
+      setFilteredData(data); // Show all data when search query is empty
+      return;
+    }
+
+    try {
+      // Send search request to the API
+      const res = await fetch(`http://localhost:3001/posts?search=${query}`);
+      if (!res.ok) throw new Error("Failed to fetch search results");
+
+      const result = await res.json();
+      setFilteredData(result); // Update the filtered data from the API response
+    } catch (error) {
+      console.error("Error fetching search results:", error);
+
+      // Fallback: Filter data on the client-side
+      const filtered = data.filter((item) =>
+        item.title.toLowerCase().includes(query.toLowerCase())
+      );
+      setFilteredData(filtered);
+    }
+  };
+
   return (
     <>
       {/* Navbar */}
       <AppBar
         position="fixed"
         sx={{
-          backgroundColor: "#fff", // พื้นหลังสีขาว
+          backgroundColor: "#fff",
           boxShadow: "0px 3px 3px rgba(0,0,0,0.1)",
           borderBottom: "1px solid #ddd",
-          zIndex: 1300, // ให้อยู่เหนือ Sidebar
+          zIndex: 1300,
         }}
       >
         <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
           {/* Sidebar Menu */}
-          <Box sx={{ 
-            display: "flex", 
-            alignItems: "center" ,
-            gap: "10px",
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              gap: "10px",
             }}
           >
             <IconButton
@@ -47,11 +107,11 @@ function Sb({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: () => v
               <MenuIcon />
             </IconButton>
 
-            <Link href="/" >
+            <Link href="/">
               <img
                 src="/images/logo-blogs.png"
                 alt="Cleaning Illustration"
-                style={{ maxWidth: "142px", height: "auto" }} // ขนาดโลโก้
+                style={{ maxWidth: "142px", height: "auto" }}
               />
             </Link>
           </Box>
@@ -60,12 +120,10 @@ function Sb({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: () => v
           <Box sx={{ flexGrow: 1, mx: 2, display: "flex", justifyContent: "center" }}>
             <TextField
               placeholder="ค้นหา"
+              value={searchQuery}
+              onChange={(e) => handleSearch(e.target.value)}
               variant="outlined"
               size="small"
-              sx={{
-                width: "60%",
-                backgroundColor: "#f6f6f6", 
-              }}
               InputProps={{
                 endAdornment: (
                   <IconButton>
@@ -73,56 +131,19 @@ function Sb({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: () => v
                   </IconButton>
                 ),
               }}
+              sx={{
+                width: "60%",
+                backgroundColor: "#f6f6f6",
+              }}
             />
           </Box>
 
           {/* Buttons */}
           <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-            <Typography
-              variant="h6"
-              noWrap
-              component="div"
-              sx={{
-                backgroundColor: "#fff", // สีขาว
-                color: "#000000",
-              }}
-            >
-               {/* ไอคอนและข้อความ*/}
-              <Box
-                sx={{
-                  display: "flex",
-                    alignItems: "center",
-                    gap: "5px", // ระยะห่างระหว่างไอคอนและข้อความ
-                   }}
-              >
-                
-                  <AddIcon 
-                    sx={{ 
-                      color: themeColors.buttonGreen,
-                      fontWeight: "bold",
-                      boxShadow: "0px 2px 5px rgba(0,0,0,0.2)", // เพิ่มเงา
-                    }} 
-                  />
-                 <Link href="/signin" >
-                    <Typography
-                      variant="h6"
-                      sx={{
-                       color: themeColors.text,
-                      }}
-                    >
-                       สร้าง
-                    </Typography>
-                </Link>
-
-              </Box>
-            </Typography>
-
-            {/* Signin Button */}
             <Button
               href="/signin"
               variant="outlined"
               sx={{
-                backgroundColor: "#ffffff",
                 color: themeColors.buttonGreen,
                 borderColor: themeColors.buttonGreen,
                 fontWeight: "bold",
@@ -136,8 +157,6 @@ function Sb({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: () => v
             >
               เข้าสู่ระบบ
             </Button>
-            
-            {/* Signup Button */}
             <Button
               href="/signup"
               variant="contained"
@@ -162,12 +181,12 @@ function Sb({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: () => v
       {/* Sidebar */}
       <Box
         sx={{
-          width: isOpen ? 240 : 72, // ความกว้างเมื่อเปิด/ปิด
+          width: isOpen ? 240 : 72,
           height: "100vh",
           backgroundColor: "#fff",
           transition: "width 0.3s",
           position: "fixed",
-          top: 64, // เลื่อน Sidebar ให้เริ่มหลัง Navbar
+          top: 64,
           left: 0,
           zIndex: 1200,
           overflow: "hidden",
@@ -177,9 +196,7 @@ function Sb({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: () => v
         <List>
           <Link href="/home/highlights">
             <ListItem
-
               component="button"
-
               sx={{
                 display: "flex",
                 flexDirection: isOpen ? "row" : "column",
@@ -244,4 +261,3 @@ function Sb({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: () => v
 }
 
 export default Sb;
-
