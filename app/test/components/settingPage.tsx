@@ -35,6 +35,7 @@ const EditPage = () => {
       const response = await axios.get<User[]>("http://localhost:3001/user/profile", {
         withCredentials: true,
       });
+      console.log('cats:', response.data);
       if (response.data && response.data.length > 0) {
         setUser(response.data[0]);
       } else {

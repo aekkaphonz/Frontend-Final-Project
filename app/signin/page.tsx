@@ -57,7 +57,7 @@ function signin() {
       console.log("Response status:", response.status);
 
       if (response.data) {
-        router.push("http://localhost:3000/test");
+        router.push("http://localhost:3000/test/userprofile");
       } else {
         alert("การเข้าสู่ระบบล้มเหลว");
       }
