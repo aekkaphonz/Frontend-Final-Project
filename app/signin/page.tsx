@@ -21,16 +21,9 @@ import GoogleIcon from "@mui/icons-material/Google";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import axios from "axios";
-import { useAuth } from "../context/AuthProvider";
+
 
 function signin() {
-
-  const { login } = useAuth();
-  interface LoginResponse {
-    token: string;
-    message: string;
-  }
-  const [loading, setLoading] = useState(false);
   const [isFormSubmitted, setIsFormSubmitted] = useState(false);
 
   const router = useRouter();
@@ -39,21 +32,17 @@ function signin() {
 
   const handleGoogleLogin = async () => {
     try {
-
+     
       window.location.href = "http://localhost:3001/auth/google";
     } catch (error) {
       console.error("Login failed:", error);
     }
   };
-
-  interface LoginResponse {
-    token: string;
-    message: string;
-  }
+  
 
   const handleFormSubmit = async (formData: any) => {
     try {
-      const response = await axios.post<LoginResponse>(
+      const response = await axios.post(
         "http://localhost:3001/auth/login",
         formData,
         {
@@ -63,13 +52,13 @@ function signin() {
           withCredentials: true,
         }
       );
+      
 
       console.log("Response data:", response.data);
       console.log("Response status:", response.status);
 
-      if (response.status === 200 && response.data.token) {
-        login(response.data.token); 
-        router.push("/"); // เปลี่ยนเส้นทางไปหน้าแรก
+      if (response.data) {
+        router.push("/");
       } else {
         alert("การเข้าสู่ระบบล้มเหลว");
       }
@@ -85,7 +74,6 @@ function signin() {
       }
     }
   };
-
 
   const [showPassword, setShowPassword] = useState(false);
 
@@ -111,7 +99,7 @@ function signin() {
             >
               เข้าสู่ระบบ
             </div>
-
+            
             <div className="w-full">
               <TextField
                 id="Email"
@@ -164,11 +152,11 @@ function signin() {
                 />
               </div>
               <div className="text-right">
-                <a
-                  href="http://localhost:3000/signup"
-                  className="text-red-500 underline"
+                <a 
+                  href="http://localhost:3000/signup" 
+                  className="text-red-500 underline" 
                 >
-                  ลืมรหัสผ่าน?
+                  ลืมรหัสผ่าน? 
                 </a>
               </div>
             </div>
@@ -194,7 +182,7 @@ function signin() {
                 เข้าสู่ระบบ
               </Button>
             </div>
-
+            
             <div className="flex justify-center items-center gap-2 ">
               <a className="text-right  ">ยังไม่เป็นสมาชิก?</a>
               <a href="http://localhost:3000/signup" className="text-blue-500">
