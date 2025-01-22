@@ -1,13 +1,14 @@
-
-
 "use client";
 
 
 import React from "react";
 import { Box, Button, Container, Typography, Grid, Card, CardContent } from "@mui/material";
-import Navbar from "@/app/navbar/homeNavbar";
+// import Navbar from "@/app/navbar/homeNavbarAfterLogin";
+// import Navbar from "@/app/navbar/homeNavbar";
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import Link from "next/link";
+import HomeNavbar from "@/app/navbar/homeNavbar"; // Navbar ก่อน Login
+import HomeNavbarAfterLogin from "@/app/navbar/homeNavbarAfterLogin"; // Navbar หลัง Login
 
 
 
@@ -16,7 +17,7 @@ export default function Home() {
   return (
 
     <>
-      <Navbar />
+    <HomeNavbar/>
       <Container
         sx={{
           display: "flex",
@@ -33,7 +34,10 @@ export default function Home() {
             borderRadius: "50%",
             backgroundColor: "#ccffe2", // สีของวงกลม
             position: "absolute",
+
+
             bottom: "-25%",
+
             left: "-20%",
             zIndex: 0,
           }}

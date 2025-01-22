@@ -64,13 +64,6 @@ export default function HomeNavbar() {
                             gap: "15px", // ระยะห่างระหว่างไอคอนและข้อความ
                         }}
                     >
-                        <AddIcon 
-                            sx={{ 
-                                color: themeColors.buttonGreen,
-                                fontWeight: "bold",
-                                boxShadow: "0px 2px 5px rgba(0,0,0,0.2)", // เพิ่มเงา
-                            }} 
-                        />
                         <Link href="/signin" >
                             <Typography
                                 variant="h6"

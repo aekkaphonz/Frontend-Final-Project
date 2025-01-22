@@ -27,8 +27,6 @@ import Swal from "sweetalert2";
 
 import axios from "axios";
 
-
-
 export default function SignUp() {
   const [isFormSubmitted, setIsFormSubmitted] = useState(false);
   const router = useRouter();
@@ -127,9 +125,7 @@ export default function SignUp() {
             gap="2rem"
             padding="2rem"
           >
-            <div
-              className="font-bold text-3xl text-center flex items-center justify-center "
-            >
+            <div className="font-bold text-3xl text-center flex items-center justify-center ">
               สมัครสมาชิก
             </div>
 
@@ -243,8 +239,6 @@ export default function SignUp() {
                     value: 6,
                     message: "รหัสผ่านต้องมีอย่างน้อย 6 ตัว",
                   },
-                  validate: (value) =>
-                    value === ("password") || "รหัสผ่านไม่ตรงกัน",
                 })}
               />
               {errors.confirmpassword && (
