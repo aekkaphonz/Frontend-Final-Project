@@ -1,5 +1,4 @@
 "use client";
-
 import {
   Box,
   Button,
@@ -22,16 +21,20 @@ import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import Typography from "@mui/material/Typography";
+
+import Swal from "sweetalert2";
+
 import axios from "axios";
 
 export default function SignUp() {
   const [isFormSubmitted, setIsFormSubmitted] = useState(false);
   const router = useRouter();
-  useEffect(() => {
-    // if (isFormSubmitted) {
-    //   router.push("/signin");
-    // }
-  }, [isFormSubmitted, router]);
+  // useEffect(() => {
+  //   if (isFormSubmitted) {
+  //     router.push("/signin");
+  //    }
+  // }, [isFormSubmitted, router]);
 
   const {
     register,
@@ -42,28 +45,67 @@ export default function SignUp() {
     getValues,
   } = useForm();
 
+  const handleReset = () => {
+    reset({
+      userName: "",
+      email: "",
+      password: "",
+      confirmpassword: "",
+      gender: "",
+      dateOfBirth: null,
+    });
+  };
+
   const onSubmit = async (data: FieldValues) => {
     const gender =
-      data.gender === 0 ? "ชาย" : data.gender === 1 ? "หญิง" : "อื่นๆ";
+      data.gender === 0
+        ? "เลือก"
+        : data.gender === 1
+        ? "ชาย"
+        : data.gender === 2
+        ? "หญิง"
+        : "อื่นๆ";
     const dateOfBirth = data.dateOfBirth
       ? dayjs(data.dateOfBirth).format("DD/MM/YYYY")
       : "ยังไม่กำหนด";
 
+    console.log({
+      userName: data.userName,
+      email: data.email,
+      password: data.password,
+      gender,
+      dateOfBirth,
+    });
+
     try {
-      const response = await axios.post("http://localhost:3001/user/register", {
+      const response = await axios.post("http://localhost:3001/auth/register", {
         userName: data.userName,
         email: data.email,
         password: data.password,
+        confirmpassword: data.confirmpassword,
         gender,
         dateOfBirth,
       });
 
       if (response.status === 201) {
-        console.log("User created successfully:", response.data);
-
-        alert("ลงทะเบียนเสร็จสิ้น")
+        Swal.fire({
+          title: "สมัครสมาชิกสำเร็จ !",
+          text: "คุณสมัครสมาชิกเรียบร้อยแล้ว!",
+          icon: "success",
+          confirmButtonText: "ตกลง",
+          confirmButtonColor: "#77bfa3",
+        });
+        reset(); // รีเซ็ตฟอร์ม
       }
-    } catch (error) {}
+    } catch (error) {
+      Swal.fire({
+        title: "เกิดข้อผิดพลาด!",
+        text: "ไม่สามารถสมัครสมาชิกได้ กรุณาลองใหม่อีกครั้ง",
+        icon: "error",
+        confirmButtonText: "ตกลง",
+        confirmButtonColor: "#d33",
+      });
+    }
   };
 
   // const [age, setAge] = React.useState("");
@@ -83,13 +125,42 @@ export default function SignUp() {
             gap="2rem"
             padding="2rem"
           >
-            <div className="font-bold text-3xl">ลงทะเบียน</div>
+            <div className="font-bold text-3xl text-center flex items-center justify-center ">
+              สมัครสมาชิก
+            </div>
+
+            {/* ข้อมูลผู้ใช้ */}
+            {/* <Box
+              sx={{
+                backgroundColor: "#bfd8bd", // 
+                padding: "16px",
+                borderRadius: "8px", // ขอบมน
+                height: "50px",
+                width: "400px"
+              }}
+            >
+              <Typography
+                variant="h6"
+                sx={{
+                  fontSize: "16px",
+                  fontWeight: "bold",
+                  color: "#757575", 
+                  marginBottom: "8px",
+                }}
+              >
+                ข้อมูลผู้ใช้
+              </Typography>
+            </Box> */}
 
             {/* ชื่อ */}
             <div className="w-full">
               <TextField
                 id="firstname"
-                label="ชื่อผู้ใช้ *"
+                label={
+                  <span>
+                    ชื่อผู้ใช้ <span style={{ color: "red" }}>*</span>
+                  </span>
+                }
                 variant="outlined"
                 fullWidth
                 {...register("userName", {
@@ -105,7 +176,11 @@ export default function SignUp() {
             <div className="w-full">
               <TextField
                 id="email"
-                label="อีเมล *"
+                label={
+                  <span>
+                    อีเมล <span style={{ color: "red" }}>*</span>
+                  </span>
+                }
                 variant="outlined"
                 fullWidth
                 {...register("email", {
@@ -120,12 +195,17 @@ export default function SignUp() {
                 <p className="text-red-500 text-sm">{`${errors.email.message}`}</p>
               )}
             </div>
+
             {/* รหัสผ่าน */}
             <div className="w-full">
               <TextField
                 type="password"
                 id="password"
-                label="รหัสผ่าน *"
+                label={
+                  <span>
+                    รหัสผ่าน <span style={{ color: "red" }}>*</span>
+                  </span>
+                }
                 variant="outlined"
                 fullWidth
                 {...register("password", {
@@ -140,6 +220,36 @@ export default function SignUp() {
                 <p className="text-red-500 text-sm">{`${errors.password.message}`}</p>
               )}
             </div>
+
+            {/* ยืนยันรหัสผ่าน */}
+            <TextField
+              type="password"
+              id="confirmpassword"
+              label={
+                <span>
+                  ยืนยันรหัสผ่าน <span style={{ color: "red" }}>*</span>
+                </span>
+              }
+              variant="outlined"
+              fullWidth
+              {...register("confirmpassword", {
+                required: "กรุณายืนยันรหัสผ่าน",
+                minLength: {
+                  value: 6,
+                  message: "รหัสผ่านต้องมีอย่างน้อย 6 ตัว",
+                },
+                validate: (value) => {
+                  const password = getValues("password");
+                  if (value !== password) {
+                    return "รหัสผ่านไม่ตรงกัน";
+                  }
+                  return true;
+                },
+              })}
+            />
+            {errors.confirmpassword && (
+              <p className="text-red-500 text-sm">{`${errors.confirmpassword.message}`}</p>
+            )}
 
             {/* เพศ */}
             <div className="flex gap-4">
@@ -163,12 +273,12 @@ export default function SignUp() {
                         {...field}
                         label="เพศ"
                       >
-                        <MenuItem value="">
-                          <em></em>
+                        <MenuItem value={0}>
+                          <em>เลือก</em>
                         </MenuItem>
-                        <MenuItem value={0}>ชาย</MenuItem>
-                        <MenuItem value={1}>หญิง</MenuItem>
-                        <MenuItem value={2}>อื่นๆ</MenuItem>
+                        <MenuItem value={1}>ชาย</MenuItem>
+                        <MenuItem value={2}>หญิง</MenuItem>
+                        <MenuItem value={3}>อื่นๆ</MenuItem>
                       </Select>
                     </FormControl>
                   )}
@@ -217,7 +327,7 @@ export default function SignUp() {
               </div>
             </div>
 
-            <div>
+            {/* <div> เผื่อใช้
               <Controller
                 name="agreeToTerms"
                 control={control}
@@ -230,28 +340,83 @@ export default function SignUp() {
                   </div>
                 )}
               />
+
             </div>
 
             <div className="btn1">
               <Button
                 variant="contained"
                 sx={{
-                  backgroundColor: "#6B7280",
+                  backgroundColor: "#77bfa3",
                   "&:hover": {
-                    backgroundColor: "#4B5563",
+                    backgroundColor: "#77bfa3",
                   },
                   "&:focus": {
-                    backgroundColor: "#6B7280",
+                    backgroundColor: "#77bfa3",
                   },
                   "&.MuiButton-root": {
                     outline: "none",
                   },
                 }}
                 className="w-full text-white p-2 text-lg"
-                type="submit"
+               
+                type="submit"              
               >
                 ยืนยัน
               </Button>
+
+            </div> */}
+
+            <div className="grid grid-cols-2 justify-between items-center">
+              <div className="btn1 flex items-center">
+                <Button
+                  variant="contained"
+                  sx={{
+                    backgroundColor: "#77bfa3",
+                    "&:hover": {
+                      backgroundColor: "#98c9a3",
+                    },
+                    "&:focus": {
+                      backgroundColor: "#bfd8bd",
+                    },
+                    "&.MuiButton-root": {
+                      outline: "none",
+                    },
+                  }}
+                  className="w-4/5 text-white p-2 text-lg"
+                  type="submit"
+                >
+                  ยืนยัน
+                </Button>
+              </div>
+              <div className="btn1 flex items-center">
+                <Button
+                  variant="contained"
+                  sx={{
+                    backgroundColor: "	#FFCC33",
+                    "&:hover": {
+                      backgroundColor: "#FFCC66",
+                    },
+                    "&:focus": {
+                      backgroundColor: "#FFCC66",
+                    },
+                    "&.MuiButton-root": {
+                      outline: "none",
+                    },
+                  }}
+                  className="w-4/5 text-white p-2 text-lg"
+                  type="button"
+                  onClick={handleReset}
+                >
+                  รีเซ็ต
+                </Button>
+              </div>
+            </div>
+            <div className="flex justify-center items-center gap-2 ">
+              <a className="text-right  ">เป็นสมาชิกแล้ว !</a>
+              <a href="http://localhost:3000/signin" className="text-blue-500">
+                เข้าสู่ระบบ
+              </a>
             </div>
           </Box>
         </CardContent>
