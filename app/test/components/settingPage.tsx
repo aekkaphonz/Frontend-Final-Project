@@ -21,6 +21,7 @@ type User = {
   userName: string;
   gender: string;
   dateOfBirth: string;
+  profileImage: string;
   content: any[];
 };
 
@@ -66,6 +67,9 @@ const EditPage = () => {
     return <p>No user data available</p>;
   }
 
+  
+
+
   return (
     <form>
       <Card
@@ -86,9 +90,18 @@ const EditPage = () => {
             maxWidth="500px"
             mx="auto"
           >
-            <div>
+            <div className="flex justify-center">
               <strong>User profile</strong>
             </div>
+            {user.profileImage && (
+              <div className="flex justify-center">
+                <img
+                  src={user.profileImage}
+                  alt="Profile Image"
+                  style={{ width: "100px", height: "100px", borderRadius: "50%" }}
+                />
+              </div>
+            )}
                 <div className="flex items-center gap-1">
                 <div className="w-1/5">
                     <strong>อีเมล :</strong>
