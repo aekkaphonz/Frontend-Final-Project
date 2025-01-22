@@ -11,6 +11,7 @@ import Link from "next/link";
 
 
 
+
 export default function Home() {
   return (
 
@@ -161,7 +162,7 @@ export default function Home() {
           {/* Service 2 */}
           <Grid item xs={12} sm={6} md={4}>
             <Card sx={{ boxShadow: 2 }}>
-              <Link href="/home/highlights" passHref>
+              <Link href="/home/article" passHref>
                 <CardContent>
                 <Box
                   display="flex"
@@ -189,7 +190,7 @@ export default function Home() {
           {/* Service 3 */}
           <Grid item xs={12} sm={6} md={4}>
             <Card sx={{ boxShadow: 2 }}>
-              <Link href="/home/highlights" passHref>
+              <Link href="/home/popular" passHref>
                 <CardContent>
                 <Box
                   display="flex"

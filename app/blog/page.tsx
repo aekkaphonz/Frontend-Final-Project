@@ -1,14 +1,26 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { useRouter } from "next/navigation"; // ใช้ router สำหรับเปลี่ยนหน้า
+import { useRouter } from "next/navigation";
 import { styled } from "@mui/material/styles";
 import Paper from "@mui/material/Paper";
 import Grid from "@mui/material/Grid";
-import { Typography, Container, Box, Button, Modal, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material";
+import {
+  Typography,
+  Container,
+  Box,
+  Button,
+  Modal,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+} from "@mui/material";
 import FilterAltOutlinedIcon from "@mui/icons-material/FilterAltOutlined";
-import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
-import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
+import BorderColorIcon from '@mui/icons-material/BorderColor';
+import DeleteIcon from '@mui/icons-material/Delete';
 
 import Sb from "@/app/sidebarAuther/page";
 
@@ -27,49 +39,62 @@ const Item = styled(Paper)(({ theme }) => ({
 }));
 
 export default function Page() {
-  const router = useRouter(); // ใช้ router สำหรับเปลี่ยนหน้า
+  const router = useRouter();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [rows, setRows] = useState<any[]>([]); // เก็บข้อมูลบทความที่ได้จาก backend
-  const [openModal, setOpenModal] = useState(false); // เปิด/ปิด Modal
-  const [selectedPost, setSelectedPost] = useState<string | null>(null); // เก็บ ID หรือชื่อบทความที่เลือกจะลบ
-
+  const [rows, setRows] = useState<any[]>([]);
+  const [openModal, setOpenModal] = useState(false);
+  const [selectedPost, setSelectedPost] = useState<string | null>(null);
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
 
   const fetchPosts = async () => {
     try {
-      const response = await fetch(`http://localhost:3001/posts`); // เรียก API โดยไม่ต้องใช้ userId
+      const response = await fetch(
+        `http://localhost:3001/posts?userId=${userId}`
+      );
+      
       if (!response.ok) throw new Error("Failed to fetch posts");
-  
+
       const data = await response.json();
       setRows(data); // ตั้งค่าข้อมูลที่ดึงมา
     } catch (error) {
       console.error("Error fetching posts:", error);
-      setRows([]); // รีเซ็ตข้อมูลหากมีข้อผิดพลาด
+
+      setRows([]);
     }
   };
   
   useEffect(() => {
-    fetchPosts(); // เรียกฟังก์ชันเมื่อ component โหลด
+    const storedUserId = localStorage.getItem("userId"); // ดึง userId จาก localStorage
+    if (storedUserId) {
+      fetchPosts(storedUserId);
+    }
   }, []);
 
   const handleEdit = (post: any) => {
-    const queryString = `/editBlog?id=${post._id}&title=${encodeURIComponent(post.title)}&content=${encodeURIComponent(post.content)}&images=${encodeURIComponent(JSON.stringify(post.images))}&tags=${encodeURIComponent(post.tags.join(", "))}`;
-    
+    const queryString = `/editBlog?id=${post._id}&title=${encodeURIComponent(
+      post.title
+    )}&content=${encodeURIComponent(post.content)}&images=${encodeURIComponent(
+      JSON.stringify(post.images)
+    )}&tags=${encodeURIComponent(post.tags.join(", "))}`;
+
     router.push(queryString);
   };
 
   const handleDelete = async () => {
     if (selectedPost) {
       try {
-        const response = await fetch(`http://localhost:3001/posts/${selectedPost}`, {
-          method: "DELETE",
-        });
+        const response = await fetch(
+          `http://localhost:3001/posts/${selectedPost}`,
+          {
+            method: "DELETE",
+          }
+        );
 
         if (response.ok) {
           alert("ลบบทความสำเร็จ!");
-          setRows(rows.filter((row) => row._id !== selectedPost)); // เปลี่ยนเป็น _id
+          setRows(rows.filter((row) => row._id !== selectedPost));
         } else {
           throw new Error("Failed to delete post");
         }
@@ -79,7 +104,6 @@ export default function Page() {
     }
     setOpenModal(false);
   };
-
 
   return (
     <Container
@@ -91,9 +115,24 @@ export default function Page() {
     >
       <Sb isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
 
-      <Grid container spacing={2} sx={{ marginLeft: isSidebarOpen ? "240px" : "72px", marginTop: "72px", transition: "margin-left 0.3s" }}>
+      <Grid
+        container spacing={3} 
+        sx={{ 
+          marginLeft: isSidebarOpen ? "240px" : "72px",
+          marginTop: "72px",
+          transition: "margin-left 0.3s",
+          padding: "16px", // ปรับ padding ด้านใน
+          maxWidth: {
+            xs: "100%", // สำหรับหน้าจอมือถือ
+            sm: isSidebarOpen ? "calc(100% - 240px)" : "calc(100% - 72px)", // สำหรับหน้าจอเล็กขึ้นไป
+            md: isSidebarOpen ? "calc(100% - 240px)" : "calc(100% - 72px)", // สำหรับหน้าจอ Desktop
+          },
+        }}
+      >
         <Grid item md={12}>
-          <Typography sx={{ fontWeight: "bold", fontSize: 26, mb: 1 }}>เนื้อหาบทความ</Typography>
+          <Typography sx={{ fontWeight: "bold", fontSize: 26, mb: 1 }}>
+            เนื้อหาบทความ
+          </Typography>
         </Grid>
         <Grid item md={12}>
           <Box sx={{ border: "1px solid #C0C0C0" }} />
@@ -112,7 +151,12 @@ export default function Page() {
           <TableContainer component={Paper}>
             <Table sx={{ minWidth: 650 }} aria-label="simple table">
               <TableHead>
-                <TableRow>
+                <TableRow
+                  sx={{
+                    backgroundColor: "#dde7c7", // สีพื้นหลังของหัวตาราง
+                    "& th": { color: "#000000", fontWeight: "bold" }, // สีและน้ำหนักของข้อความ
+                  }}
+                >
                   <TableCell sx={{ fontWeight: "bold" }}>บทความ</TableCell>
                   <TableCell sx={{ fontWeight: "bold" }} align="right">
                     วันที่
@@ -124,30 +168,45 @@ export default function Page() {
                     ความคิดเห็น
                   </TableCell>
                   <TableCell sx={{ fontWeight: "bold" }} align="right">
-                    <EditOutlinedIcon />
+                    <BorderColorIcon />
                   </TableCell>
                   <TableCell sx={{ fontWeight: "bold" }} align="right">
-                    <DeleteOutlineOutlinedIcon />
+                    <DeleteIcon />
                   </TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
                 {rows.length > 0 ? (
                   rows.map((row) => (
-                    <TableRow key={row._id} sx={{ "&:last-child td, &:last-child th": { border: 0 } }}>
+                    <TableRow
+                      key={row._id}
+                      sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                    >
                       <TableCell component="th" scope="row">
-                        <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+                        <Box
+                          sx={{ display: "flex", alignItems: "center", gap: 2 }}
+                        >
                           <img
-                            src={row.images[0] || "https://via.placeholder.com/50"} // รูปภาพ (ถ้ามี)
+                            src={
+                              row.images[0] || "https://via.placeholder.com/50"
+                            }
                             alt={row.title || "-"}
-                            style={{ width: "50px", height: "50px", borderRadius: "8px" }}
+                            style={{
+                              width: "50px",
+                              height: "50px",
+                              borderRadius: "8px",
+                            }}
                           />
                           {row.title || "-"}
                         </Box>
                       </TableCell>
-                      <TableCell align="right">{new Date(row.createdAt).toLocaleDateString() || "-"}</TableCell>
+                      <TableCell align="right">
+                        {new Date(row.createdAt).toLocaleDateString() || "-"}
+                      </TableCell>
                       <TableCell align="right">{row.viewPost ?? "-"}</TableCell>
-                      <TableCell align="right">{row.commentPost ?? "-"}</TableCell>
+                      <TableCell align="right">
+                        {row.commentPost ?? "-"}
+                      </TableCell>
                       <TableCell align="right">
                         <Button
                           sx={{ color: "#FFD500" }}
@@ -162,7 +221,7 @@ export default function Page() {
                           sx={{ color: "red" }}
                           variant="text"
                           onClick={() => {
-                            setSelectedPost(row._id); // เปลี่ยนเป็น _id
+                            setSelectedPost(row._id);
                             setOpenModal(true);
                           }}
                         >
@@ -205,14 +264,23 @@ export default function Page() {
             borderRadius: "10px",
           }}
         >
-          <Typography id="modal-modal-title" variant="h6" component="h2" sx={{ mb: 2 }}>
+          <Typography
+            id="modal-modal-title"
+            variant="h6"
+            component="h2"
+            sx={{ mb: 2 }}
+          >
             ยืนยันการลบ
           </Typography>
           <Typography id="modal-modal-description" sx={{ mb: 2 }}>
             คุณต้องการลบบทความนี้หรือไม่?
           </Typography>
           <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-            <Button variant="outlined" color="primary" onClick={() => setOpenModal(false)}>
+            <Button
+              variant="outlined"
+              color="primary"
+              onClick={() => setOpenModal(false)}
+            >
               ยกเลิก
             </Button>
             <Button variant="contained" color="error" onClick={handleDelete}>

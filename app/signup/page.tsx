@@ -21,10 +21,13 @@ import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import Typography from "@mui/material/Typography";
 
 import Swal from "sweetalert2";
 
 import axios from "axios";
+
+
 
 export default function SignUp() {
   const [isFormSubmitted, setIsFormSubmitted] = useState(false);
@@ -49,6 +52,7 @@ export default function SignUp() {
       userName: "",
       email: "",
       password: "",
+      confirmpassword: "",
       gender: "",
       dateOfBirth: null,
     });
@@ -67,11 +71,20 @@ export default function SignUp() {
       ? dayjs(data.dateOfBirth).format("DD/MM/YYYY")
       : "ยังไม่กำหนด";
 
+    console.log({
+      userName: data.userName,
+      email: data.email,
+      password: data.password,
+      gender,
+      dateOfBirth,
+    });
+
     try {
-      const response = await axios.post("http://localhost:3001/user/register", {
+      const response = await axios.post("http://localhost:3001/auth/register", {
         userName: data.userName,
         email: data.email,
         password: data.password,
+        confirmpassword: data.confirmpassword,
         gender,
         dateOfBirth,
       });
@@ -114,7 +127,34 @@ export default function SignUp() {
             gap="2rem"
             padding="2rem"
           >
-            <div className="font-bold text-3xl">ลงทะเบียน</div>
+            <div
+              className="font-bold text-3xl text-center flex items-center justify-center "
+            >
+              สมัครสมาชิก
+            </div>
+
+            {/* ข้อมูลผู้ใช้ */}
+            {/* <Box
+              sx={{
+                backgroundColor: "#bfd8bd", // 
+                padding: "16px",
+                borderRadius: "8px", // ขอบมน
+                height: "50px",
+                width: "400px"
+              }}
+            >
+              <Typography
+                variant="h6"
+                sx={{
+                  fontSize: "16px",
+                  fontWeight: "bold",
+                  color: "#757575", 
+                  marginBottom: "8px",
+                }}
+              >
+                ข้อมูลผู้ใช้
+              </Typography>
+            </Box> */}
 
             {/* ชื่อ */}
             <div className="w-full">
@@ -182,6 +222,33 @@ export default function SignUp() {
               />
               {errors.password && (
                 <p className="text-red-500 text-sm">{`${errors.password.message}`}</p>
+              )}
+            </div>
+
+            {/* ยืนยันรหัสผ่าน */}
+            <div className="w-full">
+              <TextField
+                type="password"
+                id="confirmpassword"
+                label={
+                  <span>
+                      ยืนยันรหัสผ่าน <span style={{ color: "red" }}>*</span>
+                  </span>
+                }
+                variant="outlined"
+                fullWidth
+                {...register("confirmpassword", {
+                  required: "กรุณายืนยันรหัสผ่าน",
+                  minLength: {
+                    value: 6,
+                    message: "รหัสผ่านต้องมีอย่างน้อย 6 ตัว",
+                  },
+                  validate: (value) =>
+                    value === ("password") || "รหัสผ่านไม่ตรงกัน",
+                })}
+              />
+              {errors.confirmpassword && (
+                <p className="text-red-500 text-sm">{`${errors.confirmpassword.message}`}</p>
               )}
             </div>
 
@@ -300,6 +367,7 @@ export default function SignUp() {
               </Button>
 
             </div> */}
+
             <div className="grid grid-cols-2 justify-between items-center">
               <div className="btn1 flex items-center">
                 <Button
@@ -326,12 +394,12 @@ export default function SignUp() {
                 <Button
                   variant="contained"
                   sx={{
-                    backgroundColor: "#D22B2B",
+                    backgroundColor: "	#FFCC33",
                     "&:hover": {
-                      backgroundColor: "#D2042D",
+                      backgroundColor: "#FFCC66",
                     },
                     "&:focus": {
-                      backgroundColor: "#D2042D",
+                      backgroundColor: "#FFCC66",
                     },
                     "&.MuiButton-root": {
                       outline: "none",
@@ -344,6 +412,12 @@ export default function SignUp() {
                   รีเซ็ต
                 </Button>
               </div>
+            </div>
+            <div className="flex justify-center items-center gap-2 ">
+              <a className="text-right  ">เป็นสมาชิกแล้ว !</a>
+              <a href="http://localhost:3000/signin" className="text-blue-500">
+                เข้าสู่ระบบ
+              </a>
             </div>
           </Box>
         </CardContent>

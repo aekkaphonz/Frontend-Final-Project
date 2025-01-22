@@ -45,7 +45,9 @@ export default function Page() {
   }, []);
 
   return (
-    <Box sx={{ display: "flex", minHeight: "100vh", backgroundColor: "#f6f6e7" }}>
+
+    <Box sx={{ display: "flex", minHeight: "100vh", backgroundColor: "#f9f9f9" }}>
+
       {/* Navbar */}
       <Navbar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
 
@@ -61,29 +63,38 @@ export default function Page() {
           paddingBottom: 2,
         }}
       >
-        {/* Header */}
-        <Typography
-          variant="h4"
-          gutterBottom
+        <Box
           sx={{
-            fontWeight: "bold",
-            textAlign: "center",
-            color: "#94c379",
-            marginBottom: "30px",
-            borderBottom: "2px solid #c9dbc4",
-            display: "inline-block",
-            paddingBottom: "5px",
+            backgroundColor: "#f6f6e7",
+            borderRadius: 2,
+            border: "2px solid #c9dbc4",
+            padding: 3,
           }}
         >
-          บทความ
-        </Typography>
+          {/* Header */}
+          <Typography
+            variant="h5"
+            gutterBottom
+            sx={{
+              fontWeight: "bold",
+              textAlign: "center",
+              color: "#98c9a3",
+              marginBottom: "30px",
+              borderBottom: "2px solid #c9dbc4",
+              display: "inline-block",
+              paddingBottom: "5px",
+            }}
+          >
+            บทความทั้งหมด
+          </Typography>
 
-        {/* Regions Grid */}
-        <Grid container spacing={3} justifyContent="center">
-          {data.map((post) => (
-            <RegionCard key={post._id} post={post} />
-          ))}
-        </Grid>
+          {/* Regions Grid */}
+          <Grid container spacing={3} justifyContent="center">
+            {data.map((post) => (
+              <RegionCard key={post._id} post={post} />
+            ))}
+          </Grid>
+        </Box>
       </Box>
     </Box>
   );
@@ -127,7 +138,7 @@ function RegionCard({ post }: { post: Post }) {
               backgroundColor: "#ffffff",
               textAlign: "center",
               padding: "10px",
-              borderTop: "3px solid #94c379",
+              borderTop: "3px solid #bfd8bd",
             }}
           >
             <Typography
