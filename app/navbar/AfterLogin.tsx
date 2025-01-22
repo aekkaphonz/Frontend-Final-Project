@@ -10,12 +10,11 @@ import Link from "next/link";
 import AddIcon from "@mui/icons-material/Add";
 import SearchIcon from '@mui/icons-material/Search';
 import LogoutIcon from "@mui/icons-material/Logout";
-import { useAuth } from "@/app/contexts/AuthContext";
 
 
 
-function Sb({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: () => void }) {
-  const { setIsLoggedIn } = useAuth(); // ใช้ setIsLoggedIn เพื่อเปลี่ยนสถานะ
+function NavLogIn({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: () => void }) {
+  
 
   const themeColors = {
     primary: "#ffffff",
@@ -24,9 +23,6 @@ function Sb({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: () => v
     buttonGreen: "#77bfa3",
   };
 
-  const handleLogout = () => {
-    setIsLoggedIn(false); // ออกจากระบบ
-  };
 
   return (
     <>

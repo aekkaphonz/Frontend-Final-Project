@@ -3,7 +3,9 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import SettingNav from './components/settingNav';
+import Navbar from "@/app/navbar/AfterLogin";
 import EditPage from './components/settingPage';
+
 
 
 const UsersPage = () => {
@@ -14,7 +16,7 @@ const UsersPage = () => {
    
     
     <div>
-      <SettingNav />
+      <Navbar /> {/* แดงแต่รันได้ */}
       <EditPage/>
     </div>
   );

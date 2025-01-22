@@ -28,13 +28,13 @@ const themeColors = {
 export default function Navbar({ toggleSidebar }: { toggleSidebar?: () => void }) {
   return (
     <AppBar
-      position="static"
-      sx={{
-        backgroundColor: themeColors.primary,
+       position="fixed"
+        sx={{
+          backgroundColor: "#fff", // พื้นหลังสีขาว
           boxShadow: "0px 3px 3px rgba(0,0,0,0.1)",
           borderBottom: "1px solid #ddd",
           zIndex: 1300, // ให้อยู่เหนือ Sidebar
-      }}
+        }}
     >
       <Toolbar sx={{ justifyContent: "space-between" }}>
          {/* Logo และ Sidebar Toggle */}
