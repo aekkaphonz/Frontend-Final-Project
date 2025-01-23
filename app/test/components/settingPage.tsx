@@ -102,13 +102,13 @@ const EditPage = () => {
 
   return (
     <form>
-      <Card sx={{ maxWidth: 500, mx: "auto", mt: "10rem" }}>
+      <Card sx={{ maxWidth: 500, mx: "auto", mt: "6rem" }}>
         <CardContent>
           <Box
             display="flex"
             flexDirection="column"
             gap="2rem"
-            mt="2rem"
+            mt="0rem"
             padding="2rem"
             maxWidth="500px"
             mx="auto"
