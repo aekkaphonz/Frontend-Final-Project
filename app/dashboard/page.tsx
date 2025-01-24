@@ -28,52 +28,30 @@ const Item = styled(Paper)(({ theme }) => ({
 
 export default function Page() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-
-  // ตัวแปรรับข้อมูล
-  const [userId, setUserId] = useState(""); // เก็บ userId
-  const [nameAuthor, setNameAuthor] = useState(""); // เก็บชื่อผู้เขียน
-  const [subscriber, setSubscriber] = useState(0); // เก็บจำนวนผู้ติดตาม
-  const [postCount, setPostCount] = useState(0); // เก็บจำนวนโพสต์ทั้งหมด
-  const [viewAll, setViewAll] = useState(0); // จำนวนการอ่านทั้งหมด
-  const [commentCount, setCommentCount] = useState(0); // จำนวนความคิดเห็นทั้งหมด
-  const [like, setLike] = useState(0); // ไลค์ทั้งหมด
-  const [popularPosts, setPopularPosts] = useState([]); // บทความยอดนิยม
+  const [userName, setUserName] = useState("กำลังโหลด..."); // เก็บชื่อผู้ใช้งาน
+  const [profileImage, setProfileImage] = useState("");
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
 
-  const fetchDashboardData = async () => {
+  const fetchUserData = async () => {
     try {
-      if (!userId) throw new Error("User ID is not set");
-  
-      const userResponse = await fetch(`http://localhost:3001/user/${userId}`);
-      if (!userResponse.ok) throw new Error("Failed to fetch user data");
-      const userData = await userResponse.json();
-      setNameAuthor(userData.userName || "ไม่ทราบชื่อ");
-      setSubscriber(userData.subscriber || 0);
-  
-      const postResponse = await fetch(`http://localhost:3001/posts/count/${userId}`);
-      if (!postResponse.ok) throw new Error("Failed to fetch post count");
-      const postData = await postResponse.json();
-      setPostCount(postData.count || 0);
-  
-      console.log("Fetched dashboard data successfully");
+      const response = await fetch("http://localhost:3001/user/profile", {
+        credentials: "include", // ส่ง cookie
+      });
+      if (!response.ok) throw new Error("Failed to fetch user data");
+      const data = await response.json();
+      setUserName(data[0]?.userName || "ไม่ทราบชื่อ");
+      setProfileImage(data[0]?.profileImage || "https://via.placeholder.com/100");
     } catch (error) {
-      console.error("Error fetching dashboard data:",);
-      alert("ไม่สามารถโหลดข้อมูลแดชบอร์ดได้");
+      console.error("Error fetching user data:", error);
     }
   };
 
   useEffect(() => {
-    const currentUserId = "USER_ID_FROM_AUTH";
-    setUserId(currentUserId);
-  
-    if (currentUserId) {
-      fetchDashboardData();
-    }
-  }, [userId]);
-  
+    fetchUserData();
+  }, []);
 
   return (
     <Container
@@ -85,50 +63,91 @@ export default function Page() {
     >
       <Sb isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
 
-      <Grid container spacing={3} 
-        sx={{ 
+      <Grid
+        container
+        spacing={3}
+        sx={{
           marginLeft: isSidebarOpen ? "240px" : "72px",
           marginTop: "72px",
           transition: "margin-left 0.3s",
-          padding: "16px", // ปรับ padding ด้านใน
+          padding: "16px",
           maxWidth: {
-            xs: "100%", // สำหรับหน้าจอมือถือ
-            sm: isSidebarOpen ? "calc(100% - 240px)" : "calc(100% - 72px)", // สำหรับหน้าจอเล็กขึ้นไป
-            md: isSidebarOpen ? "calc(100% - 240px)" : "calc(100% - 72px)", // สำหรับหน้าจอ Desktop
+            xs: "100%",
+            sm: isSidebarOpen ? "calc(100% - 240px)" : "calc(100% - 72px)",
+            md: isSidebarOpen ? "calc(100% - 240px)" : "calc(100% - 72px)",
           },
         }}
       >
         <Grid item md={8}>
-          <Typography sx={{ fontWeight: "bold", fontSize: 26, mb: 1 }}>แดชบอร์ดผู้เขียน</Typography>
+          <Typography sx={{ fontWeight: "bold", fontSize: 26, mb: 1 }}>
+            แดชบอร์ดผู้เขียน
+          </Typography>
         </Grid>
 
         <Grid item md={12}>
           <Item sx={{ height: 150, textAlign: "start", padding: 3 }}>
-            <Typography sx={{ fontWeight: "bold", fontSize: 18, color: "black" }}>
+            <Typography
+              sx={{ fontWeight: "bold", fontSize: 18, color: "black" }}
+            >
               ข้อมูลช่องนักเขียน
             </Typography>
             <Box sx={{ display: "flex" }}>
               <Box sx={{ my: 1, mr: 8 }}>
-                <Typography sx={{ fontSize: 18, color: "black" }}>{nameAuthor}</Typography>
+                <Typography sx={{ fontSize: 18, color: "black" }}>
+                  {userName}
+                </Typography>
                 <Typography>ผู้เขียน/นักเขียน</Typography>
+                <Typography sx={{
+                  fontSize: 78,
+                  marginLeft: 24,
+                  marginTop: -15,
+                }}>
+                  <img
+                    src={profileImage || "https://via.placeholder.com/100"}
+                    alt="Profile Image"
+                    style={{
+                      width: "100px",
+                      height: "100%",
+                      borderRadius: "50%",
+                      objectFit: "cover",
+                    }}
+                  />
+                </Typography>
               </Box>
-                  
+
               <Box sx={{ my: 1, textAlign: "right", ml: "auto" }}>
-                <Typography sx={{ fontSize: 14, color: "gray" }}>จำนวนผู้ติดตาม</Typography>
-                <Typography sx={{ fontSize: 18, color: "black" }}>{subscriber}</Typography>
+                <Typography sx={{ fontSize: 14, color: "gray" }}>
+                  จำนวนผู้ติดตาม
+                </Typography>
+                <Typography sx={{ fontSize: 18, color: "black" }}>0</Typography>
               </Box>
             </Box>
           </Item>
         </Grid>
 
-
         <Grid item md={3}>
           <Item id="profile-item" sx={{ height: 150, textAlign: "start" }}>
-            <Typography sx={{ fontWeight: "bold", fontSize: 14, marginTop: 3.5, ml: 1, mt: 8 }}>
+            <Typography
+              sx={{
+                fontWeight: "bold",
+                fontSize: 14,
+                marginTop: 3.5,
+                ml: 1,
+                mt: 8,
+              }}
+            >
               จำนวนบทความ
             </Typography>
-            <Typography sx={{ textAlign: "start", fontWeight: "bold", fontSize: 22, ml: 1, color: "#577BC1" }}>
-              {postCount}
+            <Typography
+              sx={{
+                textAlign: "start",
+                fontWeight: "bold",
+                fontSize: 22,
+                ml: 1,
+                color: "#577BC1",
+              }}
+            >
+              0
             </Typography>
             <LibraryBooksIcon
               id="profile-icon"
@@ -145,11 +164,27 @@ export default function Page() {
 
         <Grid item md={3}>
           <Item id="profile-item" sx={{ height: 150, textAlign: "start" }}>
-            <Typography sx={{ fontWeight: "bold", fontSize: 14, marginTop: 3.5, ml: 1, mt: 8 }}>
+            <Typography
+              sx={{
+                fontWeight: "bold",
+                fontSize: 14,
+                marginTop: 3.5,
+                ml: 1,
+                mt: 8,
+              }}
+            >
               จำนวนการอ่าน
             </Typography>
-            <Typography sx={{ textAlign: "start", fontWeight: "bold", fontSize: 22, ml: 1, color: "#FFD65A" }}>
-              {viewAll}
+            <Typography
+              sx={{
+                textAlign: "start",
+                fontWeight: "bold",
+                fontSize: 22,
+                ml: 1,
+                color: "#FFD65A",
+              }}
+            >
+              0
             </Typography>
             <VisibilityOutlinedIcon
               id="profile-icon"
@@ -166,11 +201,27 @@ export default function Page() {
 
         <Grid item md={3}>
           <Item id="profile-item" sx={{ height: 150, textAlign: "start" }}>
-            <Typography sx={{ fontWeight: "bold", fontSize: 14, marginTop: 3.5, ml: 1, mt: 8 }}>
+            <Typography
+              sx={{
+                fontWeight: "bold",
+                fontSize: 14,
+                marginTop: 3.5,
+                ml: 1,
+                mt: 8,
+              }}
+            >
               คอมเมนท์
             </Typography>
-            <Typography sx={{ textAlign: "start", fontWeight: "bold", fontSize: 22, ml: 1, color: "#85A947" }}>
-              {commentCount}
+            <Typography
+              sx={{
+                textAlign: "start",
+                fontWeight: "bold",
+                fontSize: 22,
+                ml: 1,
+                color: "#85A947",
+              }}
+            >
+              0
             </Typography>
             <CommentIcon
               id="profile-icon"
@@ -187,11 +238,27 @@ export default function Page() {
 
         <Grid item md={3}>
           <Item id="profile-item" sx={{ height: 150, textAlign: "start" }}>
-            <Typography sx={{ fontWeight: "bold", fontSize: 14, marginTop: 3.5, ml: 1, mt: 8 }}>
+            <Typography
+              sx={{
+                fontWeight: "bold",
+                fontSize: 14,
+                marginTop: 3.5,
+                ml: 1,
+                mt: 8,
+              }}
+            >
               ไลค์ทั้งหมด
             </Typography>
-            <Typography sx={{ textAlign: "start", fontWeight: "bold", fontSize: 22, ml: 1, color: "#FF8383" }}>
-              {like}
+            <Typography
+              sx={{
+                textAlign: "start",
+                fontWeight: "bold",
+                fontSize: 22,
+                ml: 1,
+                color: "#FF8383",
+              }}
+            >
+              0
             </Typography>
             <ThumbUpIcon
               id="profile-icon"
@@ -203,29 +270,6 @@ export default function Page() {
                 filter: "drop-shadow(2px 4px 3px rgba(0, 0, 0, 0.3))",
               }}
             />
-          </Item>
-        </Grid>
-
-        <Grid item md={4}>
-          <Item sx={{ height: 450, textAlign: "start", padding: 3 }}>
-            <Typography sx={{ fontWeight: "bold", fontSize: 18, color: "black" }}>บทความยอดนิยม</Typography>
-            <Box sx={{ display: "flex", justifyContent: "space-between", my: 1 }}>
-              <Typography>บทความ</Typography>
-              <Typography>การอ่าน</Typography>
-            </Box>
-            {popularPosts.map((post, index) => (
-              <Box key={index} sx={{ display: "flex", alignItems: "center", height: 80 }}>
-                <Box
-                  component="img"
-                  src={post.image}
-                  alt={post.title}
-                  sx={{ width: 80, height: 64, my: 1, mx: 1 }}
-                />
-                <Typography sx={{ fontSize: 14 }}>{post.title}</Typography>
-                <Typography sx={{ fontSize: 14, ml: 21 }}>{post.viewCount}</Typography>
-                {/* ขึ้นแดงแต่รันได้ปกติ */}
-              </Box>
-            ))}
           </Item>
         </Grid>
       </Grid>

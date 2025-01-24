@@ -1,11 +1,10 @@
 "use client";
 
 import React from "react";
-import SearchIcon from "@mui/icons-material/Search"; 
-import AddIcon from "@mui/icons-material/Add"; 
-import { AppBar, Toolbar, Button, Box, TextField, InputAdornment, Typography} from "@mui/material";
+import { AppBar, Toolbar, Button, Box, TextField, InputAdornment, Typography } from "@mui/material";
 import Link from "next/link";
-
+import EditNoteOutlinedIcon from "@mui/icons-material/EditNoteOutlined";
+import AddIcon from '@mui/icons-material/Add';
 
 const themeColors = {
     primary: "#ffffff",
@@ -29,7 +28,7 @@ export default function HomeNavbar() {
                 <Box
                     sx={{
                         display: "flex",
-                        alignItems: "center", 
+                        alignItems: "center",
                         gap: "10px",
                     }}
                 >
@@ -57,13 +56,20 @@ export default function HomeNavbar() {
                     }}
                 >
                     {/* ไอคอนและข้อความ "สร้าง" */}
-                    <Box 
+                    <Box
                         sx={{
                             display: "flex",
                             alignItems: "center",
                             gap: "15px", // ระยะห่างระหว่างไอคอนและข้อความ
                         }}
                     >
+                        <AddIcon 
+                            sx={{ 
+                                color: themeColors.buttonGreen,
+                                fontWeight: "bold",
+                                boxShadow: "0px 2px 5px rgba(0,0,0,0.2)", // เพิ่มเงา
+                            }} 
+                        />
                         <Link href="/signin" >
                             <Typography
                                 variant="h6"
@@ -75,7 +81,7 @@ export default function HomeNavbar() {
                             </Typography>
                         </Link>
                     </Box>
-                    
+
                     {/* Signin Button */}
                     <Button
                         href="/signin"

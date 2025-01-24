@@ -10,14 +10,15 @@ import Link from "next/link";
 import AddIcon from "@mui/icons-material/Add";
 import SearchIcon from '@mui/icons-material/Search';
 import LogoutIcon from "@mui/icons-material/Logout";
+// import { useAuth } from "@/app/contexts/AuthContext";
 
 
 function NavLogIn({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: () => void }) {
   const settings = ['Profile', 'Dashboard', 'Logout'];
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
 
-  function Sb({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: () => void }) {
-  //const { setIsLoggedIn } = useAuth(); // ใช้ setIsLoggedIn เพื่อเปลี่ยนสถานะ
+function Sb({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: () => void }) {
+  // const { setIsLoggedIn } = useAuth(); // ใช้ setIsLoggedIn เพื่อเปลี่ยนสถานะ
 
   const themeColors = {
     primary: "#ffffff",
@@ -26,9 +27,9 @@ function NavLogIn({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: (
     buttonGreen: "#77bfa3",
   };
 
-  // const handleLogout = () => {
-  //   setIsLoggedIn(false); // ออกจากระบบ
-  // };
+  const handleLogout = () => {
+    setIsLoggedIn(false); // ออกจากระบบ
+  };
 
   return (
     <>
@@ -108,26 +109,25 @@ function NavLogIn({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: (
                 }}
               >
 
-                <Link href="/createBlog" >
-
-                  <Typography
-                    variant="h6"
-                    sx={{
-                      color: themeColors.text,
-                    }}
-                  >
-                    <AddIcon
-                      sx={{
-                        color: themeColors.buttonGreen,
-                        fontWeight: "bold",
-                        boxShadow: "0px 2px 5px rgba(0,0,0,0.2)", // เพิ่มเงา
-                        marginRight: "10px",
-                        marginLeft: "120px",
-                      }}
-                    />
-                    สร้าง
-                  </Typography>
-                </Link>
+                {/* ปุ่มเขียน */}
+                <Button href="/createBlog"
+                  sx={{
+                    color: "#ffffff",
+                    backgroundColor: "#77bfa3",
+                    "&:hover": {
+                      backgroundColor: "#F7F7F7",
+                      color: "#77bfa3"
+                    },
+                    borderRadius: "20px",
+                    padding: "6px 16px",
+                    textTransform: "none",
+                    fontWeight: "bold",
+                  }}
+                  variant="contained"
+                >
+                  <EditNoteOutlinedIcon sx={{ marginRight: 1 }} />
+                  เขียน
+                </Button>
 
                 <Link href="/" >
 
@@ -152,7 +152,7 @@ function NavLogIn({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: (
             {/* ปุ่ม Logout */}
             <Button
               variant="contained"
-              // onClick={handleLogout}
+              onClick={handleLogout}
               sx={{
                 backgroundColor: "#e91e63",
                 color: "#fff",
@@ -255,7 +255,7 @@ function NavLogIn({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: (
           </Link>
         </List>
       </Box>
-      
+
     </>
   );
 }

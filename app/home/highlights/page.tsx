@@ -12,6 +12,10 @@ import {
 } from "@mui/material";
 import { useRouter } from "next/navigation";
 import Navbar from "@/app/navbar/page";
+import AfterLogin from "@/app/navbar/AfterLogin"
+import { useAuth } from "@/app/context/AuthProvider";
+
+
 
 interface Post {
   _id: string;
@@ -21,6 +25,7 @@ interface Post {
 }
 
 export default function Page() {
+  const { isLoggedIn } = useAuth();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [data, setData] = useState<Post[]>([]);
 
@@ -49,7 +54,7 @@ export default function Page() {
     <Box sx={{ display: "flex", minHeight: "100vh", backgroundColor: "#f9f9f9" }}>
 
       {/* Navbar */}
-      <Navbar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
+      {isLoggedIn ? <AfterLogin /> : <Navbar />}
 
       {/* Main Content */}
       <Box

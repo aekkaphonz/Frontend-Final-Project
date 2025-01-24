@@ -13,7 +13,8 @@ import {
   IconButton,
   Typography,
   Tooltip,
-  TextField
+  TextField,
+  Button
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import LogoutIcon from "@mui/icons-material/Logout";
@@ -24,6 +25,8 @@ import CollectionsBookmarkIcon from "@mui/icons-material/CollectionsBookmark";
 import InsertChartIcon from "@mui/icons-material/InsertChart";
 import SentimentSatisfiedAltIcon from '@mui/icons-material/SentimentSatisfiedAlt';
 import HomeIcon from '@mui/icons-material/Home';
+import EditNoteOutlinedIcon from "@mui/icons-material/EditNoteOutlined";
+import { useAuth } from "@/app/context/AuthProvider";
 
 
 const themeColors = {
@@ -34,6 +37,25 @@ const themeColors = {
 };
 
 function Sb({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: () => void }) {
+
+  const { user, logout } = useAuth();
+  const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
+  const settings = ["Profile", "Dashboard", "Logout"];
+
+  const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorElUser(event.currentTarget);
+  };
+
+  const handleCloseUserMenu = () => {
+    setAnchorElUser(null);
+  };
+
+  const handleMenuClick = async (setting: string) => {
+    if (setting === "Logout") {
+      await logout(); // เรียกใช้ฟังก์ชัน logout
+    }
+    handleCloseUserMenu(); // ปิดเมนู
+  };
   return (
     <>
       {/* Navbar */}
@@ -56,7 +78,7 @@ function Sb({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: () => v
             >
               <MenuIcon />
             </IconButton>
-            <Link href="/home/highlights" passHref>
+            <Link href="http://localhost:3000/home/highlights" >
               <img
                 src="/images/logo-blogs.png"
                 alt="Cleaning Illustration"
@@ -64,26 +86,44 @@ function Sb({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: () => v
               />
             </Link>
           </Box>
-
-          {/* Search Bar */}
-        <Box sx={{ flexGrow: 1, mx: 2, display: "flex", justifyContent: "center" }}>
-            <TextField
-              placeholder="ค้นหา"
-              variant="outlined"
-              size="small"
+          <Box sx={{ display: "flex", alignItems: "center", gap: "20px" }}>
+            {/* ปุ่มเขียน */}
+            <Button href="/createBlog"
               sx={{
-                width: "60%",
-                backgroundColor: "#f6f6f6",
+                color: "#ffffff",
+                backgroundColor: "#77bfa3",
+                "&:hover": {
+                  backgroundColor: "#F7F7F7",
+                  color: "#77bfa3"
+                },
+                borderRadius: "20px",
+                padding: "6px 16px",
+                textTransform: "none",
+                fontWeight: "bold",
               }}
-              InputProps={{
-                endAdornment: (
-                  <IconButton>
-                    <SearchIcon />
-                  </IconButton>
-                ),
-              }}
-            />
-        </Box>
+            >
+            </Button>
+          </Box>
+
+            {/* Search Bar */}
+          <Box sx={{ flexGrow: 1, mx: 2, display: "flex", justifyContent: "center" }}>
+              <TextField
+                placeholder="ค้นหา"
+                variant="outlined"
+                size="small"
+                sx={{
+                  width: "60%",
+                  backgroundColor: "#f6f6f6",
+                }}
+                InputProps={{
+                  endAdornment: (
+                    <IconButton>
+                      <SearchIcon />
+                    </IconButton>
+                  ),
+                }}
+              />
+          </Box>
 
           {/* ปุ่มไอคอน "สร้าง" และ "ออกจากระบบ" */}
           <Box sx={{ display: "flex", alignItems: "center", gap: "16px" }}>
@@ -119,6 +159,7 @@ function Sb({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: () => v
             </Link>
           </Box>
         </Toolbar>
+
       </AppBar>
 
       {/* Sidebar */}
