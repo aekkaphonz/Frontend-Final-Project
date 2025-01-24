@@ -287,21 +287,6 @@ export default function ProfilePage() {
                   border: "2px solid #91c7a7",
                 }}
               />
-              <Button
-                variant="outlined"
-                component="label"
-                sx={{
-                  marginTop: "1rem",
-                  color: "#77bfa3",
-                  borderColor: "#77bfa3",
-                  textTransform: "none",
-                  "&:hover": {
-                    borderColor: "#77bfa3",
-                  },
-                }}
-              >
-                เลือกรูปโปรไฟล์
-              </Button>
             </Box>
 
             {/* แบ่งส่วน) */}

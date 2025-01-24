@@ -193,7 +193,7 @@ export default function SidebarLayout() {
                     boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
                     textAlign: "center", // จัดข้อความให้อยู่ตรงกลาง
                     position: "relative",
-                    top: "-100px", // เลื่อนกล่องขึ้น
+                    top: "-30px", // เลื่อนกล่องขึ้น
                 }}
             >
                 <Link href="/createBlog" passHref>  
@@ -233,7 +233,7 @@ export default function SidebarLayout() {
                     boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
                     textAlign: "center", // จัดข้อความให้อยู่ตรงกลาง
                     position: "relative",
-                    top: "-100px", // เลื่อนกล่องขึ้น
+                    top: "-30px", // เลื่อนกล่องขึ้น
                 }}
             >
                 <Link href="/blog" passHref>
