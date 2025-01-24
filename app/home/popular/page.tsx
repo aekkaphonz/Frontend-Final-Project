@@ -27,7 +27,7 @@ const themeColors = {
 };
 
 export default function PopularPage() {
-    const { isLoggedIn } = useAuth();
+  const { isLoggedIn } = useAuth();
   const [posts, setPosts] = useState<any[]>([]); // เก็บข้อมูลโพสต์
   const [loading, setLoading] = useState(true); // สถานะการโหลดข้อมูล
   const [page, setPage] = useState(1); // หน้าปัจจุบัน
@@ -41,16 +41,16 @@ export default function PopularPage() {
   const fetchPosts = async (pageNumber = 1) => {
     setLoading(true);
     try {
-        const response = await axios.get(
-            `https://jsonplaceholder.typicode.com/posts?_page=${pageNumber}&_limit=5`
-        );
-        setPosts((prevPosts) => [...prevPosts, ...response.data]);
+      const response = await axios.get(
+        `https://jsonplaceholder.typicode.com/posts?_page=${pageNumber}&_limit=5`
+      );
+      setPosts((prevPosts) => [...prevPosts, ...response.data]);
     } catch (error) {
-        console.error("Error fetching posts:", error);
+      console.error("Error fetching posts:", error);
     } finally {
-        setLoading(false);
+      setLoading(false);
     }
-};
+  };
 
 
   useEffect(() => {
@@ -83,15 +83,15 @@ export default function PopularPage() {
         <Typography
           variant="h5"
           gutterBottom
-              sx={{
-                fontWeight: "bold",
-                textAlign: "center",
-                color: "#98c9a3",
-                marginBottom: "20px",
-                borderBottom: "2px solid #c9dbc4",
-                display: "inline-block",
-                paddingBottom: "5px",
-              }}
+          sx={{
+            fontWeight: "bold",
+            textAlign: "center",
+            color: "#98c9a3",
+            marginBottom: "20px",
+            borderBottom: "2px solid #c9dbc4",
+            display: "inline-block",
+            paddingBottom: "5px",
+          }}
         >
           ยอดนิยม
         </Typography>

@@ -19,7 +19,7 @@ import { useRouter } from "next/navigation";
 
 
 function NavLogIn({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: () => void }) {
-  const router = useRouter(); 
+  const router = useRouter();
   const { user, logout } = useAuth();
   const settings = ['Profile', 'Dashboard', 'Logout'];
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
@@ -155,9 +155,13 @@ function NavLogIn({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: (
             <Box sx={{ flexGrow: 0 }}>
               <Tooltip title="Profile">
                 <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                  <Avatar alt={user?.userName || "Guest"} />
+                  <Avatar
+                    alt={user?.userName || "Guest"}
+                    src={user?.profileImage || "/default-profile.png"} // เพิ่ม src เพื่อแสดงรูปโปรไฟล์
+                  />
                 </IconButton>
               </Tooltip>
+
               <Menu
                 sx={{ mt: "45px" }}
                 id="menu-appbar"
