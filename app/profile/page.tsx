@@ -1,11 +1,12 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { styled } from "@mui/material/styles";
-import { Container, Grid, Paper, Typography, Box, Avatar, IconButton } from "@mui/material";
+import { Container, Grid, Paper, Typography, Box, Avatar } from "@mui/material";
 import MaleIcon from "@mui/icons-material/Male";
 import CakeIcon from "@mui/icons-material/Cake";
 import EmailIcon from "@mui/icons-material/Email";
+import axios from "axios";
 import Sb from "@/app/sidebarAuther/page";
 
 const Item = styled(Paper)(({ theme }) => ({
@@ -18,8 +19,20 @@ const Item = styled(Paper)(({ theme }) => ({
   color: theme.palette.text.secondary,
 }));
 
+type User = {
+  _id: string;
+  email: string;
+  userName: string;
+  gender: string;
+  dateOfBirth: string;
+  profileImage: string;
+};
+
 export default function ProfilePage() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
@@ -36,16 +49,43 @@ export default function ProfilePage() {
     return age;
   };
 
-  // ข้อมูลตัวอย่าง
-  const userData = {
-    avatar: "https://via.placeholder.com/150",
-    name: "John Doe",
-    email: "johndoe@example.com",
-    gender: "Male",
-    birthDate: "1990-05-15",
+  const fetchUserData = async () => {
+    try {
+      const response = await axios.get<User>("http://localhost:3001/user/profile", {
+        withCredentials: true,
+      });
+      console.log("API Response:", response.data);
+      if (response.data) {
+        setUser(response.data); 
+      } else {
+        setError("No user data found");
+      }
+    } catch (err) {
+      console.error("Error fetching user data:", err);
+      setError("Failed to fetch user data");
+    } finally {
+      setLoading(false);
+    }
   };
+  
 
-  const age = calculateAge(userData.birthDate);
+  useEffect(() => {
+    fetchUserData();
+  }, []);
+
+  if (loading) {
+    return <p>Loading...</p>;
+  }
+
+  if (error) {
+    return <p>{error}</p>;
+  }
+
+  if (!user) {
+    return <p>No user data available</p>;
+  }
+
+  const age = calculateAge(user.dateOfBirth);
 
   return (
     <Container
@@ -65,16 +105,16 @@ export default function ProfilePage() {
         <Grid item md={4}>
           <Item>
             <Avatar
-              alt={userData.name}
-              src={userData.avatar}
+              alt={user.userName}
+              src={user.profileImage || "https://via.placeholder.com/150"}
               sx={{ width: 150, height: 150, margin: "0 auto" }}
             />
             <Typography sx={{ fontSize: 18, fontWeight: "bold", mt: 2 }}>
-              {userData.name}
+              {user.userName}
             </Typography>
             <Typography sx={{ color: "gray", fontSize: 14 }}>
               <EmailIcon sx={{ fontSize: 18, mr: 1 }} />
-              {userData.email}
+              {user.email}
             </Typography>
           </Item>
         </Grid>
@@ -84,11 +124,11 @@ export default function ProfilePage() {
             <Typography sx={{ fontWeight: "bold", fontSize: 20, mb: 2 }}>ข้อมูลส่วนตัว</Typography>
             <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
               <MaleIcon sx={{ color: "blue", mr: 2 }} />
-              <Typography>เพศ: {userData.gender}</Typography>
+              <Typography>เพศ: {user.gender}</Typography>
             </Box>
             <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
               <CakeIcon sx={{ color: "pink", mr: 2 }} />
-              <Typography>วันเกิด: {userData.birthDate}</Typography>
+              <Typography>วันเกิด: {user.dateOfBirth}</Typography>
             </Box>
             <Box sx={{ display: "flex", alignItems: "center" }}>
               <Typography>อายุ: {age} ปี</Typography>
