@@ -10,7 +10,8 @@ import Link from "next/link";
 import AddIcon from "@mui/icons-material/Add";
 import SearchIcon from '@mui/icons-material/Search';
 import LogoutIcon from "@mui/icons-material/Logout";
-// import { useAuth } from "@/app/contexts/AuthContext";
+import BorderColorIcon from '@mui/icons-material/BorderColor';
+import { useAuth } from "@/app/contexts/AuthContext";
 
 
 function NavLogIn({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: () => void }) {
@@ -18,7 +19,7 @@ function NavLogIn({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: (
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
 
 function Sb({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: () => void }) {
-  // const { setIsLoggedIn } = useAuth(); // ใช้ setIsLoggedIn เพื่อเปลี่ยนสถานะ
+   const { setIsLoggedIn } = useAuth(); // ใช้ setIsLoggedIn เพื่อเปลี่ยนสถานะ
 
   const themeColors = {
     primary: "#ffffff",
@@ -125,7 +126,7 @@ function Sb({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: () => v
                   }}
                   variant="contained"
                 >
-                  <EditNoteOutlinedIcon sx={{ marginRight: 1 }} />
+                  <BorderColorIcon sx={{ marginRight: 1 }} />
                   เขียน
                 </Button>
 
