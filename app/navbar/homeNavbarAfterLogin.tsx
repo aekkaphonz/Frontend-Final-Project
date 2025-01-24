@@ -1,3 +1,4 @@
+
 "use client";
 
 import React from "react";
@@ -36,7 +37,7 @@ export default function HomeNavbarAfterLogin() {
       router.push("/dashboard"); // เปลี่ยนเส้นทางไปยัง /dashboard
     }else if (setting === "Profile") {
       router.push("http://localhost:3000/test"); 
-   }
+    }
     handleCloseUserMenu(); // ปิดเมนู
   };
   return (
@@ -135,3 +136,4 @@ export default function HomeNavbarAfterLogin() {
     </AppBar>
   );
 }
+

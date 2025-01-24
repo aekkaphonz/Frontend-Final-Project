@@ -3,23 +3,19 @@
 
 import React from "react";
 import { Box, Button, Container, Typography, Grid, Card, CardContent } from "@mui/material";
-// import Navbar from "@/app/navbar/homeNavbarAfterLogin";
-// import Navbar from "@/app/navbar/homeNavbar";
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import Link from "next/link";
+import Navbar from "@/app/navbar/page";
+import AfterLogin from "@/app/navbar/AfterLogin"
 import { useAuth } from "@/app/context/AuthProvider";
-import HomeNavbarAfterLogin from "@/app/navbar/homeNavbarAfterLogin";
-import HomeNavbar from "@/app/navbar/homeNavbar";
-
-
 
 
 export default function Home() {
   const { isLoggedIn } = useAuth();
   return (
 
-    <>{isLoggedIn ? <HomeNavbarAfterLogin /> : <HomeNavbar />}
-    
+    <>
+      {isLoggedIn ? <AfterLogin /> : <Navbar />}
       <Container
         sx={{
           display: "flex",

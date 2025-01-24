@@ -16,14 +16,18 @@ import MenuItem from '@mui/material/MenuItem';
 import { useAuth } from "@/app/context/AuthProvider";
 import EditNoteOutlinedIcon from "@mui/icons-material/EditNoteOutlined";
 import { useRouter } from "next/navigation";
+import PersonIcon from '@mui/icons-material/Person';
+import BorderColorIcon from '@mui/icons-material/BorderColor';
+
 
 
 function NavLogIn({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: () => void }) {
-  const router = useRouter();
-  const { user, logout } = useAuth();
   const settings = ['Profile', 'Dashboard', 'Logout'];
+    const { user, logout } = useAuth();
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
 
+function Sb({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: () => void }) {
+  //const { setIsLoggedIn } = useAuth(); // ใช้ setIsLoggedIn เพื่อเปลี่ยนสถานะ
 
   const themeColors = {
     primary: "#ffffff",
@@ -48,7 +52,7 @@ function NavLogIn({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: (
       router.push("/dashboard"); // เปลี่ยนเส้นทางไปยัง /dashboard
     }else if (setting === "Profile") {
        router.push("http://localhost:3000/test"); 
-    }
+     }
     handleCloseUserMenu(); // ปิดเมนู
   };
 
@@ -146,45 +150,51 @@ function NavLogIn({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: (
                   }}
                   variant="contained"
                 >
-                  <EditNoteOutlinedIcon sx={{ marginRight: 1 }} />
+                  <BorderColorIcon sx={{ marginRight: 1 }} />
                   เขียน
                 </Button>
 
+                <Link href="/" >
+
+                  <Typography
+                    variant="h6"
+                    sx={{
+                      color: themeColors.text,
+                    }}
+                  >
+                    <LogoutIcon
+                      sx={{
+                        color: "#e91e63",
+                        fontWeight: "bold",
+                        marginLeft: "20px",
+                      }}
+                    />
+                    ออกจากระบบ
+                  </Typography>
+                </Link>
               </Box>
             </Typography>
-            <Box sx={{ flexGrow: 0 }}>
-              <Tooltip title="Profile">
-                <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                  <Avatar
-                    alt={user?.userName || "Guest"}
-                    src={user?.profileImage || "/default-profile.png"} // เพิ่ม src เพื่อแสดงรูปโปรไฟล์
-                  />
-                </IconButton>
-              </Tooltip>
-
-              <Menu
-                sx={{ mt: "45px" }}
-                id="menu-appbar"
-                anchorEl={anchorElUser}
-                anchorOrigin={{
-                  vertical: "top",
-                  horizontal: "right",
-                }}
-                keepMounted
-                transformOrigin={{
-                  vertical: "top",
-                  horizontal: "right",
-                }}
-                open={Boolean(anchorElUser)}
-                onClose={handleCloseUserMenu}
-              >
-                {settings.map((setting) => (
-                  <MenuItem key={setting} onClick={() => handleMenuClick(setting)}>
-                    <Typography textAlign="center">{setting}</Typography>
-                  </MenuItem>
-                ))}
-              </Menu>
-            </Box>
+            {/* ปุ่ม Logout */}
+            <Button
+              variant="contained"
+              // onClick={handleLogout}
+              sx={{
+                backgroundColor: "#e91e63",
+                color: "#fff",
+                fontWeight: "bold",
+                textTransform: "none",
+                borderRadius: "8px",
+                display: "flex",
+                alignItems: "center",
+                gap: "8px",
+                "&:hover": {
+                  backgroundColor: "#ec407a",
+                },
+              }}
+            >
+              <LogoutIcon />
+              Logout
+            </Button>
           </Box>
         </Toolbar>
       </AppBar>
@@ -268,11 +278,34 @@ function NavLogIn({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: (
               {isOpen && <ListItemText primary="มาเเรง" sx={{ color: "#000" }} />}
             </ListItem>
           </Link>
+          <Tooltip title="โปรไฟล์" placement="right">
+            <Link href="http://localhost:3000/test" passHref>
+              <ListItem
+                component="button"
+                sx={{
+                  display: "flex",
+                  flexDirection: isOpen ? "row" : "column",
+                  alignItems: "center",
+                  justifyContent: isOpen ? "flex-start" : "center",
+                  padding: isOpen ? "12px 20px" : "12px 0",
+                  "&:hover": {
+                    backgroundColor: "rgba(0, 0, 0, 0.08)",
+                  },
+                }}
+              >
+                <ListItemIcon sx={{ justifyContent: "center", color: "#000", minWidth: "40px" }}>
+                  <PersonIcon />
+                </ListItemIcon>
+                {isOpen && <ListItemText primary="โปรไฟล์" sx={{ color: "#000" }} />}
+              </ListItem>
+            </Link>
+          </Tooltip>
         </List>
       </Box>
 
     </>
   );
+}
 }
 
 export default NavLogIn;

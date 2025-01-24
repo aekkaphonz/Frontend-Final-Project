@@ -9,7 +9,7 @@ import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
 import LibraryBooksIcon from "@mui/icons-material/LibraryBooks";
 import CommentIcon from "@mui/icons-material/Comment";
 import ThumbUpIcon from "@mui/icons-material/ThumbUp";
-
+import Navbar from "@/app/homeMember/navbarhouse";
 import Sb from "@/app/sidebarAuther/page";
 
 const Item = styled(Paper)(({ theme }) => ({

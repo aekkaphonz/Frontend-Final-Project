@@ -126,6 +126,23 @@ export default function Page() {
           },
         }}
       >
+        <Grid item md={12}>
+          <Typography sx={{ fontWeight: "bold", fontSize: 26, mb: 1 }}>
+            เนื้อหาบทความ
+          </Typography>
+        </Grid>
+        <Grid item md={12}>
+          <Box sx={{ border: "1px solid #C0C0C0" }} />
+        </Grid>
+
+        <Grid item md={12}>
+          <Box sx={{ display: "flex", justifyContent: "end" }}>
+            <Button variant="text">
+              <FilterAltOutlinedIcon />
+              ตัวกรอง
+            </Button>
+          </Box>
+        </Grid>
 
         <Grid item md={12}>
           <TableContainer component={Paper}>
@@ -133,7 +150,7 @@ export default function Page() {
               <TableHead>
                 <TableRow
                   sx={{
-                    backgroundColor: "#dde7c7", // สีพื้นหลังของหัวตาราง
+                    backgroundColor: "#ccffe2", // สีพื้นหลังของหัวตาราง
                     "& th": { color: "#000000", fontWeight: "bold" }, // สีและน้ำหนักของข้อความ
                   }}
                 >
