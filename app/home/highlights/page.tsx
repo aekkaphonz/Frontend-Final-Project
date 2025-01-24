@@ -88,6 +88,7 @@ export default function Page() {
         handleSearch={handleSearch}
       />
 
+
       {/* Main Content */}
       <Box
         component="main"

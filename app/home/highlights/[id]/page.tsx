@@ -119,7 +119,7 @@ export default function Page() {
  const handleAddComment = async () => {
   if (newComment.trim() && data?._id) {
     try {
-      const userId = "678db93685adc7405e8fd97"; // ระบุ userId (ในระบบจริงควรดึงจาก context หรือ state)
+      const userId = "507f1f77bcf86cd799439011"; // แก้ไขเป็น ObjectId ที่ถูกต้อง
       const res = await fetch("http://localhost:3001/comments/addComment", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -130,17 +130,21 @@ export default function Page() {
         }),
       });
 
-      if (!res.ok) throw new Error("Failed to add comment");
+      if (!res.ok) {
+        const errorMessage = await res.text();
+        console.error("Error:", errorMessage);
+        throw new Error("Failed to add comment");
+      }
 
       const addedComment = await res.json();
       setComments((prevComments) => [
         ...prevComments,
         {
           id: addedComment._id,
-          name: "Anonymous", // หรือแสดงชื่อผู้ใช้จริงจาก Backend
-          message: addedComment.comment,
-          timestamp: new Date(addedComment.createdAt).toLocaleString(),
-          replies: addedComment.replies || [],
+          name: "Anonymous",
+          message: newComment,
+          timestamp: new Date().toLocaleString(),
+          replies: [],
         },
       ]);
       setNewComment("");
@@ -149,6 +153,7 @@ export default function Page() {
     }
   }
 };
+
 
 async function deleteComment(commentId: string) {
   const res = await fetch(`http://localhost:3001/comments/${commentId}`, {
@@ -205,13 +210,31 @@ async function toggleLike(postId: string) {
     setIsSidebarOpen(!isSidebarOpen);
   };
 
-  const handleEditComment = (commentId: number, newMessage: string) => {
-    const updatedComments = comments.map((comment) =>
-      comment.id === commentId ? { ...comment, message: newMessage } : comment
-    );
-    setComments(updatedComments);
-    setEditingCommentId(null);
+  const handleEditComment = async (commentId: number, newMessage: string) => {
+    if (!newMessage.trim()) return;
+  
+    try {
+      const res = await fetch(`http://localhost:3001/comments/${commentId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ comment: newMessage }), // ใช้คีย์ "comment" ตามโครงสร้าง Backend
+      });
+  
+      if (!res.ok) throw new Error("Failed to edit comment");
+  
+      // อัปเดตใน State เฉพาะคอมเมนต์ที่แก้ไขสำเร็จจาก Backend
+      setComments((prevComments) =>
+        prevComments.map((comment) =>
+          comment.id === commentId ? { ...comment, message: newMessage } : comment
+        )
+      );
+  
+      setEditingCommentId(null); // ปิดโหมดแก้ไข
+    } catch (error) {
+      console.error("Error updating comment:", error);
+    }
   };
+  
 
   const handleEditReply = (commentId: number, replyId: number, newMessage: string) => {
     const updatedComments = comments.map((comment) =>

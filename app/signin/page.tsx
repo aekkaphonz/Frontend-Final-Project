@@ -22,25 +22,23 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import axios from "axios";
 
+
 function signin() {
   const [isFormSubmitted, setIsFormSubmitted] = useState(false);
 
   const router = useRouter();
-  // useEffect(() => {
-  //   if (isFormSubmitted) {
-  //     router.push("/");
-  //   }
-  // }, [isFormSubmitted, router]);
 
   const { register, handleSubmit, control } = useForm();
 
   const handleGoogleLogin = async () => {
     try {
+     
       window.location.href = "http://localhost:3001/auth/google";
     } catch (error) {
       console.error("Login failed:", error);
     }
   };
+  
 
   const handleFormSubmit = async (formData: any) => {
     try {
@@ -51,8 +49,10 @@ function signin() {
           headers: {
             "Content-Type": "application/json",
           },
+          withCredentials: true,
         }
       );
+      
 
       console.log("Response data:", response.data);
       console.log("Response status:", response.status);
@@ -94,13 +94,11 @@ function signin() {
             maxWidth="500px"
             mx="auto"
           >
-
             <div
               className="font-bold text-3xl text-center flex items-center justify-center "
             >
               เข้าสู่ระบบ
             </div>
-
             
             <div className="w-full">
               <TextField
@@ -156,7 +154,7 @@ function signin() {
               <div className="text-right">
                 <a 
                   href="http://localhost:3000/signup" 
-                  className="text-red-500 underline" // เส้นใต้
+                  className="text-red-500 underline" 
                 >
                   ลืมรหัสผ่าน? 
                 </a>

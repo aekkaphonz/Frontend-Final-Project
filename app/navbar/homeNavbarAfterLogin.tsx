@@ -1,12 +1,16 @@
 "use client";
 
 import React from "react";
-import SearchIcon from "@mui/icons-material/Search"; 
-import AddIcon from "@mui/icons-material/Add"; 
+import SearchIcon from "@mui/icons-material/Search";
+import AddIcon from "@mui/icons-material/Add";
 import LogoutIcon from "@mui/icons-material/Logout"; // ไอคอน Logout
-import { AppBar, Toolbar, Button, Box, TextField, Typography } from "@mui/material";
+import { AppBar, Toolbar, Button, Box, TextField, Typography, Tooltip } from "@mui/material";
 import Link from "next/link";
-import { useAuth } from "@/app/contexts/AuthContext"; 
+
+import IconButton from '@mui/material/IconButton';
+import Avatar from '@mui/material/Avatar';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
 
 const themeColors = {
   primary: "#ffffff",
@@ -16,10 +20,17 @@ const themeColors = {
 };
 
 export default function HomeNavbarAfterLogin() {
-  const { setIsLoggedIn } = useAuth(); // ใช้ setIsLoggedIn เพื่อเปลี่ยนสถานะ
+  const settings = ['Profile', 'Dashboard', 'Logout'];
 
-  const handleLogout = () => {
-    setIsLoggedIn(false); // ออกจากระบบ
+  const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
+
+
+  const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorElUser(event.currentTarget);
+  };
+
+  const handleCloseUserMenu = () => {
+    setAnchorElUser(null);
   };
 
   return (
@@ -36,7 +47,7 @@ export default function HomeNavbarAfterLogin() {
         <Box
           sx={{
             display: "flex",
-            alignItems: "center", 
+            alignItems: "center",
             gap: "10px",
           }}
         >
@@ -64,20 +75,14 @@ export default function HomeNavbarAfterLogin() {
           }}
         >
           {/* ปุ่มสร้าง */}
-          <Box 
+          <Box
             sx={{
               display: "flex",
               alignItems: "center",
               gap: "15px", // ระยะห่างระหว่างไอคอนและข้อความ
             }}
           >
-            <AddIcon 
-              sx={{ 
-                color: themeColors.buttonGreen,
-                fontWeight: "bold",
-                boxShadow: "0px 2px 5px rgba(0,0,0,0.2)", // เพิ่มเงา
-              }} 
-            />
+
             <Link href="/createBlog" >
               <Typography
                 variant="h6"
@@ -85,32 +90,48 @@ export default function HomeNavbarAfterLogin() {
                   color: themeColors.text,
                 }}
               >
+                <AddIcon
+                  sx={{
+                    color: themeColors.buttonGreen,
+                    fontWeight: "bold",
+                    boxShadow: "0px 2px 5px rgba(0,0,0,0.2)", // เพิ่มเงา
+                    marginRight: "10px ",
+                  }}
+                />
                 สร้าง
               </Typography>
             </Link>
           </Box>
 
-          {/* ปุ่ม Logout */}
-          <Button
-            variant="contained"
-            onClick={handleLogout}
-            sx={{
-              backgroundColor: "#e91e63",
-              color: "#fff",
-              fontWeight: "bold",
-              textTransform: "none",
-              borderRadius: "8px",
-              display: "flex",
-              alignItems: "center",
-              gap: "8px",
-              "&:hover": {
-                backgroundColor: "#ec407a",
-              },
-            }}
-          >
-            <LogoutIcon />
-            Logout
-          </Button>
+          <Box sx={{ flexGrow: 0 }}>
+            <Tooltip title="Profile">
+              <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+                <Avatar />
+              </IconButton>
+            </Tooltip>
+            <Menu
+              sx={{ mt: '45px' }}
+              id="menu-appbar"
+              anchorEl={anchorElUser}
+              anchorOrigin={{
+                vertical: 'top',
+                horizontal: 'right',
+              }}
+              keepMounted
+              transformOrigin={{
+                vertical: 'top',
+                horizontal: 'right',
+              }}
+              open={Boolean(anchorElUser)}
+              onClose={handleCloseUserMenu}
+            >
+              {settings.map((setting) => (
+                <MenuItem key={setting} onClick={handleCloseUserMenu}>
+                  <Typography sx={{ textAlign: 'center' }}>{setting}</Typography>
+                </MenuItem>
+              ))}
+            </Menu>
+          </Box>
         </Box>
       </Toolbar>
     </AppBar>
