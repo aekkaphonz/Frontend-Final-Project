@@ -9,7 +9,23 @@ import {
   CardMedia,
   CardContent,
   CardActionArea,
+  AppBar,
+  Toolbar,
+  IconButton,
+  TextField,
+  Button,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
 } from "@mui/material";
+import SearchIcon from "@mui/icons-material/Search";
+import MenuIcon from "@mui/icons-material/Menu";
+import HomeIcon from "@mui/icons-material/Home";
+import ArticleIcon from "@mui/icons-material/Article";
+import WhatshotIcon from "@mui/icons-material/Whatshot";
+import Link from "next/link";
+import { Visibility, Comment, ThumbUp } from "@mui/icons-material";
 import { useRouter } from "next/navigation";
 import Navbar from "@/app/navbar/page";
 import AfterLogin from "@/app/navbar/AfterLogin"
@@ -22,12 +38,17 @@ interface Post {
   title: string;
   content: string;
   images: string[];
+  views: number;
+  comments: number;
+  likes: number;
 }
 
 export default function Page() {
   const { isLoggedIn } = useAuth();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState<string>("");
   const [data, setData] = useState<Post[]>([]);
+  const [filteredData, setFilteredData] = useState<Post[]>([]);
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
@@ -37,11 +58,10 @@ export default function Page() {
     async function fetchData() {
       try {
         const res = await fetch("http://localhost:3001/posts");
-        if (!res.ok) {
-          throw new Error("Failed to fetch data");
-        }
+        if (!res.ok) throw new Error("Failed to fetch data");
         const result: Post[] = await res.json();
         setData(result);
+        setFilteredData(result);
       } catch (error) {
         console.error("Error fetching posts:", error);
       }
@@ -49,12 +69,31 @@ export default function Page() {
     fetchData();
   }, []);
 
+  const handleSearch = async (query: string) => {
+    setSearchQuery(query);
+
+    if (query.trim() === "") {
+      setFilteredData(data);
+      return;
+    }
+
+    const filtered = data.filter((item) =>
+      item.title.toLowerCase().includes(query.toLowerCase())
+    );
+    setFilteredData(filtered);
+  };
+
   return (
+    <Box sx={{ display: "flex", minHeight: "100vh" }}>
+      {/* Sidebar and Navbar */}
+      <Sb
+        isOpen={isSidebarOpen}
+        toggleSidebar={toggleSidebar}
+        searchQuery={searchQuery}
+        setSearchQuery={setSearchQuery}
+        handleSearch={handleSearch}
+      />
 
-    <Box sx={{ display: "flex", minHeight: "100vh", backgroundColor: "#f9f9f9" }}>
-
-      {/* Navbar */}
-      {isLoggedIn ? <AfterLogin /> : <Navbar />}
 
       {/* Main Content */}
       <Box
@@ -76,7 +115,6 @@ export default function Page() {
             padding: 3,
           }}
         >
-          {/* Header */}
           <Typography
             variant="h5"
             gutterBottom
@@ -93,15 +131,173 @@ export default function Page() {
             บทความทั้งหมด
           </Typography>
 
-          {/* Regions Grid */}
           <Grid container spacing={3} justifyContent="center">
-            {data.map((post) => (
-              <RegionCard key={post._id} post={post} />
-            ))}
+            {filteredData.length > 0 ? (
+              filteredData.map((post) => <RegionCard key={post._id} post={post} />)
+            ) : (
+              <Typography
+                variant="body1"
+                sx={{ textAlign: "center", marginTop: "20px" }}
+              >
+                ไม่พบข้อมูลที่ค้นหา
+              </Typography>
+            )}
           </Grid>
         </Box>
       </Box>
     </Box>
+  );
+}
+
+function Sb({
+  isOpen,
+  toggleSidebar,
+  searchQuery,
+  setSearchQuery,
+  handleSearch,
+}: {
+  isOpen: boolean;
+  toggleSidebar: () => void;
+  searchQuery: string;
+  setSearchQuery: React.Dispatch<React.SetStateAction<string>>;
+  handleSearch: (query: string) => void;
+}) {
+  return (
+    <>
+      <AppBar
+        position="fixed"
+        sx={{
+          backgroundColor: "#fff",
+          boxShadow: "0px 3px 3px rgba(0,0,0,0.1)",
+          borderBottom: "1px solid #ddd",
+          zIndex: 1300,
+        }}
+      >
+        <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
+          <Box sx={{ display: "flex", alignItems: "center", gap: "10px" }}>
+            <IconButton
+              size="large"
+              edge="start"
+              onClick={toggleSidebar}
+              sx={{ color: "#000" }}
+            >
+              <MenuIcon />
+            </IconButton>
+            <Link href="/">
+              <img
+                src="/images/logo-blogs.png"
+                alt="Logo"
+                style={{ maxWidth: "142px", height: "auto" }}
+              />
+            </Link>
+          </Box>
+          <TextField
+            placeholder="ค้นหา"
+            value={searchQuery}
+            onChange={(e) => {
+              setSearchQuery(e.target.value);
+              handleSearch(e.target.value);
+            }}
+            InputProps={{
+              endAdornment: (
+                <IconButton onClick={() => handleSearch(searchQuery)}>
+                  <SearchIcon />
+                </IconButton>
+              ),
+            }}
+            sx={{ width: "60%" }}
+          />
+          <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+            <Link href="/signin">
+              <Button>เข้าสู่ระบบ</Button>
+            </Link>
+            <Link href="/signup">
+              <Button variant="contained">ลงทะเบียน</Button>
+            </Link>
+          </Box>
+        </Toolbar>
+      </AppBar>
+
+      <Box
+        sx={{
+          width: isOpen ? 240 : 72,
+          height: "100vh",
+          backgroundColor: "#fff",
+          transition: "width 0.3s",
+          position: "fixed",
+          top: 64,
+          left: 0,
+          zIndex: 1200,
+          overflow: "hidden",
+          boxShadow: "2px 0px 5px rgba(0,0,0,0.1)",
+          display: "flex",
+          flexDirection: "column",
+        }}
+      >
+        <List>
+          <Link href="/home/highlights">
+            <ListItem
+              component="button"
+              sx={{
+                display: "flex",
+                flexDirection: isOpen ? "row" : "column",
+                alignItems: "center",
+                justifyContent: isOpen ? "flex-start" : "center",
+                padding: isOpen ? "12px 20px" : "12px 0",
+                "&:hover": {
+                  backgroundColor: "rgba(0, 0, 0, 0.08)",
+                },
+              }}
+            >
+              <ListItemIcon sx={{ justifyContent: "center", color: "#000", minWidth: "40px" }}>
+                <HomeIcon />
+              </ListItemIcon>
+              {isOpen && <ListItemText primary="หน้าหลัก" sx={{ color: "#000" }} />}
+            </ListItem>
+          </Link>
+          <Link href="/home/article">
+            <ListItem
+              component="button"
+              sx={{
+                display: "flex",
+                flexDirection: isOpen ? "row" : "column",
+                alignItems: "center",
+                justifyContent: isOpen ? "flex-start" : "center",
+                padding: isOpen ? "12px 20px" : "12px 0",
+                "&:hover": {
+                  backgroundColor: "rgba(0, 0, 0, 0.08)",
+                },
+              }}
+            >
+              <ListItemIcon sx={{ justifyContent: "center", color: "#000", minWidth: "40px" }}>
+                <ArticleIcon />
+              </ListItemIcon>
+              {isOpen && <ListItemText primary="น่าสนใจ" sx={{ color: "#000" }} />}
+            </ListItem>
+          </Link>
+          <Link href="/home/popular">
+            <ListItem
+              component="button"
+              sx={{
+                display: "flex",
+                flexDirection: isOpen ? "row" : "column",
+                alignItems: "center",
+                justifyContent: isOpen ? "flex-start" : "center",
+                padding: isOpen ? "12px 20px" : "12px 0",
+                "&:hover": {
+                  backgroundColor: "rgba(0, 0, 0, 0.08)",
+                },
+              }}
+            >
+              <ListItemIcon sx={{ justifyContent: "center", color: "#000", minWidth: "40px" }}>
+                <WhatshotIcon />
+              </ListItemIcon>
+              {isOpen && <ListItemText primary="มาแรง" sx={{ color: "#000" }} />}
+            </ListItem>
+          </Link>
+        </List>
+      </Box>
+    </>
   );
 }
 
@@ -133,39 +329,26 @@ function RegionCard({ post }: { post: Post }) {
             component="img"
             height="150"
             image={post.images.length > 0 ? post.images[0] : ""}
-            alt="ยังม้ายยยมีรูป"
-            sx={{
-              backgroundColor: post.images.length > 0 ? "transparent" : "#f0f0f0",
-            }}
+            alt="ยังไม่มีรูป"
           />
-          <CardContent
-            sx={{
-              backgroundColor: "#ffffff",
-              textAlign: "center",
-              padding: "10px",
-              borderTop: "3px solid #bfd8bd",
-            }}
-          >
-            <Typography
-              variant="h6"
-              sx={{
-                fontWeight: "bold",
-                color: "#333",
-                marginBottom: "5px",
-              }}
-            >
-              {post.title}
-            </Typography>
-            <Typography
-              variant="body2"
-              sx={{
-                color: "#353c41",
-              }}
-            >
+          <CardContent>
+            <Typography variant="h6">{post.title}</Typography>
+            <Typography variant="body2">
               {post.content.substring(0, 100)}...
             </Typography>
           </CardContent>
         </CardActionArea>
+        <Box sx={{ display: "flex", justifyContent: "space-between", padding: "10px" }}>
+          <Box sx={{ display: "flex", alignItems: "center" }}>
+            <Visibility /> {post.views}
+          </Box>
+          <Box sx={{ display: "flex", alignItems: "center" }}>
+            <Comment /> {post.comments}
+          </Box>
+          <Box sx={{ display: "flex", alignItems: "center" }}>
+            <ThumbUp /> {post.likes}
+          </Box>
+        </Box>
       </Card>
     </Grid>
   );
