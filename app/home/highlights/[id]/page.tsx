@@ -1,24 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-<<<<<<< HEAD
 import { Container, Card, CardContent, CardMedia, Typography, Box, IconButton, Tooltip, TextField, InputAdornment, Menu, MenuItem, } from "@mui/material";
-=======
-import {
-  Container,
-  Card,
-  CardContent,
-  CardMedia,
-  Typography,
-  Box,
-  IconButton,
-  Tooltip,
-  TextField,
-  InputAdornment,
-  Menu,
-  MenuItem,
-} from "@mui/material";
->>>>>>> b5aed4c49ef6cb565a3723fac91369860730784a
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import ShareIcon from "@mui/icons-material/Share";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
@@ -46,10 +29,7 @@ interface Comment {
 }
 
 export default function Page() {
-<<<<<<< HEAD
   const { isLoggedIn } = useAuth();
-=======
->>>>>>> b5aed4c49ef6cb565a3723fac91369860730784a
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [data, setData] = useState<Attraction | null>(null);
   const [loading, setLoading] = useState(true);

@@ -10,8 +10,14 @@ import Link from "next/link";
 import AddIcon from "@mui/icons-material/Add";
 import SearchIcon from '@mui/icons-material/Search';
 import LogoutIcon from "@mui/icons-material/Logout";
-import BorderColorIcon from '@mui/icons-material/BorderColor';
-//import { useAuth } from "@/app/contexts/AuthContext";
+import Avatar from '@mui/material/Avatar';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
+import { useAuth } from "@/app/context/AuthProvider";
+import EditNoteOutlinedIcon from "@mui/icons-material/EditNoteOutlined";
+import { useRouter } from "next/navigation";
+import PersonIcon from '@mui/icons-material/Person';
+
 
 
 function NavLogIn({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: () => void }) {
@@ -28,9 +34,25 @@ function Sb({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: () => v
     buttonGreen: "#77bfa3",
   };
 
-  // const handleLogout = () => {
-  //   setIsLoggedIn(false); // ออกจากระบบ
-  // };
+
+
+  const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorElUser(event.currentTarget);
+  };
+
+  const handleCloseUserMenu = () => {
+    setAnchorElUser(null);
+  };
+  const handleMenuClick = async (setting: string) => {
+    if (setting === "Logout") {
+      await logout(); // เรียกใช้ฟังก์ชัน logout
+    } else if (setting === "Dashboard") {
+      router.push("/dashboard"); // เปลี่ยนเส้นทางไปยัง /dashboard
+    }else if (setting === "Profile") {
+       router.push("http://localhost:3000/test"); 
+     }
+    handleCloseUserMenu(); // ปิดเมนู
+  };
 
   return (
     <>
@@ -254,6 +276,28 @@ function Sb({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: () => v
               {isOpen && <ListItemText primary="มาเเรง" sx={{ color: "#000" }} />}
             </ListItem>
           </Link>
+          <Tooltip title="โปรไฟล์" placement="right">
+            <Link href="http://localhost:3000/test" passHref>
+              <ListItem
+                component="button"
+                sx={{
+                  display: "flex",
+                  flexDirection: isOpen ? "row" : "column",
+                  alignItems: "center",
+                  justifyContent: isOpen ? "flex-start" : "center",
+                  padding: isOpen ? "12px 20px" : "12px 0",
+                  "&:hover": {
+                    backgroundColor: "rgba(0, 0, 0, 0.08)",
+                  },
+                }}
+              >
+                <ListItemIcon sx={{ justifyContent: "center", color: "#000", minWidth: "40px" }}>
+                  <PersonIcon />
+                </ListItemIcon>
+                {isOpen && <ListItemText primary="โปรไฟล์" sx={{ color: "#000" }} />}
+              </ListItem>
+            </Link>
+          </Tooltip>
         </List>
       </Box>
 
