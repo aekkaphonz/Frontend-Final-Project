@@ -4,6 +4,7 @@ import React from "react";
 import { AppBar, Toolbar, Button, Box, TextField, InputAdornment, Typography } from "@mui/material";
 import Link from "next/link";
 import EditNoteOutlinedIcon from "@mui/icons-material/EditNoteOutlined";
+import AddIcon from '@mui/icons-material/Add';
 
 const themeColors = {
     primary: "#ffffff",
@@ -62,25 +63,23 @@ export default function HomeNavbar() {
                             gap: "15px", // ระยะห่างระหว่างไอคอนและข้อความ
                         }}
                     >
-                        {/* ปุ่มเขียน */}
-                        <Button href="/signin"
-                            sx={{
-                                color: "#ffffff",
-                                backgroundColor: "#77bfa3",
-                                "&:hover": {
-                                    backgroundColor: "#F7F7F7",
-                                    color: "#77bfa3"
-                                },
-                                borderRadius: "20px",
-                                padding: "6px 16px",
-                                textTransform: "none",
+                        <AddIcon 
+                            sx={{ 
+                                color: themeColors.buttonGreen,
                                 fontWeight: "bold",
-                            }}
-                            variant="contained"
-                        >
-                            <EditNoteOutlinedIcon sx={{ marginRight: 1 }} />
-                            เขียน
-                        </Button>
+                                boxShadow: "0px 2px 5px rgba(0,0,0,0.2)", // เพิ่มเงา
+                            }} 
+                        />
+                        <Link href="/signin" >
+                            <Typography
+                                variant="h6"
+                                sx={{
+                                    color: themeColors.text,
+                                }}
+                            >
+                                สร้าง
+                            </Typography>
+                        </Link>
                     </Box>
 
                     {/* Signin Button */}
