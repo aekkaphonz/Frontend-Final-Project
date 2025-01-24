@@ -158,7 +158,7 @@ function Sb({
 }) {
   return (
     <>
-      <AppBar
+      {/* <AppBar
         position="fixed"
         sx={{
           backgroundColor: "#fff",
@@ -210,9 +210,9 @@ function Sb({
             </Link>
           </Box>
         </Toolbar>
-      </AppBar>
+      </AppBar> */}
 
-      <Box
+      {/* <Box
         sx={{
           width: isOpen ? 240 : 72,
           height: "100vh",
@@ -290,7 +290,7 @@ function Sb({
             </ListItem>
           </Link>
         </List>
-      </Box>
+      </Box> */}
     </>
   );
 }
@@ -323,7 +323,7 @@ function RegionCard({ post }: { post: Post }) {
             component="img"
             height="150"
             image={post.images.length > 0 ? post.images[0] : ""}
-            alt="ยังไม่มีรูป"
+            alt="ไม่มีรูปภาพ"
           />
           <CardContent>
             <Typography variant="h6">{post.title}</Typography>
