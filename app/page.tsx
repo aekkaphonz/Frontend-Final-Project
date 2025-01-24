@@ -1,35 +1,25 @@
-
-
 "use client";
 
 
 import React from "react";
 import { Box, Button, Container, Typography, Grid, Card, CardContent } from "@mui/material";
-import Navbar from "@/app/navbar/homeNavbar";
+// import Navbar from "@/app/navbar/homeNavbarAfterLogin";
+// import Navbar from "@/app/navbar/homeNavbar";
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import Link from "next/link";
 import { useAuth } from "@/app/context/AuthProvider";
-import HomeNavbar from "@/app/navbar/homeNavbar";
 import HomeNavbarAfterLogin from "@/app/navbar/homeNavbarAfterLogin";
+import HomeNavbar from "@/app/navbar/homeNavbar";
 
 
 
 
 export default function Home() {
-  const [isLoggedIn, setIsLoggedIn] = React.useState(false);
-
-
-  React.useEffect(() => {
-    // ตัวอย่างการตรวจสอบสถานะการเข้าสู่ระบบ (สามารถเปลี่ยนให้ใช้ Cookie/Token จริงได้)
-    const userToken = localStorage.getItem("userToken");
-    if (userToken) {
-      setIsLoggedIn(true);
-    }
-  }, []);
+  const { isLoggedIn } = useAuth();
   return (
 
-    <>
-      {isLoggedIn ? <HomeNavbarAfterLogin /> : <HomeNavbar />}
+    <>{isLoggedIn ? <HomeNavbarAfterLogin /> : <HomeNavbar />}
+    
       <Container
         sx={{
           display: "flex",
@@ -46,7 +36,10 @@ export default function Home() {
             borderRadius: "50%",
             backgroundColor: "#ccffe2", // สีของวงกลม
             position: "absolute",
+
+
             bottom: "-25%",
+
             left: "-20%",
             zIndex: 0,
           }}
@@ -148,22 +141,22 @@ export default function Home() {
             <Card sx={{ boxShadow: 2 }}>
               <Link href="/home/highlights" passHref>
                 <CardContent>
-                  <Box
-                    display="flex"
-                    justifyContent="space-between"
-                    alignItems="center"
-                    sx={{ marginBottom: "0.5rem" }}
-                  >
-                    <Typography variant="h6" sx={{ fontWeight: "bold" }}>
-                      บทความทั้งหมด
-                    </Typography>
-                    <ArrowForwardIcon
-                      href="/home/highlights"
-                      sx={{
-                        fontSize: "30px",
-                      }}
-                    />
-                  </Box>
+                <Box
+                  display="flex"
+                  justifyContent="space-between"
+                  alignItems="center"
+                  sx={{ marginBottom: "0.5rem" }}
+                >
+                  <Typography variant="h6" sx={{ fontWeight: "bold" }}>
+                    บทความทั้งหมด
+                  </Typography>
+                  <ArrowForwardIcon 
+                    href="/home/highlights"
+                    sx={{ 
+                      fontSize: "30px",
+                    }} 
+                  />
+                </Box>
                   <Typography variant="body2" color="textSecondary">
                     พบกับบทความและไอเดียสร้างแรงบันดาลใจใหม่ ๆ ที่ช่วยเติมเต็มความคิดสร้างสรรค์และเป้าหมายในชีวิตของคุณ.
                   </Typography>
@@ -177,21 +170,21 @@ export default function Home() {
             <Card sx={{ boxShadow: 2 }}>
               <Link href="/home/article" passHref>
                 <CardContent>
-                  <Box
-                    display="flex"
-                    justifyContent="space-between"
-                    alignItems="center"
-                    sx={{ marginBottom: "0.5rem" }}
-                  >
-                    <Typography variant="h6" sx={{ fontWeight: "bold" }}>
-                      บทความที่น่าสนใจ
-                    </Typography>
-                    <ArrowForwardIcon
-                      sx={{
-                        fontSize: "30px",
-                      }}
-                    />
-                  </Box>
+                <Box
+                  display="flex"
+                  justifyContent="space-between"
+                  alignItems="center"
+                  sx={{ marginBottom: "0.5rem" }}
+                >
+                  <Typography variant="h6" sx={{ fontWeight: "bold" }}>
+                    บทความที่น่าสนใจ
+                  </Typography>
+                  <ArrowForwardIcon 
+                    sx={{ 
+                      fontSize: "30px",
+                    }} 
+                  />
+                </Box>
                   <Typography variant="body2" color="textSecondary">
                     บทความที่คัดสรรมาเพื่อเสริมสร้างแรงบันดาลใจและมุมมองใหม่ ๆ ในการพัฒนาตนเองและการใช้ชีวิต.
                   </Typography>
@@ -205,21 +198,21 @@ export default function Home() {
             <Card sx={{ boxShadow: 2 }}>
               <Link href="/home/popular" passHref>
                 <CardContent>
-                  <Box
-                    display="flex"
-                    justifyContent="space-between"
-                    alignItems="center"
-                    sx={{ marginBottom: "0.5rem" }}
-                  >
-                    <Typography variant="h6" sx={{ fontWeight: "bold" }}>
-                      บทความใหม่ล่าสุด
-                    </Typography>
-                    <ArrowForwardIcon
-                      sx={{
-                        fontSize: "30px",
-                      }}
-                    />
-                  </Box>
+                <Box
+                  display="flex"
+                  justifyContent="space-between"
+                  alignItems="center"
+                  sx={{ marginBottom: "0.5rem" }}
+                >
+                  <Typography variant="h6" sx={{ fontWeight: "bold" }}>
+                    บทความใหม่ล่าสุด
+                  </Typography>
+                  <ArrowForwardIcon 
+                    sx={{ 
+                      fontSize: "30px",
+                    }} 
+                  />
+                </Box>
                   <Typography variant="body2" color="textSecondary">
                     ติดตามบทความใหม่ล่าสุดที่นำเสนอเรื่องราวและแนวคิดที่ช่วยให้คุณเริ่มต้นวันใหม่อย่างสดใส.
                   </Typography>

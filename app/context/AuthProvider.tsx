@@ -1,44 +1,57 @@
 "use client";
 
 import React, { createContext, useContext, useState, useEffect } from "react";
+import axios from "axios";
 
 interface AuthContextType {
-  login: (token: string) => void;
-  logout: () => void;
+  user: { userName?: string } | null;
   isLoggedIn: boolean;
+  logout: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
+  const [user, setUser] = useState<{ userName?: string } | null>(null);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
-    // ตรวจสอบ token ใน localStorage
-    const token = localStorage.getItem("userToken");
-    if (token) {
-      setIsLoggedIn(true);
-    }
+    const fetchProfile = async () => {
+      try {
+        const response = await axios.get("http://localhost:3001/user/profile", {
+          withCredentials: true,
+        });
+        if (response.data) {
+          setUser(response.data);
+          setIsLoggedIn(true);
+        }
+      } catch {
+        setUser(null);
+        setIsLoggedIn(false);
+      }
+    };
+
+    fetchProfile();
   }, []);
 
-  const login = (token: string) => {
-    localStorage.setItem("userToken", token);
-    setIsLoggedIn(true);
-  };
-
-  const logout = () => {
-    localStorage.removeItem("userToken");
-    setIsLoggedIn(false);
+  const logout = async () => {
+    try {
+      await axios.post("http://localhost:3001/auth/logout", {}, { withCredentials: true });
+      setUser(null);
+      setIsLoggedIn(false);
+    } catch (error) {
+      console.error("Logout failed:", error);
+    }
   };
 
   return (
-    <AuthContext.Provider value={{ login, logout, isLoggedIn }}>
+    <AuthContext.Provider value={{ user, isLoggedIn, logout }}>
       {children}
     </AuthContext.Provider>
   );
 };
 
-export const useAuth = (): AuthContextType => {
+export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {
     throw new Error("useAuth must be used within an AuthProvider");

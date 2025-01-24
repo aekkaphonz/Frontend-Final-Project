@@ -24,14 +24,11 @@ const Item = styled(Paper)(({ theme }) => ({
 
 export default function Page() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-
-  // ตัวแปรเก็บข้อมูล
-  const [title, setTitle] = useState(""); // เก็บหัวข้อ
-  const [content, setContent] = useState(""); // เก็บเนื้อหา
-  const [tags, setTags] = useState(""); // เก็บแท็ก
-  const [images, setImages] = useState<File[]>([]); // เก็บไฟล์รูปภาพ
-  const [imagePreviews, setImagePreviews] = useState<string[]>([]); // เก็บ URL รูปสำหรับแสดงตัวอย่าง
-  const [createdAt, setCreatedAt] = useState(new Date().toISOString()); // เก็บวันที่การสร้าง
+  const [title, setTitle] = useState("");
+  const [content, setContent] = useState("");
+  const [tags, setTags] = useState("");
+  const [images, setImages] = useState<string[]>([]); // สำหรับเก็บ Base64
+  const [imagePreviews, setImagePreviews] = useState<string[]>([]); // สำหรับแสดงตัวอย่างรูป
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
@@ -39,23 +36,35 @@ export default function Page() {
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files) {
-      const filesArray = Array.from(event.target.files);
-      setImages([...images, ...filesArray]);
+      const files = Array.from(event.target.files);
+      const newImages: string[] = [];
+      const newPreviews: string[] = [];
 
-      const previews = filesArray.map((file) => URL.createObjectURL(file));
-      setImagePreviews([...imagePreviews, ...previews]);
+      files.forEach((file) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => {
+          if (reader.result) {
+            newImages.push(reader.result as string);
+            newPreviews.push(reader.result as string);
+            setImages((prev) => [...prev, ...newImages]);
+            setImagePreviews((prev) => [...prev, ...newPreviews]);
+          }
+        };
+      });
     }
   };
 
   const handleSave = async () => {
-    // เตรียมข้อมูลในรูปแบบ JSON
     const payload = {
       title,
       content,
-      tags: tags.split(",").map((tag) => tag.trim()), // แปลงแท็กเป็น array
-      createdAt,
-      images: images.map((image) => image.name), // ในกรณี backend เก็บชื่อรูป
+      tags: tags.split(",").map((tag) => tag.trim()),
+      images,
+      createdAt: new Date().toISOString(),
     };
+
+    console.log("🚀 Sending data to Backend:", payload);
 
     try {
       const response = await fetch("http://localhost:3001/posts", {
@@ -66,25 +75,24 @@ export default function Page() {
         body: JSON.stringify(payload),
       });
 
-      if (!response.ok) {
-        throw new Error("การส่งข้อมูลล้มเหลว");
+      if (response.ok) {
+        alert("บทความและรูปภาพถูกบันทึกเรียบร้อย!");
+        handleCancel();
+      } else {
+        alert("เกิดข้อผิดพลาดในการบันทึกบทความ");
       }
-
-      const result = await response.json();
-      console.log("ผลลัพธ์จาก backend:", result);
-      alert("บทความและข้อมูลถูกบันทึกเรียบร้อย!");
     } catch (error) {
       console.error("เกิดข้อผิดพลาด:", error);
-      alert("เกิดข้อผิดพลาดในการบันทึกบทความ");
+      alert("ไม่สามารถเชื่อมต่อกับ Backend ได้");
     }
   };
 
-  //ยกเลิก
   const handleCancel = () => {
-    setTitle(""); // รีเซ็ตค่า title
-    setContent(""); // รีเซ็ตค่า content
-    setTags(""); // รีเซ็ตค่า tags
-    setImages([]); // รีเซ็ตค่า images
+    setTitle("");
+    setContent("");
+    setTags("");
+    setImages([]);
+    setImagePreviews([]);
   };
 
   return (
@@ -96,21 +104,17 @@ export default function Page() {
       }}
     >
       <Sb isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
-      <Grid 
-        container spacing={3} 
-        sx={{ 
+      <Grid
+        container
+        spacing={3}
+        sx={{
           marginLeft: isSidebarOpen ? "240px" : "72px",
           marginTop: "72px",
           transition: "margin-left 0.3s",
-          padding: "16px", // ปรับ padding ด้านใน
-          maxWidth: {
-            xs: "100%", // สำหรับหน้าจอมือถือ
-            sm: isSidebarOpen ? "calc(100% - 240px)" : "calc(100% - 72px)", // สำหรับหน้าจอเล็กขึ้นไป
-            md: isSidebarOpen ? "calc(100% - 240px)" : "calc(100% - 72px)", // สำหรับหน้าจอ Desktop
-          },
+          padding: "16px",
         }}
       >
-        <Grid item md={12} sx={{ boxShadow: "0px 2px 1px rgba(0, 0, 0, 0.1)" }}>
+        <Grid item md={12}>
           <Typography sx={{ fontWeight: "bold", fontSize: 26, mb: 1 }}>เขียนบทความ</Typography>
         </Grid>
 
@@ -129,18 +133,6 @@ export default function Page() {
         {/* เนื้อหา */}
         <Grid item md={12}>
           <Typography sx={{ fontWeight: "bold", fontSize: 18, mb: 1 }}>เนื้อหา</Typography>
-          <Box sx={{ display: "flex", alignItems: "center", gap: 2, mb: 1 }}>
-            <IconButton component="label" title="เพิ่มรูป">
-              <ImageIcon sx={{ fontSize: 28, color: "#98c9a3" }} />
-              <input
-                type="file"
-                hidden
-                accept="image/*"
-                multiple
-                onChange={handleImageUpload}
-              />
-            </IconButton>
-          </Box>
           <TextField
             fullWidth
             variant="outlined"
@@ -152,29 +144,34 @@ export default function Page() {
           />
         </Grid>
 
-        {/* แสดงรูปภาพ */}
-        {imagePreviews.length > 0 && (
-          <Grid item md={12} sx={{ mt: 2 }}>
-            <Typography sx={{ fontWeight: "bold", fontSize: 18, mb: 1 }}>รูปภาพที่แนบ</Typography>
-            <Grid container spacing={2}>
-              {imagePreviews.map((src, index) => (
-                <Grid item key={index} xs={4}>
-                  <img
-                    src={src}
-                    alt={`uploaded ${index}`}
-                    style={{
-                      width: "100%",
-                      height: "150px",
-                      objectFit: "cover",
-                      borderRadius: "8px",
-                      border: "1px solid #EBE8E8",
-                    }}
-                  />
-                </Grid>
-              ))}
-            </Grid>
+        {/* อัปโหลดรูป */}
+        <Grid item md={12}>
+          <Typography sx={{ fontWeight: "bold", fontSize: 18, mb: 1 }}>แนบรูปภาพ</Typography>
+          <Button
+            component="label"
+            variant="contained"
+            sx={{ mb: 2, backgroundColor: "#77bfa3", color: "#ffffff" }}
+          >
+            อัปโหลดรูป
+            <input type="file" hidden multiple accept="image/*" onChange={handleImageUpload} />
+          </Button>
+          <Grid container spacing={2}>
+            {imagePreviews.map((preview, index) => (
+              <Grid item key={index} xs={4}>
+                <img
+                  src={preview}
+                  alt={`รูปที่ ${index + 1}`}
+                  style={{
+                    width: "100%",
+                    height: "150px",
+                    objectFit: "cover",
+                    borderRadius: "8px",
+                  }}
+                />
+              </Grid>
+            ))}
           </Grid>
-        )}
+        </Grid>
 
         {/* แท็ก */}
         <Grid item md={12}>
@@ -189,42 +186,18 @@ export default function Page() {
         </Grid>
 
         {/* ปุ่มบันทึก */}
-        <Grid 
-          item md={12} 
-          sx={{ 
-            textAlign: "center", 
-            mt: 2 ,
-            display: "flex", 
-            alignItems: "end", 
-            justifyContent: "flex-end", // ชิดขวา
-            gap: 2 
-            }}
-        >
+        <Grid item md={12} sx={{ textAlign: "right", mt: 3 }}>
           <Button
             variant="contained"
-            color="primary"
             onClick={handleSave}
-            sx={{ 
-              fontWeight: "bold", 
-              fontSize: 16 ,
-              color: "#ffffff",
-              backgroundColor: "#77bfa3", 
-            }}
+            sx={{ backgroundColor: "#77bfa3", color: "#ffffff", mr: 2 }}
           >
             บันทึก
           </Button>
-
-          {/* ปุ่มยกเลิก */}
           <Button
             variant="contained"
-            color="primary"
-            // onClick={handleCancel}
-            sx={{ 
-              fontWeight: "bold", 
-              fontSize: 16 ,
-              color: "#ffffff",
-              backgroundColor: "#FF3366", 
-            }}
+            onClick={handleCancel}
+            sx={{ backgroundColor: "#FF3366", color: "#ffffff" }}
           >
             ยกเลิก
           </Button>

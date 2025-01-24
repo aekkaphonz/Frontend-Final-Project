@@ -1,8 +1,6 @@
 
 
-  "use client";
-
-
+"use client";
 
 import React from "react";
 import { Box, List, ListItem, ListItemIcon, ListItemText, AppBar, Toolbar, IconButton, Typography, Button, TextField, Tooltip, } from "@mui/material";
@@ -13,6 +11,7 @@ import WhatshotIcon from '@mui/icons-material/Whatshot';
 import Link from "next/link";
 import AddIcon from "@mui/icons-material/Add";
 import SearchIcon from '@mui/icons-material/Search';
+import EditNoteOutlinedIcon from "@mui/icons-material/EditNoteOutlined";
 
 const themeColors = {
   primary: "#ffffff",
@@ -99,25 +98,25 @@ function Sb({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: () => v
                   gap: "5px", // ระยะห่างระหว่างไอคอนและข้อความ
                 }}
               >
-
-                <AddIcon
+                {/* ปุ่มเขียน */}
+                <Button href="/signin"
                   sx={{
-                    color: themeColors.buttonGreen,
+                    color: "#ffffff",
+                    backgroundColor: "#77bfa3",
+                    "&:hover": {
+                      backgroundColor: "#F7F7F7",
+                      color: "#77bfa3"
+                    },
+                    borderRadius: "20px",
+                    padding: "6px 16px",
+                    textTransform: "none",
                     fontWeight: "bold",
-                    boxShadow: "0px 2px 5px rgba(0,0,0,0.2)", // เพิ่มเงา
                   }}
-                />
-                <Link href="/signin" >
-                  <Typography
-                    variant="h6"
-                    sx={{
-                      color: themeColors.text,
-                    }}
-                  >
-                    สร้าง
-                  </Typography>
-                </Link>
-
+                  variant="contained"
+                >
+                  <EditNoteOutlinedIcon sx={{ marginRight: 1 }} />
+                  เขียน
+                </Button>
               </Box>
             </Typography>
 
@@ -160,6 +159,7 @@ function Sb({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: () => v
               ลงทะเบียน
             </Button>
           </Box>
+          
         </Toolbar>
       </AppBar>
 

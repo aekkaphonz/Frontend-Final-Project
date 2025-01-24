@@ -120,7 +120,16 @@ const EditPage = () => {
                 <img
                   src={user.profileImage}
                   alt="Profile Image"
-                  className="w-24 h-24 rounded-full object-cover"
+
+             
+
+                  style={{
+                    width: "100px",
+                    height: "100%",
+                    borderRadius: "50%",
+                    objectFit: "cover",
+                  }}
+
                 />
               )}
               <label htmlFor="file-input" className="absolute right-0 bottom-0">

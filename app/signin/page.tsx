@@ -22,6 +22,7 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import axios from "axios";
 
+
 function signin() {
   const [isFormSubmitted, setIsFormSubmitted] = useState(false);
 
@@ -57,7 +58,8 @@ function signin() {
       console.log("Response status:", response.status);
 
       if (response.data) {
-        router.push("http://localhost:3000/test");
+        // router.push("http://localhost:3000/test");
+        router.push("/");
       } else {
         alert("การเข้าสู่ระบบล้มเหลว");
       }
