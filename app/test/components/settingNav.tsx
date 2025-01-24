@@ -1,16 +1,23 @@
 "use client";
 
 import React from "react";
-import { Box, AppBar, Toolbar, IconButton, Typography, Button, TextField } from "@mui/material";
+import {
+  Box,
+  AppBar,
+  Toolbar,
+  IconButton,
+  Typography,
+  Button,
+  TextField,
+} from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
-import SearchIcon from '@mui/icons-material/Search';
+import SearchIcon from "@mui/icons-material/Search";
 import AddIcon from "@mui/icons-material/Add";
 import LogoutIcon from "@mui/icons-material/Logout";
 import Link from "next/link";
-import { useRouter } from 'next/router';
+import { useRouter } from "next/router";
 import axios from "axios";
 function SettingNav() {
-  // const router = useRouter();
   const themeColors = {
     primary: "#ffffff",
     text: "#000000",
@@ -20,13 +27,17 @@ function SettingNav() {
 
   const handleLogout = async () => {
     try {
-      const response = await axios.post('http://localhost:3001/auth/logout', {}, { withCredentials: true });
-      console.log(response.data); 
-      
-      
-      // router.push('/login');
+      const response = await axios.post(
+        "http://localhost:3001/auth/logout",
+        {},
+        {
+          withCredentials: true,
+        }
+      );
+
+      window.location.href = "http://localhost:3000/";
     } catch (err) {
-      console.error('Logout failed:', err);
+      console.error("Logout failed:", err);
     }
   };
 
@@ -56,7 +67,14 @@ function SettingNav() {
           </Box>
 
           {/* Search Bar */}
-          <Box sx={{ flexGrow: 1, mx: 2, display: "flex", justifyContent: "center" }}>
+          <Box
+            sx={{
+              flexGrow: 1,
+              mx: 2,
+              display: "flex",
+              justifyContent: "center",
+            }}
+          >
             <TextField
               placeholder="ค้นหา"
               variant="outlined"
