@@ -35,9 +35,15 @@ export default function HomeNavbarAfterLogin() {
       await logout(); // เรียกใช้ฟังก์ชัน logout
     } else if (setting === "Dashboard") {
       router.push("/dashboard"); // เปลี่ยนเส้นทางไปยัง /dashboard
+<<<<<<< HEAD
     }else if (setting === "Profile") {
       router.push("http://localhost:3000/test"); 
     }
+=======
+     }else if (setting === "Profile") {
+       router.push("/profile"); 
+     }
+>>>>>>> 67a7eafe37794af86b9730c2acf9762d59dec461
     handleCloseUserMenu(); // ปิดเมนู
   };
   return (
