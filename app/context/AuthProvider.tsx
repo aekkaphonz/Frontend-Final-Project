@@ -4,7 +4,7 @@ import React, { createContext, useContext, useState, useEffect } from "react";
 import axios from "axios";
 
 interface AuthContextType {
-  user: { userName?: string } | null;
+    user: { userName?: string; profileImage?: string } | null;
   isLoggedIn: boolean;
   logout: () => Promise<void>;
 }

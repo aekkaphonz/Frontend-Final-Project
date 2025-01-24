@@ -21,6 +21,7 @@ import GoogleIcon from "@mui/icons-material/Google";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import axios from "axios";
+import Swal from "sweetalert2";
 
 
 function signin() {
@@ -52,29 +53,54 @@ function signin() {
           withCredentials: true,
         }
       );
-      
-
+  
       console.log("Response data:", response.data);
       console.log("Response status:", response.status);
-
+  
       if (response.data) {
-        // router.push("http://localhost:3000/test");
+    
+        Swal.fire({
+          title: "เข้าสู่ระบบสำเร็จ!",
+          text: "ยินดีต้อนรับกลับเข้าสู่ระบบ!",
+          icon: "success",
+          confirmButtonText: "ตกลง",
+          confirmButtonColor: "#77bfa3",
+        });
+  
         router.push("/");
       } else {
-        alert("การเข้าสู่ระบบล้มเหลว");
+     
+        Swal.fire({
+          title: "การเข้าสู่ระบบล้มเหลว",
+          text: "ข้อมูลของคุณไม่ถูกต้อง กรุณาลองใหม่อีกครั้ง",
+          icon: "error",
+          confirmButtonText: "ตกลง",
+          confirmButtonColor: "#d33",
+        });
       }
     } catch (error: any) {
       if (error.response && error.response.data) {
-        console.error("Backend error:", error.response.data);
-        alert(
-          `Error: ${error.response.data.message || "การเข้าสู่ระบบล้มเหลว"}`
-        );
+        console.error("error:", error.response.data);
+        Swal.fire({
+          title: "เกิดข้อผิดพลาด!",
+          text: error.response.data.message || "การเข้าสู่ระบบล้มเหลว",
+          icon: "error",
+          confirmButtonText: "ตกลง",
+          confirmButtonColor: "#d33",
+        });
       } else {
         console.error("Error login:", error);
-        alert("An error occurred. Please try again later.");
+        Swal.fire({
+          title: "เกิดข้อผิดพลาด!",
+          text: "ไม่สามารถเข้าสู่ระบบได้ กรุณาลองใหม่อีกครั้ง",
+          icon: "error",
+          confirmButtonText: "ตกลง",
+          confirmButtonColor: "#d33",
+        });
       }
     }
   };
+  
 
   const [showPassword, setShowPassword] = useState(false);
 

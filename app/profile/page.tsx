@@ -11,6 +11,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import React from "react";
 
+<<<<<<< HEAD
 type User = {
   _id: string;
   email: string;
@@ -219,3 +220,26 @@ const EditPage = () => {
 };
 
 export default EditPage;
+=======
+import { useEffect, useState } from "react";
+import axios from "axios";
+
+import EditPage from "../profile/component/settingPage";
+import Sb from "@/app/sidebarAuther/page";
+import ReadOnlyProfilePage from "../profile/component/profilePage";
+
+const UsersPage = () => {
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen);
+  };
+  return (
+    <div>
+      <Sb isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
+      <ReadOnlyProfilePage />
+    </div>
+  );
+};
+
+export default UsersPage;
+>>>>>>> 293e9c2e87484b96a9f948167bb7ee9dc25abb4d

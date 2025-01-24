@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import Link from "next/link"; // ใช้สำหรับลิงค์
+import Link from "next/link"; 
 import { Avatar, Box, List, ListItem, Menu, MenuItem, ListItemIcon, ListItemText, AppBar, Toolbar, IconButton, Typography, Tooltip, Button } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import DashboardIcon from "@mui/icons-material/Dashboard";
@@ -10,6 +10,7 @@ import InsertChartIcon from "@mui/icons-material/InsertChart";
 import EditNoteOutlinedIcon from "@mui/icons-material/EditNoteOutlined";
 import PersonIcon from '@mui/icons-material/Person';
 import { useAuth } from "@/app/context/AuthProvider";
+import PersonIcon from '@mui/icons-material/Person';
 
 function Sb({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: () => void }) {
 

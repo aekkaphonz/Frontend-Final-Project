@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { AppBar, Toolbar, Box, Typography, Tooltip, IconButton, Menu, MenuItem, Avatar,Button} from "@mui/material";
+import { AppBar, Toolbar, Box, Typography, Tooltip, IconButton, Menu, MenuItem, Avatar, Button } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import { useAuth } from "@/app/context/AuthProvider";
 import Link from "next/link";
@@ -34,9 +34,9 @@ export default function HomeNavbarAfterLogin() {
       await logout(); // เรียกใช้ฟังก์ชัน logout
     } else if (setting === "Dashboard") {
       router.push("/dashboard"); // เปลี่ยนเส้นทางไปยัง /dashboard
-     }//else if (setting === "Profile") {
-    //   router.push("/profile"); 
-    // }
+     }else if (setting === "Profile") {
+       router.push("/profile"); 
+     }
     handleCloseUserMenu(); // ปิดเมนู
   };
   return (
@@ -75,32 +75,37 @@ export default function HomeNavbarAfterLogin() {
 
         {/* ปุ่มสร้างและโปรไฟล์ */}
         <Box sx={{ display: "flex", alignItems: "center", gap: "20px" }}>
-            {/* ปุ่มเขียน */}
-            <Button href="/createBlog"
-                  sx={{
-                    color: "#ffffff",
-                    backgroundColor: "#77bfa3",
-                    "&:hover": {
-                      backgroundColor: "#F7F7F7",
-                      color: "#77bfa3"
-                    },
-                    borderRadius: "20px",
-                    padding: "6px 16px",
-                    textTransform: "none",
-                    fontWeight: "bold",
-                  }}
-                  variant="contained"
-                >
-                  <EditNoteOutlinedIcon sx={{ marginRight: 1 }} />
-                  เขียน
-                </Button>
+          {/* ปุ่มเขียน */}
+          <Button href="/createBlog"
+            sx={{
+              color: "#ffffff",
+              backgroundColor: "#77bfa3",
+              "&:hover": {
+                backgroundColor: "#F7F7F7",
+                color: "#77bfa3"
+              },
+              borderRadius: "20px",
+              padding: "6px 16px",
+              textTransform: "none",
+              fontWeight: "bold",
+            }}
+            variant="contained"
+          >
+            <EditNoteOutlinedIcon sx={{ marginRight: 1 }} />
+            เขียน
+          </Button>
 
           {/* เมนูผู้ใช้ */}
           <Box sx={{ flexGrow: 0 }}>
             <Tooltip title="Profile">
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                <Avatar alt={user?.userName || "User"} />
+                <Avatar
+                  alt={user?.userName || "User"}
+                  src={user?.profileImage || "/default-profile.png"} 
+                />
+
               </IconButton>
+
             </Tooltip>
             <Menu
               sx={{ mt: "45px" }}
