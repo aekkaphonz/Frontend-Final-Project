@@ -25,9 +25,9 @@ const Item = styled(Paper)(({ theme }) => ({
 export default function Page() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [title, setTitle] = useState("");
-  const [content, setContent] = useState("");
+  const [detail, setDetail] = useState("");
   const [tags, setTags] = useState("");
-  const [images, setImages] = useState<string[]>([]); // สำหรับเก็บ Base64
+  const [postImage, setImages] = useState<string[]>([]); // สำหรับเก็บ Base64
   const [imagePreviews, setImagePreviews] = useState<string[]>([]); // สำหรับแสดงตัวอย่างรูป
 
   const toggleSidebar = () => {
@@ -58,16 +58,16 @@ export default function Page() {
   const handleSave = async () => {
     const payload = {
       title,
-      content,
-      tags: tags.split(",").map((tag) => tag.trim()),
-      images,
+      detail,
+      // tags: tags.split(",").map((tag) => tag.trim()),
+      postImage,
       createdAt: new Date().toISOString(),
     };
 
     console.log("🚀 Sending data to Backend:", payload);
 
     try {
-      const response = await fetch("http://localhost:3001/posts", {
+      const response = await fetch("http://localhost:3001/contents/createContent", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -89,7 +89,7 @@ export default function Page() {
 
   const handleCancel = () => {
     setTitle("");
-    setContent("");
+    setDetail("");
     setTags("");
     setImages([]);
     setImagePreviews([]);
@@ -139,8 +139,8 @@ export default function Page() {
             placeholder="เขียนเนื้อหาบทความ..."
             multiline
             rows={10}
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
+            value={detail}
+            onChange={(e) => setDetail(e.target.value)}
           />
         </Grid>
 

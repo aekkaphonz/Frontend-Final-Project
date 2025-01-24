@@ -12,6 +12,7 @@ import {
 import { useEffect, useState } from "react";
 import axios from "axios";
 import EditIcon from "@mui/icons-material/Edit";
+import { useRouter } from "next/navigation";
 
 type User = {
   _id: string;
@@ -29,7 +30,7 @@ const EditPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [file, setFile] = useState<File | null>(null);
-
+  const router = useRouter();
   const fetchUserData = async () => {
     try {
       const response = await axios.get<User[]>(
@@ -85,7 +86,7 @@ const EditPage = () => {
           withCredentials: true,
         }
       );
-      alert("Profile updated successfully!");
+      router.push("/profile")
     } catch (error) {
       console.error("Failed to update user data", error);
       alert("Error updating profile");
@@ -100,7 +101,16 @@ const EditPage = () => {
   };
 
   return (
-    <form>
+<div
+  style={{
+    background: "linear-gradient(135deg, #eceff1, #f5f5f5)",
+    minHeight: "100vh",
+    justifyContent: "center",
+    alignItems: "center",
+    padding: "2rem",
+  }}
+>
+    <form >
       <Card
         sx={{
           maxWidth: 600,
@@ -233,6 +243,7 @@ const EditPage = () => {
         </CardContent>
       </Card>
     </form>
+    </div>
   );
 };
 

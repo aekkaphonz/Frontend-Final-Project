@@ -7,7 +7,7 @@ import Sb from "@/app/sidebarAuther/page";
 import ReadOnlyProfilePage from "../component/profilePage";
 import EditPage from "../component/settingPage";
 
-const UsersPage = () => {
+const EditUsersPage = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
@@ -21,4 +21,4 @@ const UsersPage = () => {
   );
 };
 
-export default UsersPage;
+export default EditUsersPage;

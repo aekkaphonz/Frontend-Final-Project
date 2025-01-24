@@ -95,7 +95,7 @@ export default function SignUp() {
           confirmButtonText: "ตกลง",
           confirmButtonColor: "#77bfa3",
         });
-        reset(); // รีเซ็ตฟอร์ม
+        reset(); 
       }
     } catch (error) {
       Swal.fire({
@@ -129,7 +129,7 @@ export default function SignUp() {
               สมัครสมาชิก
             </div>
 
-            {/* ข้อมูลผู้ใช้ */}
+     
             {/* <Box
               sx={{
                 backgroundColor: "#bfd8bd", // 
@@ -152,7 +152,7 @@ export default function SignUp() {
               </Typography>
             </Box> */}
 
-            {/* ชื่อ */}
+  
             <div className="w-full">
               <TextField
                 id="firstname"
@@ -172,7 +172,7 @@ export default function SignUp() {
               )}
             </div>
 
-            {/* เมล */}
+    
             <div className="w-full">
               <TextField
                 id="email"
@@ -196,7 +196,7 @@ export default function SignUp() {
               )}
             </div>
 
-            {/* รหัสผ่าน */}
+        
             <div className="w-full">
               <TextField
                 type="password"
@@ -221,7 +221,7 @@ export default function SignUp() {
               )}
             </div>
 
-            {/* ยืนยันรหัสผ่าน */}
+         
             <TextField
               type="password"
               id="confirmpassword"
@@ -251,7 +251,7 @@ export default function SignUp() {
               <p className="text-red-500 text-sm">{`${errors.confirmpassword.message}`}</p>
             )}
 
-            {/* เพศ */}
+       
             <div className="flex gap-4">
               <div className="flex-1">
                 <Controller
@@ -288,7 +288,7 @@ export default function SignUp() {
                 )}
               </div>
 
-              {/* วัน/เดือน/ปี */}
+              
               <div className="flex-1">
                 <Controller
                   name="dateOfBirth"
