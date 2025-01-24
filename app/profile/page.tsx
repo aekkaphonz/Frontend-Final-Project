@@ -1,101 +1,221 @@
 "use client";
+import {
+  Box,
+  Button,
+  Card,
+  CardContent,
+  InputAdornment,
+  TextField,
+} from "@mui/material";
+import { useEffect, useState } from "react";
+import axios from "axios";
+import React from "react";
 
-import React, { useState } from "react";
-import { styled } from "@mui/material/styles";
-import { Container, Grid, Paper, Typography, Box, Avatar, IconButton } from "@mui/material";
-import MaleIcon from "@mui/icons-material/Male";
-import CakeIcon from "@mui/icons-material/Cake";
-import EmailIcon from "@mui/icons-material/Email";
-import Sb from "@/app/sidebarAuther/page";
+type User = {
+  _id: string;
+  email: string;
+  password: string;
+  userName: string;
+  gender: string;
+  dateOfBirth: string;
+  profileImage: string;
+  content: any[];
+};
 
-const Item = styled(Paper)(({ theme }) => ({
-  backgroundColor: "#fff",
-  padding: theme.spacing(2),
-  textAlign: "center",
-  border: "1px solid #EBE8E8",
-  boxShadow: "1px 2px 2px rgba(0, 0, 0, 0.2)",
-  borderRadius: 15,
-  color: theme.palette.text.secondary,
-}));
+const EditPage = () => {
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [file, setFile] = useState<File | null>(null); 
 
-export default function ProfilePage() {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-
-  const toggleSidebar = () => {
-    setIsSidebarOpen(!isSidebarOpen);
-  };
-
-  const calculateAge = (birthDate: string) => {
-    const today = new Date();
-    const birth = new Date(birthDate);
-    let age = today.getFullYear() - birth.getFullYear();
-    const m = today.getMonth() - birth.getMonth();
-    if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) {
-      age--;
+  const fetchUserData = async () => {
+    try {
+      const response = await axios.get<User[]>("http://localhost:3001/user/profile", {
+        withCredentials: true,
+      });
+      if (response.data && response.data.length > 0) {
+        setUser(response.data[0]);
+      } else {
+        setError("No user data found");
+      }
+    } catch (err) {
+      setError("Failed to fetch user data");
+    } finally {
+      setLoading(false);
     }
-    return age;
   };
 
-  // ข้อมูลตัวอย่าง
-  const userData = {
-    avatar: "https://via.placeholder.com/150",
-    name: "John Doe",
-    email: "johndoe@example.com",
-    gender: "Male",
-    birthDate: "1990-05-15",
+  useEffect(() => {
+    fetchUserData();
+  }, []);
+
+  if (loading) {
+    return <p>Loading...</p>;
+  }
+
+  if (error) {
+    return <p>{error}</p>;
+  }
+
+  if (!user) {
+    return <p>No user data available</p>;
+  }
+
+  const handleProfileUpdate = async () => {
+    try {
+      const formData = new FormData();
+      formData.append("profileImage", file as Blob); 
+      formData.append("userName", user.userName);
+      formData.append("email", user.email);
+      formData.append("gender", user.gender);
+      formData.append("dateOfBirth", user.dateOfBirth);
+
+      const response = await axios.put(
+        `http://localhost:3001/user/${user._id}`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data", 
+          },
+          withCredentials: true,
+        }
+      );
+      console.log("Updated user data:", response.data);
+    } catch (error) {
+      console.error("Failed to update user data", error);
+      alert("Error updating profile");
+    }
   };
 
-  const age = calculateAge(userData.birthDate);
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const selectedFile = e.target.files ? e.target.files[0] : null;
+    if (selectedFile) {
+      setFile(selectedFile);
+    }
+  };
 
   return (
-    <Container
-      maxWidth={false}
-      sx={{
-        maxWidth: "1400px",
-        marginRight: 15,
-      }}
-    >
-      <Sb isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
+    <form>
+      <Card sx={{ maxWidth: 500, mx: "auto", mt: "10rem" }}>
+        <CardContent>
+          <Box
+            display="flex"
+            flexDirection="column"
+            gap="2rem"
+            mt="2rem"
+            padding="2rem"
+            maxWidth="500px"
+            mx="auto"
+          >
+            <div className="flex justify-center">
+              <strong>User profile</strong>
+            </div>
 
-      <Grid container spacing={3} sx={{ marginLeft: isSidebarOpen ? "240px" : "72px", marginTop: "72px", transition: "margin-left 0.3s" }}>
-        <Grid item md={12}>
-          <Typography sx={{ fontWeight: "bold", fontSize: 26, mb: 3 }}>โปรไฟล์</Typography>
-        </Grid>
+            {user.profileImage && (
+              <div className="flex justify-center">
+                <img
+                  src={user.profileImage}
+                  alt="Profile Image"
+                  style={{
+                    width: "100px",
+                    height: "100%",
+                    borderRadius: "50%",
+                    objectFit: "cover",
+                  }}
+                />
+              </div>
+            )}
 
-        <Grid item md={4}>
-          <Item>
-            <Avatar
-              alt={userData.name}
-              src={userData.avatar}
-              sx={{ width: 150, height: 150, margin: "0 auto" }}
-            />
-            <Typography sx={{ fontSize: 18, fontWeight: "bold", mt: 2 }}>
-              {userData.name}
-            </Typography>
-            <Typography sx={{ color: "gray", fontSize: 14 }}>
-              <EmailIcon sx={{ fontSize: 18, mr: 1 }} />
-              {userData.email}
-            </Typography>
-          </Item>
-        </Grid>
+            <div className="flex items-center gap-1">
+              <div className="w-1/5">
+                <strong>อีเมล :</strong>
+              </div>
+              <div className="w-4/5 flex-1">
+                <TextField
+                  value={user.email}
+                  variant="outlined"
+                  fullWidth
+                  InputProps={{
+                    endAdornment: <InputAdornment position="end"></InputAdornment>,
+                  }}
+                  disabled
+                />
+              </div>
+            </div>
 
-        <Grid item md={8}>
-          <Item>
-            <Typography sx={{ fontWeight: "bold", fontSize: 20, mb: 2 }}>ข้อมูลส่วนตัว</Typography>
-            <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
-              <MaleIcon sx={{ color: "blue", mr: 2 }} />
-              <Typography>เพศ: {userData.gender}</Typography>
+            <div className="flex items-center gap-1">
+              <div className="w-1/5">
+                <strong>ชื่อผู้ใช้ :</strong>
+              </div>
+              <div className="w-4/5 flex-1">
+                <TextField
+                  value={user.userName}
+                  variant="outlined"
+                  fullWidth
+                  onChange={(e) => setUser({ ...user, userName: e.target.value })}
+                  InputProps={{
+                    endAdornment: <InputAdornment position="end"></InputAdornment>,
+                  }}
+                />
+              </div>
+            </div>
+
+            <div className="flex items-center gap-1">
+              <div className="w-1/5">
+                <strong>เพศ :</strong>
+              </div>
+              <div className="w-4/5 flex-1">
+                <TextField
+                  value={user.gender}
+                  variant="outlined"
+                  fullWidth
+                  onChange={(e) => setUser({ ...user, gender: e.target.value })}
+                  InputProps={{
+                    endAdornment: <InputAdornment position="end"></InputAdornment>,
+                  }}
+                />
+              </div>
+            </div>
+
+            <div className="flex items-center gap-1">
+              <div className="w-1/5">
+                <strong>วันเกิด :</strong>
+              </div>
+              <div className="w-4/5 flex-1">
+                <TextField
+                  value={user.dateOfBirth}
+                  variant="outlined"
+                  fullWidth
+                  onChange={(e) =>
+                    setUser({ ...user, dateOfBirth: e.target.value })
+                  }
+                  InputProps={{
+                    endAdornment: <InputAdornment position="end"></InputAdornment>,
+                  }}
+                />
+              </div>
+            </div>
+
+          
+            <div>
+              <input
+                type="file"
+                onChange={handleFileChange}
+                accept="image/*"
+              />
+            </div>
+
+            <Box display="flex" justifyContent="center" mt={2}>
+              <Button variant="contained" color="primary" onClick={handleProfileUpdate}>
+                Update Profile
+              </Button>
             </Box>
-            <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
-              <CakeIcon sx={{ color: "pink", mr: 2 }} />
-              <Typography>วันเกิด: {userData.birthDate}</Typography>
-            </Box>
-            <Box sx={{ display: "flex", alignItems: "center" }}>
-              <Typography>อายุ: {age} ปี</Typography>
-            </Box>
-          </Item>
-        </Grid>
-      </Grid>
-    </Container>
+          </Box>
+        </CardContent>
+      </Card>
+    </form>
   );
-}
+};
+
+export default EditPage;

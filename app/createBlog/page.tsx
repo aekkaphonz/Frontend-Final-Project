@@ -64,7 +64,7 @@ export default function Page() {
       createdAt: new Date().toISOString(),
     };
 
-    console.log("🚀 Sending data to Backend:", payload);
+    console.log("Sending data to Backend:", payload);
 
     try {
       const response = await fetch("http://localhost:3001/posts", {

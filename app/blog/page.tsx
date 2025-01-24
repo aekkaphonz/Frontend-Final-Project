@@ -70,14 +70,9 @@ export default function Page() {
   }, []);
 
   const handleEdit = (post: any) => {
-    const queryString = `/editBlog?id=${post._id}&title=${encodeURIComponent(
-      post.title
-    )}&content=${encodeURIComponent(post.content)}&images=${encodeURIComponent(
-      JSON.stringify(post.images)
-    )}&tags=${encodeURIComponent(post.tags.join(", "))}`;
-
-    router.push(queryString);
-  };
+    localStorage.setItem("editPost", JSON.stringify(post)); 
+    router.push(`/editBlog?id=${post._id}`); // ส่งแค่ ID
+  };  
 
   const handleDelete = async () => {
     if (selectedPost) {

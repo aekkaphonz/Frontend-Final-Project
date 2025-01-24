@@ -8,6 +8,7 @@ import DashboardIcon from "@mui/icons-material/Dashboard";
 import CollectionsBookmarkIcon from "@mui/icons-material/CollectionsBookmark";
 import InsertChartIcon from "@mui/icons-material/InsertChart";
 import EditNoteOutlinedIcon from "@mui/icons-material/EditNoteOutlined";
+import PersonIcon from '@mui/icons-material/Person';
 import { useAuth } from "@/app/context/AuthProvider";
 
 function Sb({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: () => void }) {
