@@ -7,17 +7,19 @@ import { Box, Button, Container, Typography, Grid, Card, CardContent } from "@mu
 // import Navbar from "@/app/navbar/homeNavbar";
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import Link from "next/link";
-import HomeNavbar from "@/app/navbar/homeNavbar"; // Navbar ก่อน Login
-import HomeNavbarAfterLogin from "@/app/navbar/homeNavbarAfterLogin"; // Navbar หลัง Login
+import { useAuth } from "@/app/context/AuthProvider";
+import HomeNavbarAfterLogin from "@/app/navbar/homeNavbarAfterLogin";
+import HomeNavbar from "@/app/navbar/homeNavbar";
 
 
 
 
 export default function Home() {
+  const { isLoggedIn } = useAuth();
   return (
 
-    <>
-    <HomeNavbar/>
+    <>{isLoggedIn ? <HomeNavbarAfterLogin /> : <HomeNavbar />}
+    
       <Container
         sx={{
           display: "flex",

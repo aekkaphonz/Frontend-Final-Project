@@ -27,6 +27,11 @@ import WhatshotIcon from "@mui/icons-material/Whatshot";
 import Link from "next/link";
 import { Visibility, Comment, ThumbUp } from "@mui/icons-material";
 import { useRouter } from "next/navigation";
+import Navbar from "@/app/navbar/page";
+import AfterLogin from "@/app/navbar/AfterLogin"
+import { useAuth } from "@/app/context/AuthProvider";
+
+
 
 interface Post {
   _id: string;
@@ -39,6 +44,7 @@ interface Post {
 }
 
 export default function Page() {
+  const { isLoggedIn } = useAuth();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [data, setData] = useState<Post[]>([]);

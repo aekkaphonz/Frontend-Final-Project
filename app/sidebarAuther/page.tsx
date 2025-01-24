@@ -1,15 +1,36 @@
 "use client";
 
 import React from "react";
-import Link from "next/link"; // ใช้สำหรับลิงค์
-import { Box, List, ListItem, ListItemIcon, ListItemText, AppBar, Toolbar, IconButton, Typography, Tooltip, Button } from "@mui/material";
+import Link from "next/link"; 
+import { Avatar, Box, List, ListItem, Menu, MenuItem, ListItemIcon, ListItemText, AppBar, Toolbar, IconButton, Typography, Tooltip, Button } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import CollectionsBookmarkIcon from "@mui/icons-material/CollectionsBookmark";
 import InsertChartIcon from "@mui/icons-material/InsertChart";
 import EditNoteOutlinedIcon from "@mui/icons-material/EditNoteOutlined";
+import { useAuth } from "@/app/context/AuthProvider";
+import PersonIcon from '@mui/icons-material/Person';
 
 function Sb({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: () => void }) {
+
+  const { user, logout } = useAuth();
+  const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
+  const settings = ["Profile", "Dashboard", "Logout"];
+
+  const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorElUser(event.currentTarget);
+  };
+
+  const handleCloseUserMenu = () => {
+    setAnchorElUser(null);
+  };
+
+  const handleMenuClick = async (setting: string) => {
+    if (setting === "Logout") {
+      await logout(); // เรียกใช้ฟังก์ชัน logout
+    }
+    handleCloseUserMenu(); // ปิดเมนู
+  };
   return (
     <>
       {/* Navbar */}
@@ -32,7 +53,7 @@ function Sb({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: () => v
             >
               <MenuIcon />
             </IconButton>
-            <Link href="/statistics" >
+            <Link href="http://localhost:3000/home/highlights" >
               <img
                 src="/images/logo-blogs.png"
                 alt="Cleaning Illustration"
@@ -40,27 +61,60 @@ function Sb({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: () => v
               />
             </Link>
           </Box>
+          <Box sx={{ display: "flex", alignItems: "center", gap: "20px" }}>
+            {/* ปุ่มเขียน */}
+            <Button href="/createBlog"
+              sx={{
+                color: "#ffffff",
+                backgroundColor: "#77bfa3",
+                "&:hover": {
+                  backgroundColor: "#F7F7F7",
+                  color: "#77bfa3"
+                },
+                borderRadius: "20px",
+                padding: "6px 16px",
+                textTransform: "none",
+                fontWeight: "bold",
+              }}
 
-          {/* ปุ่มเขียน */}
-          <Button href="/createBlog"
-            sx={{
-              color: "#ffffff",
-              backgroundColor: "#77bfa3", 
-              "&:hover": { 
-                backgroundColor: "#F7F7F7" ,
-                color: "#77bfa3"
-              },
-              borderRadius: "20px",
-              padding: "6px 16px",
-              textTransform: "none",
-              fontWeight: "bold",
-            }}
-            variant="contained"
-          >
-            <EditNoteOutlinedIcon sx={{ marginRight: 1 }} />
-            เขียน
-          </Button>
+              variant="contained"
+            >
+              <EditNoteOutlinedIcon sx={{ marginRight: 1 }} />
+              เขียน
+            </Button>
+            {/* เมนูผู้ใช้ */}
+            <Box sx={{ flexGrow: 0 }}>
+              <Tooltip title="Profile">
+                <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+                  <Avatar alt={user?.userName || "User"} />
+                </IconButton>
+              </Tooltip>
+              <Menu
+                sx={{ mt: "45px" }}
+                id="menu-appbar"
+                anchorEl={anchorElUser}
+                anchorOrigin={{
+                  vertical: "top",
+                  horizontal: "right",
+                }}
+                keepMounted
+                transformOrigin={{
+                  vertical: "top",
+                  horizontal: "right",
+                }}
+                open={Boolean(anchorElUser)}
+                onClose={handleCloseUserMenu}
+              >
+                {settings.map((setting) => (
+                  <MenuItem key={setting} onClick={() => handleMenuClick(setting)}>
+                    <Typography textAlign="center">{setting}</Typography>
+                  </MenuItem>
+                ))}
+              </Menu>
+            </Box>
+          </Box>
         </Toolbar>
+
       </AppBar>
 
       {/* Sidebar */}
@@ -105,8 +159,8 @@ function Sb({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: () => v
           <Tooltip title="เนื้อหา" placement="right">
             <Link href="/blog" passHref>
               <ListItem
-                component="button"   
-                
+                component="button"
+
                 sx={{
                   display: "flex",
                   flexDirection: isOpen ? "row" : "column",
@@ -145,6 +199,29 @@ function Sb({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: () => v
                   <InsertChartIcon />
                 </ListItemIcon>
                 {isOpen && <ListItemText primary="สถิติ" sx={{ color: "#000" }} />}
+              </ListItem>
+            </Link>
+          </Tooltip>
+
+          <Tooltip title="โปรไฟล์" placement="right">
+            <Link href="/profile" passHref>
+              <ListItem
+                component="button"
+                sx={{
+                  display: "flex",
+                  flexDirection: isOpen ? "row" : "column",
+                  alignItems: "center",
+                  justifyContent: isOpen ? "flex-start" : "center",
+                  padding: isOpen ? "12px 20px" : "12px 0",
+                  "&:hover": {
+                    backgroundColor: "rgba(0, 0, 0, 0.08)",
+                  },
+                }}
+              >
+                <ListItemIcon sx={{ justifyContent: "center", color: "#000", minWidth: "40px" }}>
+                  <PersonIcon />
+                </ListItemIcon>
+                {isOpen && <ListItemText primary="โปรไฟล์" sx={{ color: "#000" }} />}
               </ListItem>
             </Link>
           </Tooltip>

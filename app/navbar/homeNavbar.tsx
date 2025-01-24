@@ -1,11 +1,9 @@
 "use client";
 
 import React from "react";
-import SearchIcon from "@mui/icons-material/Search"; 
-import AddIcon from "@mui/icons-material/Add"; 
-import { AppBar, Toolbar, Button, Box, TextField, InputAdornment, Typography} from "@mui/material";
+import { AppBar, Toolbar, Button, Box, TextField, InputAdornment, Typography } from "@mui/material";
 import Link from "next/link";
-
+import EditNoteOutlinedIcon from "@mui/icons-material/EditNoteOutlined";
 
 const themeColors = {
     primary: "#ffffff",
@@ -29,7 +27,7 @@ export default function HomeNavbar() {
                 <Box
                     sx={{
                         display: "flex",
-                        alignItems: "center", 
+                        alignItems: "center",
                         gap: "10px",
                     }}
                 >
@@ -57,25 +55,34 @@ export default function HomeNavbar() {
                     }}
                 >
                     {/* ไอคอนและข้อความ "สร้าง" */}
-                    <Box 
+                    <Box
                         sx={{
                             display: "flex",
                             alignItems: "center",
                             gap: "15px", // ระยะห่างระหว่างไอคอนและข้อความ
                         }}
                     >
-                        <Link href="/signin" >
-                            <Typography
-                                variant="h6"
-                                sx={{
-                                    color: themeColors.text,
-                                }}
-                            >
-                                สร้าง
-                            </Typography>
-                        </Link>
+                        {/* ปุ่มเขียน */}
+                        <Button href="/signin"
+                            sx={{
+                                color: "#ffffff",
+                                backgroundColor: "#77bfa3",
+                                "&:hover": {
+                                    backgroundColor: "#F7F7F7",
+                                    color: "#77bfa3"
+                                },
+                                borderRadius: "20px",
+                                padding: "6px 16px",
+                                textTransform: "none",
+                                fontWeight: "bold",
+                            }}
+                            variant="contained"
+                        >
+                            <EditNoteOutlinedIcon sx={{ marginRight: 1 }} />
+                            เขียน
+                        </Button>
                     </Box>
-                    
+
                     {/* Signin Button */}
                     <Button
                         href="/signin"

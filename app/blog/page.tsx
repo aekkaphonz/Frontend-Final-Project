@@ -48,12 +48,12 @@ export default function Page() {
     setIsSidebarOpen(!isSidebarOpen);
   };
 
-  const fetchPosts = async (userId: string) => {
+  const fetchPosts = async () => {
     try {
-      const response = await fetch(
-        `http://localhost:3001/posts?userId=${userId}`
-      );
-      
+      const response = await fetch(`http://localhost:3001/posts`, {
+        credentials: "include", // ส่ง cookie เพื่อใช้ session
+      });
+
       if (!response.ok) throw new Error("Failed to fetch posts");
 
       const data = await response.json();
@@ -66,10 +66,7 @@ export default function Page() {
   };
 
   useEffect(() => {
-    const storedUserId = localStorage.getItem("userId"); // ดึง userId จาก localStorage
-    if (storedUserId) {
-      fetchPosts(storedUserId);
-    }
+    fetchPosts();
   }, []);
 
   const handleEdit = (post: any) => {
@@ -116,36 +113,19 @@ export default function Page() {
       <Sb isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
 
       <Grid
-        container spacing={3} 
-        sx={{ 
+        container spacing={3}
+        sx={{
           marginLeft: isSidebarOpen ? "240px" : "72px",
           marginTop: "72px",
           transition: "margin-left 0.3s",
-          padding: "16px", // ปรับ padding ด้านใน
+          padding: "16px",
           maxWidth: {
-            xs: "100%", // สำหรับหน้าจอมือถือ
-            sm: isSidebarOpen ? "calc(100% - 240px)" : "calc(100% - 72px)", // สำหรับหน้าจอเล็กขึ้นไป
-            md: isSidebarOpen ? "calc(100% - 240px)" : "calc(100% - 72px)", // สำหรับหน้าจอ Desktop
+            xs: "100%",
+            sm: isSidebarOpen ? "calc(100% - 240px)" : "calc(100% - 72px)",
+            md: isSidebarOpen ? "calc(100% - 240px)" : "calc(100% - 72px)",
           },
         }}
       >
-        <Grid item md={12}>
-          <Typography sx={{ fontWeight: "bold", fontSize: 26, mb: 1 }}>
-            เนื้อหาบทความ
-          </Typography>
-        </Grid>
-        <Grid item md={12}>
-          <Box sx={{ border: "1px solid #C0C0C0" }} />
-        </Grid>
-
-        <Grid item md={12}>
-          <Box sx={{ display: "flex", justifyContent: "end" }}>
-            <Button variant="text">
-              <FilterAltOutlinedIcon />
-              ตัวกรอง
-            </Button>
-          </Box>
-        </Grid>
 
         <Grid item md={12}>
           <TableContainer component={Paper}>
@@ -193,7 +173,7 @@ export default function Page() {
                             alt={row.title || "-"}
                             style={{
                               width: "50px",
-                              height: "50px",
+                              height: "100%",
                               borderRadius: "8px",
                             }}
                           />
