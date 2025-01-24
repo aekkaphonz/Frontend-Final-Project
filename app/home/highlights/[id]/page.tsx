@@ -1,12 +1,7 @@
 "use client";
 
-<<<<<<< HEAD
-import React, { useEffect, useState } from "react";
-import { Container, Card, CardContent, CardMedia, Typography, Box, IconButton, Tooltip, TextField, InputAdornment, Menu, MenuItem, } from "@mui/material";
-=======
 import React, { createContext, useContext, useEffect, useState } from "react";
 import {Container,Card,CardContent,CardMedia,Typography,Box,IconButton,Tooltip,TextField,InputAdornment,Menu,MenuItem,} from "@mui/material";
->>>>>>> d176bedd715a0f4a7a542e419566494345f4fe41
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import ShareIcon from "@mui/icons-material/Share";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
@@ -16,6 +11,7 @@ import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { useRouter } from "next/navigation";
 import { useParams } from "next/navigation";
 import Navbar from "@/app/navbar/AfterLogin";
+import { useAuth } from "@/app/context/AuthProvider"; 
 
 interface User {
   id: string;
