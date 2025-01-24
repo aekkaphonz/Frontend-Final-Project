@@ -3,6 +3,7 @@ import { Box, Typography, Paper, Divider, Button } from "@mui/material";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
+import dayjs from "dayjs";
 
 type User = {
   _id: string;
@@ -21,9 +22,12 @@ const ReadOnlyProfilePage = () => {
 
   const fetchUserData = async () => {
     try {
-      const response = await axios.get<User[]>("http://localhost:3001/user/profile", {
-        withCredentials: true,
-      });
+      const response = await axios.get<User[]>(
+        "http://localhost:3001/user/profile",
+        {
+          withCredentials: true,
+        }
+      );
       if (response.data && response.data.length > 0) {
         setUser(response.data[0]);
       } else {
@@ -76,7 +80,8 @@ const ReadOnlyProfilePage = () => {
       >
         <Box
           sx={{
-            background: "url('https://via.placeholder.com/700x200') center/cover",
+            background:
+              "url('https://via.placeholder.com/700x200') center/cover",
             height: "200px",
             position: "relative",
           }}
@@ -137,7 +142,11 @@ const ReadOnlyProfilePage = () => {
           >
             {user.userName}
           </Typography>
-          <Typography variant="body2" color="text.secondary" sx={{ marginBottom: "1rem" }}>
+          <Typography
+            variant="body2"
+            color="text.secondary"
+            sx={{ marginBottom: "1rem" }}
+          >
             {user.email}
           </Typography>
           <Divider sx={{ marginY: "1.5rem" }} />
@@ -153,10 +162,14 @@ const ReadOnlyProfilePage = () => {
               <strong>เพศ:</strong> {user.gender}
             </Typography>
             <Typography variant="body1" sx={{ width: "100%" }}>
-              <strong>วันเกิด:</strong> {user.dateOfBirth}
+              <strong>วันเกิด:</strong>{" "}
+              {user.dateOfBirth
+                ? dayjs(user.dateOfBirth).format("DD/MM/YYYY")
+                : "ไม่ระบุ"}
             </Typography>
           </Box>
-          <Button className="mt-8"
+          <Button
+            className="mt-8"
             variant="contained"
             color="primary"
             sx={{

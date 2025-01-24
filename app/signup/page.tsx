@@ -327,46 +327,6 @@ export default function SignUp() {
               </div>
             </div>
 
-            {/* <div> เผื่อใช้
-              <Controller
-                name="agreeToTerms"
-                control={control}
-                render={({ field }) => (
-                  <div>
-                    <Checkbox {...field} defaultChecked />
-                    <label>
-                      ข้าพเจ้ายอมรับข้อกำหนดและเงื่อนไขในการดำเนินการ
-                    </label>
-                  </div>
-                )}
-              />
-
-            </div>
-
-            <div className="btn1">
-              <Button
-                variant="contained"
-                sx={{
-                  backgroundColor: "#77bfa3",
-                  "&:hover": {
-                    backgroundColor: "#77bfa3",
-                  },
-                  "&:focus": {
-                    backgroundColor: "#77bfa3",
-                  },
-                  "&.MuiButton-root": {
-                    outline: "none",
-                  },
-                }}
-                className="w-full text-white p-2 text-lg"
-               
-                type="submit"              
-              >
-                ยืนยัน
-              </Button>
-
-            </div> */}
-
             <div className="grid grid-cols-2 justify-between items-center">
               <div className="btn1 flex items-center">
                 <Button
