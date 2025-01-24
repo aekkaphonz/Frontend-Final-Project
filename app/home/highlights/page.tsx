@@ -323,7 +323,7 @@ function RegionCard({ post }: { post: Post }) {
             component="img"
             height="150"
             image={post.images.length > 0 ? post.images[0] : ""}
-            alt="ยังไม่มีรูป"
+            alt="ไม่มีรูปภาพ"
           />
           <CardContent>
             <Typography variant="h6">{post.title}</Typography>
