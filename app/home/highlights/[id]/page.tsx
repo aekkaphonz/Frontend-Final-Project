@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
 import {Container,Card,CardContent,CardMedia,Typography,Box,IconButton,Tooltip,TextField,InputAdornment,Menu,MenuItem,} from "@mui/material";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import ShareIcon from "@mui/icons-material/Share";
@@ -13,6 +13,12 @@ import { useParams } from "next/navigation";
 import Navbar from "@/app/navbar/page";
 import AfterLogin from "@/app/navbar/AfterLogin"
 import { useAuth } from "@/app/context/AuthProvider";
+
+interface User {
+  id: string;
+  name: string;
+  email: string;
+}
 
 interface Attraction {
   _id: string;
