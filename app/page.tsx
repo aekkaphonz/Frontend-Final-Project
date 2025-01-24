@@ -4,15 +4,13 @@
 import React from "react";
 import { Box, Button, Container, Typography, Grid, Card, CardContent } from "@mui/material";
 // import Navbar from "@/app/navbar/homeNavbarAfterLogin";
-// import Navbar from "@/app/navbar/homeNavbar";
+ import Navbar from "@/app/navbar/homeNavbar";
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import Link from "next/link";
 
 
-
-
 export default function Home() {
-  const { isLoggedIn } = useAuth();
+  // const { isLoggedIn } = useAuth();
   return (
 
     <>
