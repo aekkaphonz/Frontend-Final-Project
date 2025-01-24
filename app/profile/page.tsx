@@ -8,6 +8,9 @@ import CakeIcon from "@mui/icons-material/Cake";
 import EmailIcon from "@mui/icons-material/Email";
 import axios from "axios";
 import Sb from "@/app/sidebarAuther/page";
+import Navbar from "@/app/navbar/page";
+import AfterLogin from "@/app/navbar/AfterLogin"
+import { useAuth } from "@/app/context/AuthProvider";
 
 const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: "#fff",
@@ -29,6 +32,7 @@ type User = {
 };
 
 export default function ProfilePage() {
+    const { isLoggedIn } = useAuth();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
@@ -95,7 +99,7 @@ export default function ProfilePage() {
         marginRight: 15,
       }}
     >
-      <Sb isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
+           {isLoggedIn ? <AfterLogin /> : <Navbar />}
 
       <Grid container spacing={3} sx={{ marginLeft: isSidebarOpen ? "240px" : "72px", marginTop: "72px", transition: "margin-left 0.3s" }}>
         <Grid item md={12}>

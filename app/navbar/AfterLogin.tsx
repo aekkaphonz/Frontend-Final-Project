@@ -46,9 +46,9 @@ function NavLogIn({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: (
       await logout(); // เรียกใช้ฟังก์ชัน logout
     } else if (setting === "Dashboard") {
       router.push("/dashboard"); // เปลี่ยนเส้นทางไปยัง /dashboard
-    }//else if (setting === "Profile") {
-    //   router.push("/profile"); 
-    // }
+    }else if (setting === "Profile") {
+       router.push("http://localhost:3000/test"); 
+    }
     handleCloseUserMenu(); // ปิดเมนู
   };
 
