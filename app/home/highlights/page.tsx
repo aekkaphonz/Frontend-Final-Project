@@ -338,7 +338,7 @@ function RegionCard({ post }: { post: Post }) {
           </Box>
           <Box sx={{ display: "flex", alignItems: "center" }}>
             <Comment /> {post.comments}
-          </Box>
+          </Box> 
           <Box sx={{ display: "flex", alignItems: "center" }}>
             <ThumbUp /> {post.likes}
           </Box>
