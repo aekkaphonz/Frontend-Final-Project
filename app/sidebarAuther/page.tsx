@@ -1,15 +1,40 @@
 "use client";
 
 import React from "react";
-import Link from "next/link"; 
-import { Avatar, Box, List, ListItem, Menu, MenuItem, ListItemIcon, ListItemText, AppBar, Toolbar, IconButton, Typography, Tooltip, Button } from "@mui/material";
+import Link from "next/link"; // ใช้สำหรับลิงค์
+import {
+  Box,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  AppBar,
+  Toolbar,
+  IconButton,
+  Typography,
+  Tooltip,
+  TextField,
+  Button
+} from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
+import LogoutIcon from "@mui/icons-material/Logout";
+import AddIcon from "@mui/icons-material/Add";
+import SearchIcon from "@mui/icons-material/Search";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import CollectionsBookmarkIcon from "@mui/icons-material/CollectionsBookmark";
 import InsertChartIcon from "@mui/icons-material/InsertChart";
+import SentimentSatisfiedAltIcon from '@mui/icons-material/SentimentSatisfiedAlt';
+import HomeIcon from '@mui/icons-material/Home';
 import EditNoteOutlinedIcon from "@mui/icons-material/EditNoteOutlined";
 import { useAuth } from "@/app/context/AuthProvider";
-import PersonIcon from '@mui/icons-material/Person';
+
+
+const themeColors = {
+  primary: "#ffffff",
+  text: "#000000",
+  buttonGreen: "#77bfa3",
+  buttonRed: "#ff4d4f",
+};
 
 function Sb({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: () => void }) {
 
@@ -37,19 +62,19 @@ function Sb({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: () => v
       <AppBar
         position="fixed"
         sx={{
-          backgroundColor: "#ffffff",
+          backgroundColor: themeColors.primary,
           boxShadow: "0px 3px 3px rgba(0,0,0,0.1)",
           borderBottom: "1px solid #ddd",
           zIndex: 1300, // ให้อยู่เหนือ Sidebar
         }}
       >
-        <Toolbar sx={{ justifyContent: "space-between" }}> {/* ปรับให้จัดตำแหน่งแบบ space-between */}
+        <Toolbar sx={{ justifyContent: "space-between" }}>
           <Box sx={{ display: "flex", alignItems: "center" }}>
             <IconButton
               size="large"
               edge="start"
               onClick={toggleSidebar}
-              sx={{ color: "#000" }}
+              sx={{ color: themeColors.text }}
             >
               <MenuIcon />
             </IconButton>
@@ -76,42 +101,62 @@ function Sb({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: () => v
                 textTransform: "none",
                 fontWeight: "bold",
               }}
-
-              variant="contained"
             >
-              <EditNoteOutlinedIcon sx={{ marginRight: 1 }} />
-              เขียน
             </Button>
-            {/* เมนูผู้ใช้ */}
-            <Box sx={{ flexGrow: 0 }}>
-              <Tooltip title="Profile">
-                <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                  <Avatar alt={user?.userName || "User"} />
-                </IconButton>
-              </Tooltip>
-              <Menu
-                sx={{ mt: "45px" }}
-                id="menu-appbar"
-                anchorEl={anchorElUser}
-                anchorOrigin={{
-                  vertical: "top",
-                  horizontal: "right",
+          </Box>
+
+            {/* Search Bar */}
+          <Box sx={{ flexGrow: 1, mx: 2, display: "flex", justifyContent: "center" }}>
+              <TextField
+                placeholder="ค้นหา"
+                variant="outlined"
+                size="small"
+                sx={{
+                  width: "60%",
+                  backgroundColor: "#f6f6f6",
                 }}
-                keepMounted
-                transformOrigin={{
-                  vertical: "top",
-                  horizontal: "right",
+                InputProps={{
+                  endAdornment: (
+                    <IconButton>
+                      <SearchIcon />
+                    </IconButton>
+                  ),
                 }}
-                open={Boolean(anchorElUser)}
-                onClose={handleCloseUserMenu}
-              >
-                {settings.map((setting) => (
-                  <MenuItem key={setting} onClick={() => handleMenuClick(setting)}>
-                    <Typography textAlign="center">{setting}</Typography>
-                  </MenuItem>
-                ))}
-              </Menu>
-            </Box>
+              />
+          </Box>
+
+          {/* ปุ่มไอคอน "สร้าง" และ "ออกจากระบบ" */}
+          <Box sx={{ display: "flex", alignItems: "center", gap: "16px" }}>
+            <Link href="/createBlog" passHref>
+              <Box sx={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                <AddIcon
+                  sx={{
+                    color: themeColors.buttonGreen,
+                    fontWeight: "bold",
+                    boxShadow: "0px 2px 5px rgba(0,0,0,0.2)", // เพิ่มเงา
+                  }}
+                />
+                <Typography
+                  variant="h6"
+                  sx={{
+                    color: themeColors.text,
+                    fontWeight: "bold",
+                  }}
+                >
+                  สร้าง
+                </Typography>
+              </Box>
+            </Link>
+
+            <Link href="/profile" passHref>
+                <SentimentSatisfiedAltIcon
+                sx={{
+                    color: themeColors.buttonGreen,
+                    fontWeight: "bold",
+                    boxShadow: "0px 2px 5px rgba(0,0,0,0.2)", // เพิ่มเงา
+                }}
+                />
+            </Link>
           </Box>
         </Toolbar>
 
@@ -133,19 +178,36 @@ function Sb({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: () => v
         }}
       >
         <List>
-          <Link href="/dashboard" passHref>
-            <Tooltip title="แดชบอร์ด" placement="right">
+          <Tooltip title="หน้าหลัก" placement="right">
+            <Link href="/homeMember/house" passHref>
               <ListItem
-                component="button"
                 sx={{
                   display: "flex",
                   flexDirection: isOpen ? "row" : "column",
                   alignItems: "center",
                   justifyContent: isOpen ? "flex-start" : "center",
                   padding: isOpen ? "12px 20px" : "12px 0",
-                  "&:hover": {
-                    backgroundColor: "rgba(0, 0, 0, 0.08)",
-                  },
+                  "&:hover": { backgroundColor: "rgba(0, 0, 0, 0.08)" },
+                }}
+              >
+                <ListItemIcon sx={{ justifyContent: "center", color: "#000", minWidth: "40px" }}>
+                  <HomeIcon />
+                </ListItemIcon>
+                {isOpen && <ListItemText primary="หน้าหลัก" sx={{ color: "#000" }} />}
+              </ListItem>
+            </Link>
+          </Tooltip>
+
+          <Tooltip title="แดชบอร์ด" placement="right">
+            <Link href="/dashboard" passHref>
+              <ListItem
+                sx={{
+                  display: "flex",
+                  flexDirection: isOpen ? "row" : "column",
+                  alignItems: "center",
+                  justifyContent: isOpen ? "flex-start" : "center",
+                  padding: isOpen ? "12px 20px" : "12px 0",
+                  "&:hover": { backgroundColor: "rgba(0, 0, 0, 0.08)" },
                 }}
               >
                 <ListItemIcon sx={{ justifyContent: "center", color: "#000", minWidth: "40px" }}>
@@ -153,29 +215,25 @@ function Sb({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: () => v
                 </ListItemIcon>
                 {isOpen && <ListItemText primary="แดชบอร์ด" sx={{ color: "#000" }} />}
               </ListItem>
-            </Tooltip>
-          </Link>
+            </Link>
+          </Tooltip>
 
-          <Tooltip title="เนื้อหา" placement="right">
+          <Tooltip title="บทความ" placement="right">
             <Link href="/blog" passHref>
               <ListItem
-                component="button"
-
                 sx={{
                   display: "flex",
                   flexDirection: isOpen ? "row" : "column",
                   alignItems: "center",
                   justifyContent: isOpen ? "flex-start" : "center",
                   padding: isOpen ? "12px 20px" : "12px 0",
-                  "&:hover": {
-                    backgroundColor: "rgba(0, 0, 0, 0.08)",
-                  },
+                  "&:hover": { backgroundColor: "rgba(0, 0, 0, 0.08)" },
                 }}
               >
                 <ListItemIcon sx={{ justifyContent: "center", color: "#000", minWidth: "40px" }}>
                   <CollectionsBookmarkIcon />
                 </ListItemIcon>
-                {isOpen && <ListItemText primary="เนื้อหา" sx={{ color: "#000" }} />}
+                {isOpen && <ListItemText primary="บทความ" sx={{ color: "#000" }} />}
               </ListItem>
             </Link>
           </Tooltip>
@@ -183,16 +241,13 @@ function Sb({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: () => v
           <Tooltip title="สถิติ" placement="right">
             <Link href="/statistics" passHref>
               <ListItem
-                component="button"
                 sx={{
                   display: "flex",
                   flexDirection: isOpen ? "row" : "column",
                   alignItems: "center",
                   justifyContent: isOpen ? "flex-start" : "center",
                   padding: isOpen ? "12px 20px" : "12px 0",
-                  "&:hover": {
-                    backgroundColor: "rgba(0, 0, 0, 0.08)",
-                  },
+                  "&:hover": { backgroundColor: "rgba(0, 0, 0, 0.08)" },
                 }}
               >
                 <ListItemIcon sx={{ justifyContent: "center", color: "#000", minWidth: "40px" }}>
@@ -203,28 +258,26 @@ function Sb({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: () => v
             </Link>
           </Tooltip>
 
-          <Tooltip title="โปรไฟล์" placement="right">
-            <Link href="/profile" passHref>
+          <Tooltip title="ออกจากระบบ" placement="right">
+            <Link href="/" passHref>
               <ListItem
-                component="button"
                 sx={{
                   display: "flex",
                   flexDirection: isOpen ? "row" : "column",
                   alignItems: "center",
                   justifyContent: isOpen ? "flex-start" : "center",
                   padding: isOpen ? "12px 20px" : "12px 0",
-                  "&:hover": {
-                    backgroundColor: "rgba(0, 0, 0, 0.08)",
-                  },
+                  "&:hover": { backgroundColor: "rgba(0, 0, 0, 0.08)" },
                 }}
               >
-                <ListItemIcon sx={{ justifyContent: "center", color: "#000", minWidth: "40px" }}>
-                  <PersonIcon />
+                <ListItemIcon sx={{ justifyContent: "center", color: "#ff4d4f", minWidth: "40px" }}>
+                  <LogoutIcon />
                 </ListItemIcon>
-                {isOpen && <ListItemText primary="โปรไฟล์" sx={{ color: "#000" }} />}
+                {isOpen && <ListItemText primary="ออกจากระบบ" sx={{ color: "#ff4d4f" }} />}
               </ListItem>
             </Link>
           </Tooltip>
+          
         </List>
       </Box>
     </>
