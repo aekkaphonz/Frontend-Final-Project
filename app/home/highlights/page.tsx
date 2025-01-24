@@ -33,6 +33,7 @@ import { useAuth } from "@/app/context/AuthProvider";
 
 
 
+
 interface Post {
   _id: string;
   title: string;
@@ -86,14 +87,7 @@ export default function Page() {
   return (
     <Box sx={{ display: "flex", minHeight: "100vh" }}>
       {/* Sidebar and Navbar */}
-      <Sb
-        isOpen={isSidebarOpen}
-        toggleSidebar={toggleSidebar}
-        searchQuery={searchQuery}
-        setSearchQuery={setSearchQuery}
-        handleSearch={handleSearch}
-      />
-
+      {isLoggedIn ? <AfterLogin /> : <Navbar />}
 
       {/* Main Content */}
       <Box

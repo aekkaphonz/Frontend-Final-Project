@@ -11,6 +11,8 @@ import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { useRouter } from "next/navigation";
 import { useParams } from "next/navigation";
 import Navbar from "@/app/navbar/page";
+import AfterLogin from "@/app/navbar/AfterLogin"
+import { useAuth } from "@/app/context/AuthProvider";
 
 interface Attraction {
   _id: string;
@@ -28,6 +30,7 @@ interface Comment {
 }
 
 export default function Page() {
+      const { isLoggedIn } = useAuth();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [data, setData] = useState<Attraction | null>(null);
   const [loading, setLoading] = useState(true);
@@ -338,7 +341,7 @@ export default function Page() {
 
   return (
     <Box sx={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
-      <Navbar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
+      {isLoggedIn ? <AfterLogin /> : <Navbar />}
 
       <Container
         maxWidth="md"
