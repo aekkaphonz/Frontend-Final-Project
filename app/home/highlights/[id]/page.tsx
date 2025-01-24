@@ -10,23 +10,22 @@ import ReplyIcon from "@mui/icons-material/Reply";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { useRouter } from "next/navigation";
 import { useParams } from "next/navigation";
-import Navbar from "@/app/navbar/page";
-import AfterLogin from "@/app/navbar/AfterLogin"
-import { useAuth } from "@/app/context/AuthProvider";
+import Navbar from "@/app/navbar/AfterLogin";
 
 interface Attraction {
   _id: string;
   title: string;
   content: string;
-  images: string[];
+  images: string[]; // รูปภาพเป็น array
   likeCount: number;
 }
+
 interface Comment {
   id: number;
   name: string;
   message: string;
   replies?: Comment[];
-  timestamp: string; // เก็บวันและเวลา
+  timestamp: string;
 }
 
 export default function Page() {
@@ -48,133 +47,51 @@ export default function Page() {
   const params: any = useParams();
   const router = useRouter();
 
-  const editComment = async (commentId: string, newMessage: string) => {
-    if (!newMessage.trim()) return;
-
-    try {
-      const res = await fetch(`http://localhost:3001/comments/${commentId}`, {
-        method: "PUT", // ใช้ PUT สำหรับการอัปเดตข้อมูล
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ comment: newMessage }), // ส่งข้อความใหม่ไปยัง API
-      });
-
-      if (!res.ok) {
-        const errorMessage = await res.text();
-        console.error("API Error:", errorMessage);
-        throw new Error("Failed to edit comment");
-      }
-
-      const updatedComment = await res.json();
-
-      // อัปเดต state ของ comments ใน Frontend
-      setComments((prevComments) =>
-        prevComments.map((comment) =>
-          comment.id === updatedComment._id
-            ? { ...comment, message: updatedComment.comment }
-            : comment
-        )
-      );
-
-      const deleteComment = async (commentId: string) => {
-        try {
-          const res = await fetch(`http://localhost:3001/comments/${commentId}`, {
-            method: 'DELETE',
-          });
-
-          if (!res.ok) {
-            const errorMessage = await res.text();
-            console.error("API Error:", errorMessage);
-            throw new Error("Failed to delete comment");
-          }
-
-          // อัปเดต state หลังลบสำเร็จ
-          setComments((prevComments) =>
-            prevComments.filter((comment) => comment.id.toString() !== commentId) // ตรวจสอบด้วย string
-          );
-        } catch (error) {
-          console.error("Error deleting comment:", error);
-          alert("เกิดข้อผิดพลาดในการลบคอมเมนต์");
-        }
-      };
-
-
-      setEditingCommentId(null); // ปิดโหมดแก้ไข
-    } catch (error) {
-      console.error("Error updating comment:", error);
-      alert("เกิดข้อผิดพลาดในการแก้ไขคอมเมนต์");
-    }
-  };
-
-  const deleteComment = async (commentId: string) => {
-    try {
-      const res = await fetch(`http://localhost:3001/comments/${commentId}`, {
-        method: 'DELETE',
-      });
-
-      if (!res.ok) {
-        const errorMessage = await res.text();
-        console.error("API Error:", errorMessage);
-        throw new Error("Failed to delete comment");
-      }
-
-      // อัปเดต state หลังลบสำเร็จ
-      setComments((prevComments) =>
-        prevComments.filter((comment) => comment.id !== commentId)
-      );
-    } catch (error) {
-      console.error("Error deleting comment:", error);
-      alert("เกิดข้อผิดพลาดในการลบคอมเมนต์");
-    }
-  };
-
-
-  // ดึงความคิดเห็น
   useEffect(() => {
     async function fetchComments(postId: string) {
       try {
         const res = await fetch(`http://localhost:3001/comments/content/${postId}`);
         if (!res.ok) throw new Error("Failed to fetch comments");
-
         const result = await res.json();
-        const mappedComments = result.map((comment: any) => ({
-          id: comment._id,
-          name: "Anonymous", // หรือดึงชื่อผู้ใช้จาก comment.userId
-          message: comment.comment,
-          timestamp: new Date(comment.createdAt).toLocaleString(),
-          replies: comment.replies || [],
-        }));
-        setComments(mappedComments);
+        console.log("Fetched comments:", result); // ตรวจสอบผลลัพธ์
+        setComments(
+          result.map((comment: any) => ({
+            id: comment._id,
+            name: "Anonymous", // หรือดึงชื่อจากข้อมูล userId
+            message: comment.comment,
+            timestamp: new Date(comment.createdAt).toLocaleString(),
+            replies: comment.replies || [],
+          }))
+        );
       } catch (error) {
         console.error("Error fetching comments:", error);
       }
     }
-
     if (data) {
       fetchComments(data._id);
     }
   }, [data]);
-
-
-  // ดึงข้อมูลโพสต์
+  
+  
   useEffect(() => {
-    async function fetchData(postId: string) {
+    async function fetchData(id: string) {
       try {
-        const res = await fetch(`http://localhost:3001/posts/${postId}`);
-        if (!res.ok) throw new Error("Failed to fetch post data");
+        const res = await fetch(`http://localhost:3001/posts/${id}`);
+        if (!res.ok) {
+          throw new Error("Failed to fetch data");
+        }
         const result = await res.json();
 
         setData({
-          _id: result._id,
-          title: result.title,
-          content: result.content,
-          images: result.images || [],
-          likeCount: result.likeCount || 0,
+          ...result.attraction,
+          likeCount: 0,
         });
+
+        setComments([]);
         setLoading(false);
-      } catch (error: any) {
-        setError(error.message || "Failed to load post data");
+      } catch (err: any) {
+        console.error(err.message);
+        setError("ไม่สามารถโหลดข้อมูลได้");
         setLoading(false);
       }
     }
@@ -187,69 +104,81 @@ export default function Page() {
     }
   }, [params]);
 
-  // เพิ่มความคิดเห็นใหม่
-  const handleAddComment = async () => {
-    if (newComment.trim() && data?._id) {
-      try {
-        const userId = "507f1f77bcf86cd799439011"; // แก้ไขเป็น ObjectId ที่ถูกต้อง
-        const res = await fetch("http://localhost:3001/comments/addComment", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            userId,
-            postId: data._id,
-            comment: newComment,
-          }),
-        });
+  // เพิ่มฟังก์ชันสำหรับ API
+async function fetchComments(postId: string) {
+  const res = await fetch(`http://localhost:3001/comments/${postId}`);
+  if (!res.ok) throw new Error("Failed to fetch comments");
+  return res.json();
+}
 
-        if (!res.ok) {
-          const errorMessage = await res.text();
-          console.error("Error:", errorMessage);
-          throw new Error("Failed to add comment");
-        }
+async function addComment(postId: string, message: string) {
+  const res = await fetch(`http://localhost:3001/comments`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ postId, message }),
+  });
+  if (!res.ok) throw new Error("Failed to add comment");
+  return res.json();
+}
 
-        const addedComment = await res.json();
-        setComments((prevComments) => [
-          ...prevComments,
-          {
-            id: addedComment._id,
-            name: "Anonymous",
-            message: newComment,
-            timestamp: new Date().toLocaleString(),
-            replies: [],
-          },
-        ]);
-        setNewComment("");
-      } catch (error) {
-        console.error("Error adding comment:", error);
-      }
+async function deleteComment(commentId: string) {
+  const res = await fetch(`http://localhost:3001/comments/${commentId}`, {
+    method: "DELETE",
+  });
+  if (!res.ok) throw new Error("Failed to delete comment");
+  return res.json();
+}
+
+async function editComment(commentId: string, newMessage: string) {
+  const res = await fetch(`http://localhost:3001/comments/${commentId}`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ message: newMessage }),
+  });
+  if (!res.ok) throw new Error("Failed to edit comment");
+  return res.json();
+}
+
+async function toggleLike(postId: string) {
+  const res = await fetch(`http://localhost:3001/posts/${postId}/like`, {
+    method: "PATCH",
+  });
+  if (!res.ok) throw new Error("Failed to toggle like");
+  return res.json();
+}
+
+
+  const handleAddComment = () => {
+    if (newComment.trim()) {
+      const comment: Comment = {
+        id: comments.length + 1,
+        name: "Anonymous",
+        message: newComment,
+        timestamp: new Date().toLocaleString(),
+        replies: [],
+      };
+      const updatedComments = [...comments, comment];
+      setComments(updatedComments);
+      setNewComment("");
     }
   };
-
-  async function toggleLike(postId: string) {
-    const res = await fetch(`http://localhost:3001/posts/${postId}/like`, {
-      method: "PATCH",
-    });
-    if (!res.ok) throw new Error("Failed to toggle like");
-    return res.json();
-  }
 
   const handleAddReply = (commentId: number) => {
     if (replyMessage.trim()) {
       const updatedComments = comments.map((comment) =>
         comment.id === commentId
           ? {
-            ...comment,
-            replies: [
-              ...(comment.replies || []),
-              {
-                id: (comment.replies?.length || 0) + 1,
-                name: "Anonymous",
-                message: replyMessage,
-                timestamp: new Date().toLocaleString(),
-              },
-            ],
-          }
+              ...comment,
+              replies: [
+                ...(comment.replies || []),
+                {
+                  id: (comment.replies?.length || 0) + 1,
+                  name: "Anonymous",
+                  message: replyMessage,
+                  timestamp: new Date().toLocaleString(),
+                },
+              ],
+            }
           : comment
       );
 
@@ -263,42 +192,23 @@ export default function Page() {
     setIsSidebarOpen(!isSidebarOpen);
   };
 
-
-  const handleEditComment = async (commentId: number, newMessage: string) => {
-    if (!newMessage.trim()) return;
-
-    try {
-      const res = await fetch(`http://localhost:3001/comments/${commentId}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ comment: newMessage }), // ใช้คีย์ "comment" ตามโครงสร้าง Backend
-      });
-
-      if (!res.ok) throw new Error("Failed to edit comment");
-
-      // อัปเดตใน State เฉพาะคอมเมนต์ที่แก้ไขสำเร็จจาก Backend
-      setComments((prevComments) =>
-        prevComments.map((comment) =>
-          comment.id === commentId ? { ...comment, message: newMessage } : comment
-        )
-      );
-
-      setEditingCommentId(null); // ปิดโหมดแก้ไข
-    } catch (error) {
-      console.error("Error updating comment:", error);
-    }
+  const handleEditComment = (commentId: number, newMessage: string) => {
+    const updatedComments = comments.map((comment) =>
+      comment.id === commentId ? { ...comment, message: newMessage } : comment
+    );
+    setComments(updatedComments);
+    setEditingCommentId(null);
   };
-
 
   const handleEditReply = (commentId: number, replyId: number, newMessage: string) => {
     const updatedComments = comments.map((comment) =>
       comment.id === commentId
         ? {
-          ...comment,
-          replies: comment.replies?.map((reply) =>
-            reply.id === replyId ? { ...reply, message: newMessage } : reply
-          ),
-        }
+            ...comment,
+            replies: comment.replies?.map((reply) =>
+              reply.id === replyId ? { ...reply, message: newMessage } : reply
+            ),
+          }
         : comment
     );
     setComments(updatedComments);
@@ -314,9 +224,9 @@ export default function Page() {
     const updatedComments = comments.map((comment) =>
       comment.id === commentId
         ? {
-          ...comment,
-          replies: comment.replies?.filter((reply) => reply.id !== replyId),
-        }
+            ...comment,
+            replies: comment.replies?.filter((reply) => reply.id !== replyId),
+          }
         : comment
     );
     setComments(updatedComments);
@@ -341,7 +251,7 @@ export default function Page() {
 
   return (
     <Box sx={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
-      {isLoggedIn ? <AfterLogin /> : <Navbar />}
+      <Navbar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
 
       <Container
         maxWidth="md"
@@ -505,13 +415,12 @@ export default function Page() {
                 </MenuItem>
                 <MenuItem
                   onClick={() => {
-                    deleteComment(comment.id.toString()); // แปลง id เป็น string ก่อนส่งไปยังฟังก์ชัน
-                    handleMenuClose(); // ปิดเมนู
+                    handleDeleteComment(comment.id);
+                    handleMenuClose();
                   }}
                 >
                   ลบ
                 </MenuItem>
-
               </Menu>
 
               {editingCommentId === comment.id && (
@@ -520,14 +429,14 @@ export default function Page() {
                     fullWidth
                     multiline
                     rows={2}
-                    defaultValue={comment.message} // แสดงข้อความเดิม
-                    onChange={(e) => setReplyMessage(e.target.value)} // บันทึกข้อความใหม่ใน state
+                    defaultValue={comment.message}
+                    onChange={(e) => setReplyMessage(e.target.value)}
                     InputProps={{
                       endAdornment: (
                         <InputAdornment position="end">
                           <IconButton
                             color="primary"
-                            onClick={() => editComment(comment.id, replyMessage.trim())} // เรียกใช้ฟังก์ชัน editComment
+                            onClick={() => handleEditComment(comment.id, replyMessage.trim())}
                             edge="end"
                           >
                             <SendIcon />
@@ -537,9 +446,9 @@ export default function Page() {
                     }}
                     autoFocus
                   />
+
                 </Box>
               )}
-
 
               {comment.replies &&
                 comment.replies.map((reply) => (

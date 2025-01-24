@@ -158,7 +158,7 @@ function Sb({
 }) {
   return (
     <>
-      <AppBar
+      {/* <AppBar
         position="fixed"
         sx={{
           backgroundColor: "#fff",
@@ -210,9 +210,9 @@ function Sb({
             </Link>
           </Box>
         </Toolbar>
-      </AppBar>
+      </AppBar> */}
 
-      <Box
+      {/* <Box
         sx={{
           width: isOpen ? 240 : 72,
           height: "100vh",
@@ -290,7 +290,7 @@ function Sb({
             </ListItem>
           </Link>
         </List>
-      </Box>
+      </Box> */}
     </>
   );
 }
