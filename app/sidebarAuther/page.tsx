@@ -2,15 +2,34 @@
 
 import React from "react";
 import Link from "next/link"; // ใช้สำหรับลิงค์
-import { Box, List, ListItem, ListItemIcon, ListItemText, AppBar, Toolbar, IconButton, Typography, Tooltip, Button } from "@mui/material";
+import { Avatar, Box, List, ListItem, Menu, MenuItem, ListItemIcon, ListItemText, AppBar, Toolbar, IconButton, Typography, Tooltip, Button } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import CollectionsBookmarkIcon from "@mui/icons-material/CollectionsBookmark";
 import InsertChartIcon from "@mui/icons-material/InsertChart";
-import AddIcon from '@mui/icons-material/Add';
-import PersonIcon from '@mui/icons-material/Person';
+import EditNoteOutlinedIcon from "@mui/icons-material/EditNoteOutlined";
+import { useAuth } from "@/app/context/AuthProvider";
 
 function Sb({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: () => void }) {
+
+  const { user, logout } = useAuth();
+  const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
+  const settings = ["Profile", "Dashboard", "Logout"];
+
+  const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorElUser(event.currentTarget);
+  };
+
+  const handleCloseUserMenu = () => {
+    setAnchorElUser(null);
+  };
+
+  const handleMenuClick = async (setting: string) => {
+    if (setting === "Logout") {
+      await logout(); // เรียกใช้ฟังก์ชัน logout
+    }
+    handleCloseUserMenu(); // ปิดเมนู
+  };
   return (
     <>
       {/* Navbar */}
@@ -33,7 +52,7 @@ function Sb({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: () => v
             >
               <MenuIcon />
             </IconButton>
-            <Link href="/profile" >
+            <Link href="http://localhost:3000/home/highlights" >
               <img
                 src="/images/logo-blogs.png"
                 alt="Cleaning Illustration"
@@ -41,27 +60,60 @@ function Sb({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: () => v
               />
             </Link>
           </Box>
+          <Box sx={{ display: "flex", alignItems: "center", gap: "20px" }}>
+            {/* ปุ่มเขียน */}
+            <Button href="/createBlog"
+              sx={{
+                color: "#ffffff",
+                backgroundColor: "#77bfa3",
+                "&:hover": {
+                  backgroundColor: "#F7F7F7",
+                  color: "#77bfa3"
+                },
+                borderRadius: "20px",
+                padding: "6px 16px",
+                textTransform: "none",
+                fontWeight: "bold",
+              }}
 
-          {/* ปุ่มเขียน */}
-          <Button href="/createBlog"
-            sx={{
-              color: "#ffffff",
-              backgroundColor: "#77bfa3", 
-              "&:hover": { 
-                backgroundColor: "#F7F7F7" ,
-                color: "#77bfa3"
-              },
-              borderRadius: "20px",
-              padding: "6px 16px",
-              textTransform: "none",
-              fontWeight: "bold",
-            }}
-            variant="contained"
-          >
-            <AddIcon sx={{ marginRight: 1 }} />
-            สร้าง
-          </Button>
+              variant="contained"
+            >
+              <EditNoteOutlinedIcon sx={{ marginRight: 1 }} />
+              เขียน
+            </Button>
+            {/* เมนูผู้ใช้ */}
+            <Box sx={{ flexGrow: 0 }}>
+              <Tooltip title="Profile">
+                <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+                  <Avatar alt={user?.userName || "User"} />
+                </IconButton>
+              </Tooltip>
+              <Menu
+                sx={{ mt: "45px" }}
+                id="menu-appbar"
+                anchorEl={anchorElUser}
+                anchorOrigin={{
+                  vertical: "top",
+                  horizontal: "right",
+                }}
+                keepMounted
+                transformOrigin={{
+                  vertical: "top",
+                  horizontal: "right",
+                }}
+                open={Boolean(anchorElUser)}
+                onClose={handleCloseUserMenu}
+              >
+                {settings.map((setting) => (
+                  <MenuItem key={setting} onClick={() => handleMenuClick(setting)}>
+                    <Typography textAlign="center">{setting}</Typography>
+                  </MenuItem>
+                ))}
+              </Menu>
+            </Box>
+          </Box>
         </Toolbar>
+
       </AppBar>
 
       {/* Sidebar */}

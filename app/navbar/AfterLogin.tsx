@@ -13,9 +13,14 @@ import LogoutIcon from "@mui/icons-material/Logout";
 import Avatar from '@mui/material/Avatar';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
+import { useAuth } from "@/app/context/AuthProvider";
+import EditNoteOutlinedIcon from "@mui/icons-material/EditNoteOutlined";
+import { useRouter } from "next/navigation";
 
 
 function NavLogIn({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: () => void }) {
+  const router = useRouter(); 
+  const { user, logout } = useAuth();
   const settings = ['Profile', 'Dashboard', 'Logout'];
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
 
@@ -28,13 +33,23 @@ function NavLogIn({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: (
   };
 
 
-  
-    const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
-      setAnchorElUser(event.currentTarget);
-    };
-    
+
+  const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorElUser(event.currentTarget);
+  };
+
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
+  };
+  const handleMenuClick = async (setting: string) => {
+    if (setting === "Logout") {
+      await logout(); // เรียกใช้ฟังก์ชัน logout
+    } else if (setting === "Dashboard") {
+      router.push("/dashboard"); // เปลี่ยนเส้นทางไปยัง /dashboard
+     }//else if (setting === "Profile") {
+    //   router.push("/profile"); 
+    // }
+    handleCloseUserMenu(); // ปิดเมนู
   };
 
   return (
@@ -115,58 +130,57 @@ function NavLogIn({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: (
                 }}
               >
 
-                <Link href="/createBlog" >
-
-                  <Typography
-                    variant="h6"
-                    sx={{
-                      color: themeColors.text,
-                    }}
-                  >
-                    <AddIcon
-                      sx={{
-                        color: themeColors.buttonGreen,
-                        fontWeight: "bold",
-                        boxShadow: "0px 2px 5px rgba(0,0,0,0.2)", // เพิ่มเงา
-                        marginRight: "10px",
-                        marginLeft: "120px",
-                      }}
-                    />
-                    สร้าง
-                  </Typography>
-                </Link>
+                {/* ปุ่มเขียน */}
+                <Button href="/createBlog"
+                  sx={{
+                    color: "#ffffff",
+                    backgroundColor: "#77bfa3",
+                    "&:hover": {
+                      backgroundColor: "#F7F7F7",
+                      color: "#77bfa3"
+                    },
+                    borderRadius: "20px",
+                    padding: "6px 16px",
+                    textTransform: "none",
+                    fontWeight: "bold",
+                  }}
+                  variant="contained"
+                >
+                  <EditNoteOutlinedIcon sx={{ marginRight: 1 }} />
+                  เขียน
+                </Button>
 
               </Box>
             </Typography>
             <Box sx={{ flexGrow: 0 }}>
-            <Tooltip title="Profile">
-              <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                <Avatar />
-              </IconButton>
-            </Tooltip>
-            <Menu
-              sx={{ mt: '45px' }}
-              id="menu-appbar"
-              anchorEl={anchorElUser}
-              anchorOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
-              }}
-              keepMounted
-              transformOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
-              }}
-              open={Boolean(anchorElUser)}
-              onClose={handleCloseUserMenu}
-            >
-              {settings.map((setting) => (
-                <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                  <Typography sx={{ textAlign: 'center' }}>{setting}</Typography>
-                </MenuItem>
-              ))}
-            </Menu>
-          </Box>
+              <Tooltip title="Profile">
+                <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+                  <Avatar alt={user?.userName || "Guest"} />
+                </IconButton>
+              </Tooltip>
+              <Menu
+                sx={{ mt: "45px" }}
+                id="menu-appbar"
+                anchorEl={anchorElUser}
+                anchorOrigin={{
+                  vertical: "top",
+                  horizontal: "right",
+                }}
+                keepMounted
+                transformOrigin={{
+                  vertical: "top",
+                  horizontal: "right",
+                }}
+                open={Boolean(anchorElUser)}
+                onClose={handleCloseUserMenu}
+              >
+                {settings.map((setting) => (
+                  <MenuItem key={setting} onClick={() => handleMenuClick(setting)}>
+                    <Typography textAlign="center">{setting}</Typography>
+                  </MenuItem>
+                ))}
+              </Menu>
+            </Box>
           </Box>
         </Toolbar>
       </AppBar>
@@ -252,7 +266,7 @@ function NavLogIn({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: (
           </Link>
         </List>
       </Box>
-      
+
     </>
   );
 }

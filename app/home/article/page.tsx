@@ -14,6 +14,8 @@ import CommentIcon from "@mui/icons-material/Comment";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import Navbar from "@/app/navbar/page";
+import AfterLogin from "@/app/navbar/AfterLogin"
+import { useAuth } from "@/app/context/AuthProvider";
 
 interface Article {
   id: number;
@@ -22,6 +24,7 @@ interface Article {
 }
 
 export default function Page() {
+    const { isLoggedIn } = useAuth();
   const [articles, setArticles] = useState<Article[]>([]);
   const [showMore, setShowMore] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false); // State สำหรับควบคุม Sidebar
@@ -55,8 +58,9 @@ export default function Page() {
     <Container maxWidth="xl">
       <Box sx={{ display: "flex", minHeight: "100vh", backgroundColor: "#f9f9f9" }}>
         {/* Sidebar */}
-        <Navbar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
-
+        {isLoggedIn !== undefined ? (
+        isLoggedIn ? <AfterLogin /> : <Navbar />
+      ) : null}
         {/* Main Content */}
         <Box
           component="main"

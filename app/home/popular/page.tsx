@@ -14,6 +14,8 @@ import {
 import { ChatBubbleOutline as CommentIcon } from "@mui/icons-material";
 import axios from "axios";
 import Navbar from "@/app/navbar/page";
+import AfterLogin from "@/app/navbar/AfterLogin"
+import { useAuth } from "@/app/context/AuthProvider";
 
 const themeColors = {
   primary: "#98c9a3",
@@ -25,6 +27,7 @@ const themeColors = {
 };
 
 export default function PopularPage() {
+    const { isLoggedIn } = useAuth();
   const [posts, setPosts] = useState<any[]>([]); // เก็บข้อมูลโพสต์
   const [loading, setLoading] = useState(true); // สถานะการโหลดข้อมูล
   const [page, setPage] = useState(1); // หน้าปัจจุบัน
@@ -63,8 +66,7 @@ export default function PopularPage() {
   return (
     <Box sx={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
       {/* Navbar */}
-      <Navbar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
-
+      {isLoggedIn ? <AfterLogin /> : <Navbar />}
       {/* Main Content */}
       <Container
         maxWidth="lg"
