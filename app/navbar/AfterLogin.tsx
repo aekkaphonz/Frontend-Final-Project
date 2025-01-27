@@ -20,7 +20,7 @@ import { useRouter } from "next/navigation";
 
 function NavLogIn({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: () => void }) {
   const router = useRouter();
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
   const settings = ['Profile', 'Dashboard', 'Logout'];
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
 
@@ -32,6 +32,22 @@ function NavLogIn({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: (
     buttonGreen: "#77bfa3",
   };
 
+  const logout = async () => {
+    try {
+      const response = await axios.post("http://localhost:3001/auth/logout", null, {
+        withCredentials: true,
+      });
+  
+      if (response.status === 200) {
+        console.log("Logout successful");
+        
+      } else {
+        console.error("Logout failed");
+      }
+    } catch (error) {
+      console.error("Error during logout:", error);
+    }
+  };
 
 
   const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
@@ -43,9 +59,9 @@ function NavLogIn({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: (
   };
   const handleMenuClick = async (setting: string) => {
     if (setting === "Logout") {
-      await logout(); // เรียกใช้ฟังก์ชัน logout
+      await logout(); 
     } else if (setting === "Dashboard") {
-      router.push("/dashboard"); // เปลี่ยนเส้นทางไปยัง /dashboard
+      router.push("/dashboard"); 
      }else if (setting === "Profile") {
       router.push("/profile"); 
     }
