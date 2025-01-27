@@ -56,7 +56,7 @@ export default function Page() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const res = await fetch("http://localhost:3001/contents/all");
+        const res = await fetch("http://localhost:3001/contents");
         if (!res.ok) throw new Error("Failed to fetch data");
         const result: Post[] = await res.json();
         console.log(result); // ตรวจสอบ postImage ใน console
