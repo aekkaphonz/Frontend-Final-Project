@@ -3,13 +3,8 @@
 import React from "react";
 import { Box, List, ListItem, ListItemIcon, ListItemText, AppBar, Toolbar, IconButton, Typography, Button, TextField, Tooltip, } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
-import HomeIcon from '@mui/icons-material/Home';
-import ArticleIcon from '@mui/icons-material/Article';
-import WhatshotIcon from '@mui/icons-material/Whatshot';
 import Link from "next/link";
-import AddIcon from "@mui/icons-material/Add";
 import SearchIcon from '@mui/icons-material/Search';
-import LogoutIcon from "@mui/icons-material/Logout";
 import Avatar from '@mui/material/Avatar';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
@@ -17,9 +12,14 @@ import { useAuth } from "@/app/context/AuthProvider";
 import EditNoteOutlinedIcon from "@mui/icons-material/EditNoteOutlined";
 import { useRouter } from "next/navigation";
 
-function NavLogIn({ isOpen, toggleSidebar, handleSearch }: { isOpen: boolean; toggleSidebar: () => void; handleSearch: (query: string) => void }) {
+import DashboardIcon from '@mui/icons-material/Dashboard';
+import CollectionsBookmarkIcon from '@mui/icons-material/CollectionsBookmark';
+import InsertChartIcon from '@mui/icons-material/InsertChart';
+import PersonIcon from '@mui/icons-material/Person';
+
+function NavLogIn({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: () => void }) {
   const router = useRouter();
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
   const settings = ['Profile', 'Dashboard', 'Logout'];
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
 
@@ -31,22 +31,6 @@ function NavLogIn({ isOpen, toggleSidebar, handleSearch }: { isOpen: boolean; to
     buttonGreen: "#77bfa3",
   };
 
-  const logout = async () => {
-    try {
-      const response = await axios.post("http://localhost:3001/auth/logout", null, {
-        withCredentials: true,
-      });
-  
-      if (response.status === 200) {
-        console.log("Logout successful");
-        
-      } else {
-        console.error("Logout failed");
-      }
-    } catch (error) {
-      console.error("Error during logout:", error);
-    }
-  };
 
 
   const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
@@ -58,12 +42,10 @@ function NavLogIn({ isOpen, toggleSidebar, handleSearch }: { isOpen: boolean; to
   };
   const handleMenuClick = async (setting: string) => {
     if (setting === "Logout") {
-
       await logout();
-      router.push("/"); 
-
+      router.push("/signin"); 
     } else if (setting === "Dashboard") {
-      router.push("/dashboard"); 
+      router.push("/dashboard"); // เปลี่ยนเส้นทางไปยัง /dashboard
      }else if (setting === "Profile") {
       router.push("/profile"); 
     }
@@ -118,7 +100,6 @@ function NavLogIn({ isOpen, toggleSidebar, handleSearch }: { isOpen: boolean; to
                 width: "60%",
                 backgroundColor: "#f6f6f6",
               }}
-              onChange={(e) => handleSearch(e.target.value)}
               InputProps={{
                 endAdornment: (
                   <IconButton>
@@ -225,68 +206,98 @@ function NavLogIn({ isOpen, toggleSidebar, handleSearch }: { isOpen: boolean; to
         }}
       >
         <List>
-          <Link href="/home/highlights">
-            <ListItem
+          <Link href="/dashboard" passHref>
+            <Tooltip title="แดชบอร์ด" placement="right">
+              <ListItem
+                component="button"
+                sx={{
+                  display: "flex",
+                  flexDirection: isOpen ? "row" : "column",
+                  alignItems: "center",
+                  justifyContent: isOpen ? "flex-start" : "center",
+                  padding: isOpen ? "12px 20px" : "12px 0",
+                  "&:hover": {
+                    backgroundColor: "rgba(0, 0, 0, 0.08)",
+                  },
+                }}
+              >
+                <ListItemIcon sx={{ justifyContent: "center", color: "#000", minWidth: "40px" }}>
+                  <DashboardIcon />
+                </ListItemIcon>
+                {isOpen && <ListItemText primary="แดชบอร์ด" sx={{ color: "#000" }} />}
+              </ListItem>
+            </Tooltip>
+          </Link>
 
-              component="button"
+          <Tooltip title="เนื้อหา" placement="right">
+            <Link href="/blog" passHref>
+              <ListItem
+                component="button"
 
-              sx={{
-                display: "flex",
-                flexDirection: isOpen ? "row" : "column",
-                alignItems: "center",
-                justifyContent: isOpen ? "flex-start" : "center",
-                padding: isOpen ? "12px 20px" : "12px 0",
-                "&:hover": {
-                  backgroundColor: "rgba(0, 0, 0, 0.08)",
-                },
-              }}
-            >
-              <ListItemIcon sx={{ justifyContent: "center", color: "#000", minWidth: "40px" }}>
-                <HomeIcon />
-              </ListItemIcon>
-              {isOpen && <ListItemText primary="หน้าหลัก" sx={{ color: "#000" }} />}
-            </ListItem>
-          </Link>
-          <Link href="/home/article">
-            <ListItem
-              component="button"
-              sx={{
-                display: "flex",
-                flexDirection: isOpen ? "row" : "column",
-                alignItems: "center",
-                justifyContent: isOpen ? "flex-start" : "center",
-                padding: isOpen ? "12px 20px" : "12px 0",
-                "&:hover": {
-                  backgroundColor: "rgba(0, 0, 0, 0.08)",
-                },
-              }}
-            >
-              <ListItemIcon sx={{ justifyContent: "center", color: "#000", minWidth: "40px" }}>
-                <ArticleIcon />
-              </ListItemIcon>
-              {isOpen && <ListItemText primary="น่าสนใจ" sx={{ color: "#000" }} />}
-            </ListItem>
-          </Link>
-          <Link href="/home/popular">
-            <ListItem
-              component="button"
-              sx={{
-                display: "flex",
-                flexDirection: isOpen ? "row" : "column",
-                alignItems: "center",
-                justifyContent: isOpen ? "flex-start" : "center",
-                padding: isOpen ? "12px 20px" : "12px 0",
-                "&:hover": {
-                  backgroundColor: "rgba(0, 0, 0, 0.08)",
-                },
-              }}
-            >
-              <ListItemIcon sx={{ justifyContent: "center", color: "#000", minWidth: "40px" }}>
-                <WhatshotIcon />
-              </ListItemIcon>
-              {isOpen && <ListItemText primary="มาเเรง" sx={{ color: "#000" }} />}
-            </ListItem>
-          </Link>
+                sx={{
+                  display: "flex",
+                  flexDirection: isOpen ? "row" : "column",
+                  alignItems: "center",
+                  justifyContent: isOpen ? "flex-start" : "center",
+                  padding: isOpen ? "12px 20px" : "12px 0",
+                  "&:hover": {
+                    backgroundColor: "rgba(0, 0, 0, 0.08)",
+                  },
+                }}
+              >
+                <ListItemIcon sx={{ justifyContent: "center", color: "#000", minWidth: "40px" }}>
+                  <CollectionsBookmarkIcon />
+                </ListItemIcon>
+                {isOpen && <ListItemText primary="เนื้อหา" sx={{ color: "#000" }} />}
+              </ListItem>
+            </Link>
+          </Tooltip>
+
+          <Tooltip title="สถิติ" placement="right">
+            <Link href="/statistics" passHref>
+              <ListItem
+                component="button"
+                sx={{
+                  display: "flex",
+                  flexDirection: isOpen ? "row" : "column",
+                  alignItems: "center",
+                  justifyContent: isOpen ? "flex-start" : "center",
+                  padding: isOpen ? "12px 20px" : "12px 0",
+                  "&:hover": {
+                    backgroundColor: "rgba(0, 0, 0, 0.08)",
+                  },
+                }}
+              >
+                <ListItemIcon sx={{ justifyContent: "center", color: "#000", minWidth: "40px" }}>
+                  <InsertChartIcon />
+                </ListItemIcon>
+                {isOpen && <ListItemText primary="สถิติ" sx={{ color: "#000" }} />}
+              </ListItem>
+            </Link>
+          </Tooltip>
+
+          <Tooltip title="โปรไฟล์" placement="right">
+            <Link href="/profile" passHref>
+              <ListItem
+                component="button"
+                sx={{
+                  display: "flex",
+                  flexDirection: isOpen ? "row" : "column",
+                  alignItems: "center",
+                  justifyContent: isOpen ? "flex-start" : "center",
+                  padding: isOpen ? "12px 20px" : "12px 0",
+                  "&:hover": {
+                    backgroundColor: "rgba(0, 0, 0, 0.08)",
+                  },
+                }}
+              >
+                <ListItemIcon sx={{ justifyContent: "center", color: "#000", minWidth: "40px" }}>
+                  <PersonIcon />
+                </ListItemIcon>
+                {isOpen && <ListItemText primary="โปรไฟล์" sx={{ color: "#000" }} />}
+              </ListItem>
+            </Link>
+          </Tooltip>
         </List>
       </Box>
 

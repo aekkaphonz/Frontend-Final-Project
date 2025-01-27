@@ -9,8 +9,10 @@ import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
 import LibraryBooksIcon from "@mui/icons-material/LibraryBooks";
 import CommentIcon from "@mui/icons-material/Comment";
 import ThumbUpIcon from "@mui/icons-material/ThumbUp";
+import Navbar from "@/app/navbar/page";
+import AutherAfterLogin from "@/app/navbar/AutherAfterLogin";
+import { useAuth } from "@/app/context/AuthProvider";
 
-import Sb from "@/app/sidebarAuther/page";
 
 const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: "#fff",
@@ -27,6 +29,7 @@ const Item = styled(Paper)(({ theme }) => ({
 }));
 
 export default function Page() {
+  const { isLoggedIn } = useAuth();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [userName, setUserName] = useState("กำลังโหลด..."); // เก็บชื่อผู้ใช้งาน
   const [profileImage, setProfileImage] = useState("");
@@ -61,7 +64,11 @@ export default function Page() {
         marginRight: 15,
       }}
     >
-      <Sb isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
+      {isLoggedIn ? (
+        <AutherAfterLogin isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
+      ) : (
+        <Navbar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
+      )}
 
       <Grid
         container
@@ -100,13 +107,18 @@ export default function Page() {
                 <Typography sx={{
                   fontSize: 78,
                   marginLeft: 24,
-                  marginTop: -15,
+                  marginTop: -20,
+                  width: "124px",
+                  height: "124px",
+                  borderRadius: "50%",
+                  border: "1px #EBE8E8 solid",
+                  backgroundColor: "#fff",
                 }}>
                   <img
                     src={profileImage || "https://via.placeholder.com/100"}
                     alt="Profile Image"
                     style={{
-                      width: "100px",
+                      width: "100%",
                       height: "100%",
                       borderRadius: "50%",
                       objectFit: "cover",

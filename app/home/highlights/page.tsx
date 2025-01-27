@@ -28,14 +28,15 @@ import Link from "next/link";
 import { Visibility, Comment, ThumbUp } from "@mui/icons-material";
 import { useRouter } from "next/navigation";
 import Navbar from "@/app/navbar/page";
-import AfterLogin from "@/app/navbar/AfterLogin"
+import AfterLogin from "@/app/navbar/AfterLogin";
 import { useAuth } from "@/app/context/AuthProvider";
+
 
 interface Post {
   _id: string;
   title: string;
-  content: string;
-  images: string[];
+  detail: string;
+  postImage: string[];
   views: number;
   comments: number;
   likes: number;
@@ -55,29 +56,30 @@ export default function Page() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const res = await fetch("http://localhost:3001/posts"); // API ที่รวมจำนวนความคิดเห็น
-        if (!res.ok) throw new Error("Failed to fetch posts");
+
+        const res = await fetch("http://localhost:3001/contents/");
+        if (!res.ok) throw new Error("Failed to fetch data");
         const result: Post[] = await res.json();
-        console.log(result); // ตรวจสอบข้อมูลที่ได้
+        console.log(result); // ตรวจสอบ postImage ใน console
         setData(result);
         setFilteredData(result);
+
       } catch (error) {
-        console.error("Error fetching posts:", error);
+        console.error("Error fetching data:", error);
+        setData([]);
       }
     }
     fetchData();
-  }, []);
+  }, []);  
 
-  const handleSearch = async (query: string) => {
+  const handleSearch = (query) => {
     setSearchQuery(query);
-
     if (query.trim() === "") {
       setFilteredData(data);
       return;
     }
-
     const filtered = data.filter((item) =>
-      item.title.toLowerCase().includes(query.toLowerCase())
+      item?.title?.toLowerCase().includes(query.toLowerCase())
     );
     setFilteredData(filtered);
   };
@@ -85,15 +87,16 @@ export default function Page() {
   return (
     <Box sx={{ display: "flex", minHeight: "100vh" }}>
       {/* Sidebar and Navbar */}
-      {isLoggedIn ?  <AfterLogin
+      {isLoggedIn ?   <AfterLogin
         isOpen={isSidebarOpen}
         toggleSidebar={toggleSidebar}
         handleSearch={handleSearch}
-      /> : <Navbar
-      isOpen={isSidebarOpen}
-      toggleSidebar={toggleSidebar}
-      handleSearch={handleSearch}
-        />}
+      /> :
+      <Navbar
+        isOpen={isSidebarOpen}
+        toggleSidebar={toggleSidebar}
+        handleSearch={handleSearch}
+      />}
 
       {/* Main Content */}
       <Box
@@ -109,9 +112,9 @@ export default function Page() {
       >
         <Box
           sx={{
-            backgroundColor: "#f6f6e7",
-            borderRadius: 2,
-            border: "2px solid #c9dbc4",
+            // backgroundColor: "#f6f6e7",
+            // borderRadius: 2,
+            // border: "2px solid #c9dbc4",
             padding: 3,
           }}
         >
@@ -328,13 +331,19 @@ function RegionCard({ post }: { post: Post }) {
           <CardMedia
             component="img"
             height="150"
-            image={post.images.length > 0 ? post.images[0] : ""}
-            alt="ยังไม่มีรูป"
+            image={typeof post.postImage === "string" ? post.postImage : ""}
+            alt={"ไม่ไม่มีรูปภาพ"}
+            sx={{
+              objectFit: "cover",
+              borderRadius: "8px",
+              height:"150px",
+            }}
           />
+
           <CardContent>
             <Typography variant="h6">{post.title}</Typography>
             <Typography variant="body2">
-              {post.content.substring(0, 100)}...
+              {post.detail?.substring(0, 100) || "ไม่มีเนื้อหา"}...
             </Typography>
           </CardContent>
         </CardActionArea>
@@ -343,7 +352,7 @@ function RegionCard({ post }: { post: Post }) {
             <Visibility /> {post.views} ยอดวิว
           </Box>
           <Box sx={{ display: "flex", alignItems: "center" }}>
-            <Comment /> {post.comments} ความคิดเห็น
+            {/* <Comment /> {post.comments} */}
           </Box>
           <Box sx={{ display: "flex", alignItems: "center" }}>
             <ThumbUp /> {post.likes} ถูกใจ
