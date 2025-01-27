@@ -28,9 +28,8 @@ import Link from "next/link";
 import { Visibility, Comment, ThumbUp } from "@mui/icons-material";
 import { useRouter } from "next/navigation";
 import Navbar from "@/app/navbar/page";
-import AfterLogin from "@/app/navbar/AfterLogin"
+import AfterLogin from "@/app/navbar/AfterLogin";
 import { useAuth } from "@/app/context/AuthProvider";
-
 
 interface Post {
   _id: string;
@@ -56,7 +55,7 @@ export default function Page() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const res = await fetch("http://localhost:3001/contents/all");
+        const res = await fetch("http://localhost:3001/contents");
         if (!res.ok) throw new Error("Failed to fetch data");
         const result: Post[] = await res.json();
         console.log(result); // ตรวจสอบ postImage ใน console
@@ -67,7 +66,7 @@ export default function Page() {
       }
     }
     fetchData();
-  }, []);  
+  }, []);
 
   const handleSearch = async (query: string) => {
     setSearchQuery(query);
@@ -85,7 +84,6 @@ export default function Page() {
 
   return (
     <Box sx={{ display: "flex", minHeight: "100vh" }}>
-      {/* Sidebar and Navbar */}
       {isLoggedIn ? <AfterLogin /> : <Navbar />}
 
       {/* Main Content */}
@@ -126,7 +124,9 @@ export default function Page() {
 
           <Grid container spacing={3} justifyContent="center">
             {filteredData.length > 0 ? (
-              filteredData.map((post) => <RegionCard key={post._id} post={post} />)
+              filteredData.map((post) => (
+                <RegionCard key={post._id} post={post} />
+              ))
             ) : (
               <Typography
                 variant="body1"
@@ -242,10 +242,18 @@ function Sb({
                 },
               }}
             >
-              <ListItemIcon sx={{ justifyContent: "center", color: "#000", minWidth: "40px" }}>
+              <ListItemIcon
+                sx={{
+                  justifyContent: "center",
+                  color: "#000",
+                  minWidth: "40px",
+                }}
+              >
                 <HomeIcon />
               </ListItemIcon>
-              {isOpen && <ListItemText primary="หน้าหลัก" sx={{ color: "#000" }} />}
+              {isOpen && (
+                <ListItemText primary="หน้าหลัก" sx={{ color: "#000" }} />
+              )}
             </ListItem>
           </Link>
           <Link href="/home/article">
@@ -262,10 +270,18 @@ function Sb({
                 },
               }}
             >
-              <ListItemIcon sx={{ justifyContent: "center", color: "#000", minWidth: "40px" }}>
+              <ListItemIcon
+                sx={{
+                  justifyContent: "center",
+                  color: "#000",
+                  minWidth: "40px",
+                }}
+              >
                 <ArticleIcon />
               </ListItemIcon>
-              {isOpen && <ListItemText primary="น่าสนใจ" sx={{ color: "#000" }} />}
+              {isOpen && (
+                <ListItemText primary="น่าสนใจ" sx={{ color: "#000" }} />
+              )}
             </ListItem>
           </Link>
           <Link href="/home/popular">
@@ -282,10 +298,18 @@ function Sb({
                 },
               }}
             >
-              <ListItemIcon sx={{ justifyContent: "center", color: "#000", minWidth: "40px" }}>
+              <ListItemIcon
+                sx={{
+                  justifyContent: "center",
+                  color: "#000",
+                  minWidth: "40px",
+                }}
+              >
                 <WhatshotIcon />
               </ListItemIcon>
-              {isOpen && <ListItemText primary="มาแรง" sx={{ color: "#000" }} />}
+              {isOpen && (
+                <ListItemText primary="มาแรง" sx={{ color: "#000" }} />
+              )}
             </ListItem>
           </Link>
         </List>
@@ -321,12 +345,12 @@ function RegionCard({ post }: { post: Post }) {
           <CardMedia
             component="img"
             height="150"
-            image={post.postImage} // ใช้ placeholder หากไม่มีรูป
+            image={typeof post.postImage === "string" ? post.postImage : ""}
             alt={post.title || "ยังไม่ไม่มีรูปภาพ"}
             sx={{
               objectFit: "cover",
               borderRadius: "8px",
-              height:"150px",
+              height: "150px",
             }}
           />
 
@@ -337,7 +361,13 @@ function RegionCard({ post }: { post: Post }) {
             </Typography>
           </CardContent>
         </CardActionArea>
-        <Box sx={{ display: "flex", justifyContent: "space-between", padding: "10px" }}>
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            padding: "10px",
+          }}
+        >
           <Box sx={{ display: "flex", alignItems: "center" }}>
             <Visibility /> {post.views}
           </Box>
