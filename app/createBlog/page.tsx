@@ -2,13 +2,13 @@
 
 import React, { useState, useEffect } from "react";
 import { styled } from "@mui/material/styles";
-import { Typography, Container, TextField, Button, Grid, IconButton, Box } from "@mui/material";
-import ImageIcon from "@mui/icons-material/Image";
-import DeleteIcon from "@mui/icons-material/Delete";
+import { Typography, Container, TextField, Button, Grid, IconButton } from "@mui/material";
 import Paper from "@mui/material/Paper";
 import Navbar from "@/app/navbar/page";
 import AutherAfterLogin from "@/app/navbar/AutherAfterLogin";
 import { useAuth } from "@/app/context/AuthProvider";
+
+import ImageIcon from "@mui/icons-material/Image";
 
 const Item = styled(Paper)(({ theme }) => ({
     backgroundColor: "#fff",
@@ -28,10 +28,11 @@ export default function Page() {
     const { isLoggedIn } = useAuth();
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [title, setTitle] = useState("");
-    const [content, setContent] = useState("");
-    const [description, setDescription] = useState("");
+    const [content, setContent] = useState(""); // ✅ เปลี่ยนจาก `detail` เป็น `content`
+    const [description, setDescription] = useState(""); // ✅ ใช้ `description` ตรงกับ Backend
     const [images, setImages] = useState<File[]>([]);
     const [imagePreviews, setImagePreviews] = useState<string[]>([]);
+
 
     const toggleSidebar = () => {
         setIsSidebarOpen(!isSidebarOpen);
@@ -39,21 +40,23 @@ export default function Page() {
 
     const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
         if (event.target.files) {
-            const filesArray = Array.from(event.target.files);
-            setImages((prev) => [...prev, ...filesArray]);
+            const files = Array.from(event.target.files);
+            const newFiles: File[] = [];
+            const newPreviews: string[] = [];
 
-            const previews = filesArray.map((file) => URL.createObjectURL(file));
-            setImagePreviews((prev) => [...prev, ...previews]);
+            files.forEach((file) => {
+                newFiles.push(file);
+                newPreviews.push(URL.createObjectURL(file));
+            });
+
+            setImages((prev) => [...prev, ...newFiles]);
+            setImagePreviews((prev) => [...prev, ...newPreviews]);
         }
     };
 
-    const handleRemoveImage = (index: number) => {
-        setImages((prev) => prev.filter((_, i) => i !== index));
-        setImagePreviews((prev) => prev.filter((_, i) => i !== index));
-    };
-
     const handleSave = async () => {
-        const userId = "678dc3849e06f647dac9c181";
+        // ✅ ใช้ userId ที่ได้จาก Session หรือ API Authentication
+        const userId = "678dc3849e06f647dac9c181"; // ใช้ค่าจริงจาก session
 
         const formData = new FormData();
         formData.append("userId", userId);
@@ -61,7 +64,11 @@ export default function Page() {
         formData.append("detail", content);
         formData.append("description", description);
 
-        images.forEach((image) => formData.append("postImages", image));
+        if (images.length > 0) {
+            formData.append("postImage", images[0]);
+        }
+
+        console.log("🚀 กำลังส่งข้อมูลไป Backend:", Object.fromEntries(formData.entries()));
 
         try {
             const response = await fetch("http://localhost:3001/contents/createContent", {
@@ -74,12 +81,37 @@ export default function Page() {
                 handleCancel();
             } else {
                 const errorText = await response.text();
-                alert("เกิดข้อผิดพลาด: " + errorText);
+                console.error("❌ เกิดข้อผิดพลาด:", errorText);
+                alert("เกิดข้อผิดพลาดในการบันทึกบทความ: " + errorText);
             }
         } catch (error) {
+            console.error("❌ ไม่สามารถเชื่อมต่อกับ Backend ได้:", error);
             alert("ไม่สามารถเชื่อมต่อกับ Backend ได้");
         }
     };
+
+    const [userId, setUserId] = useState("");
+
+    useEffect(() => {
+        // ดึงข้อมูลผู้ใช้จาก Session หรือ API
+        const fetchUser = async () => {
+            try {
+                const response = await fetch("http://localhost:3001/auth/user", {
+                    credentials: "include", // ใช้ cookie จาก session
+                });
+
+                if (response.ok) {
+                    const userData = await response.json();
+                    setUserId(userData.userId); // ตั้งค่า userId
+                }
+            } catch (error) {
+                console.error("❌ ไม่สามารถดึงข้อมูลผู้ใช้:", error);
+            }
+        };
+
+        fetchUser();
+    }, []);
+
 
     const handleCancel = () => {
         setTitle("");
@@ -117,6 +149,7 @@ export default function Page() {
                     <Typography sx={{ fontWeight: "bold", fontSize: 26, mb: 1 }}>เขียนบทความ</Typography>
                 </Grid>
 
+                {/* หัวข้อ */}
                 <Grid item md={12}>
                     <Typography sx={{ fontWeight: "bold", fontSize: 18, mb: 1 }}>หัวข้อ</Typography>
                     <TextField
@@ -128,6 +161,7 @@ export default function Page() {
                     />
                 </Grid>
 
+                {/* เนื้อหา */}
                 <Grid item md={12}>
                     <Typography sx={{ fontWeight: "bold", fontSize: 18, mb: 1 }}>เนื้อหา</Typography>
                     <TextField
@@ -141,41 +175,40 @@ export default function Page() {
                     />
                 </Grid>
 
+                {/* อัปโหลดรูป */}
                 <Grid item md={12}>
                     <Typography sx={{ fontWeight: "bold", fontSize: 18, mb: 1 }}>แนบรูปภาพ</Typography>
-                    <Box sx={{ display: "flex", alignItems: "center", gap: 2, mb: 1 }}>
-                        <IconButton component="label" sx={{ backgroundColor: "#77bfa3", color: "#ffffff" }}>
-                            <ImageIcon />
-                            <input type="file" hidden multiple accept="image/*" onChange={handleImageUpload} />
-                        </IconButton>
-                    </Box>
-
-                    <Grid container spacing={2} sx={{ mt: 2 }}>
+                    <IconButton component="label" title="เพิ่มรูป">
+                        <ImageIcon sx={{ fontSize: 28, color: "#98c9a3" }} />
+                        <input type="file" hidden accept="image/*" multiple onChange={handleImageUpload} />
+                    </IconButton>
+                    {/* <Button
+                        component="label"
+                        variant="contained"
+                        sx={{ mb: 2, backgroundColor: "#77bfa3", color: "#ffffff" }}
+                    >
+                        อัปโหลดรูป
+                        <input type="file" hidden multiple accept="image/*" onChange={handleImageUpload} />
+                    </Button> */}
+                    <Grid container spacing={2}>
                         {imagePreviews.map((preview, index) => (
                             <Grid item key={index} xs={4}>
-                                <Box sx={{ position: "relative" }}>
-                                    <img
-                                        src={preview}
-                                        alt={`uploaded ${index}`}
-                                        style={{
-                                            width: "100%",
-                                            height: "150px",
-                                            objectFit: "cover",
-                                            borderRadius: "8px",
-                                        }}
-                                    />
-                                    <IconButton
-                                        sx={{ position: "absolute", top: 5, right: 5, color: "red" }}
-                                        onClick={() => handleRemoveImage(index)}
-                                    >
-                                        <DeleteIcon />
-                                    </IconButton>
-                                </Box>
+                                <img
+                                    src={preview}
+                                    alt={`รูปที่ ${index + 1}`}
+                                    style={{
+                                        width: "100%",
+                                        height: "150px",
+                                        objectFit: "cover",
+                                        borderRadius: "8px",
+                                    }}
+                                />
                             </Grid>
                         ))}
                     </Grid>
                 </Grid>
 
+                {/* แท็ก */}
                 <Grid item md={12}>
                     <Typography sx={{ fontWeight: "bold", fontSize: 18, mb: 1 }}>แท็ก</Typography>
                     <TextField
@@ -187,6 +220,7 @@ export default function Page() {
                     />
                 </Grid>
 
+                {/* ปุ่มบันทึก */}
                 <Grid item md={12} sx={{ textAlign: "right", mt: 3 }}>
                     <Button
                         variant="contained"

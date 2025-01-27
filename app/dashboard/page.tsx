@@ -13,7 +13,6 @@ import Navbar from "@/app/navbar/page";
 import AutherAfterLogin from "@/app/navbar/AutherAfterLogin";
 import { useAuth } from "@/app/context/AuthProvider";
 
-import Sb from "@/app/sidebarAuther/page";
 
 const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: "#fff",
