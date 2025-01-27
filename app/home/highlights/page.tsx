@@ -31,9 +31,6 @@ import Navbar from "@/app/navbar/page";
 import AfterLogin from "@/app/navbar/AfterLogin"
 import { useAuth } from "@/app/context/AuthProvider";
 
-
-
-
 interface Post {
   _id: string;
   title: string;
@@ -58,9 +55,10 @@ export default function Page() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const res = await fetch("http://localhost:3001/posts");
-        if (!res.ok) throw new Error("Failed to fetch data");
+        const res = await fetch("http://localhost:3001/posts"); // API ที่รวมจำนวนความคิดเห็น
+        if (!res.ok) throw new Error("Failed to fetch posts");
         const result: Post[] = await res.json();
+        console.log(result); // ตรวจสอบข้อมูลที่ได้
         setData(result);
         setFilteredData(result);
       } catch (error) {
@@ -87,7 +85,15 @@ export default function Page() {
   return (
     <Box sx={{ display: "flex", minHeight: "100vh" }}>
       {/* Sidebar and Navbar */}
-      {isLoggedIn ? <AfterLogin /> : <Navbar />}
+      {isLoggedIn ?  <AfterLogin
+        isOpen={isSidebarOpen}
+        toggleSidebar={toggleSidebar}
+        handleSearch={handleSearch}
+      /> : <Navbar
+      isOpen={isSidebarOpen}
+      toggleSidebar={toggleSidebar}
+      handleSearch={handleSearch}
+        />}
 
       {/* Main Content */}
       <Box
@@ -334,15 +340,16 @@ function RegionCard({ post }: { post: Post }) {
         </CardActionArea>
         <Box sx={{ display: "flex", justifyContent: "space-between", padding: "10px" }}>
           <Box sx={{ display: "flex", alignItems: "center" }}>
-            <Visibility /> {post.views}
+            <Visibility /> {post.views} ยอดวิว
           </Box>
           <Box sx={{ display: "flex", alignItems: "center" }}>
-            <Comment /> {post.comments}
-          </Box> 
+            <Comment /> {post.comments} ความคิดเห็น
+          </Box>
           <Box sx={{ display: "flex", alignItems: "center" }}>
-            <ThumbUp /> {post.likes}
+            <ThumbUp /> {post.likes} ถูกใจ
           </Box>
         </Box>
+
       </Card>
     </Grid>
   );

@@ -17,8 +17,7 @@ import { useAuth } from "@/app/context/AuthProvider";
 import EditNoteOutlinedIcon from "@mui/icons-material/EditNoteOutlined";
 import { useRouter } from "next/navigation";
 
-
-function NavLogIn({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: () => void }) {
+function NavLogIn({ isOpen, toggleSidebar, handleSearch }: { isOpen: boolean; toggleSidebar: () => void; handleSearch: (query: string) => void }) {
   const router = useRouter();
   const { user, logout } = useAuth();
   const settings = ['Profile', 'Dashboard', 'Logout'];
@@ -31,8 +30,7 @@ function NavLogIn({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: (
     buttonBorder: "#000000",
     buttonGreen: "#77bfa3",
   };
-
-
+  
 
   const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElUser(event.currentTarget);
@@ -100,6 +98,7 @@ function NavLogIn({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: (
                 width: "60%",
                 backgroundColor: "#f6f6f6",
               }}
+              onChange={(e) => handleSearch(e.target.value)}
               InputProps={{
                 endAdornment: (
                   <IconButton>
