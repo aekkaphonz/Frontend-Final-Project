@@ -107,13 +107,18 @@ export default function Page() {
                 <Typography sx={{
                   fontSize: 78,
                   marginLeft: 24,
-                  marginTop: -15,
+                  marginTop: -20,
+                  width: "124px",
+                  height: "124px",
+                  borderRadius: "50%",
+                  border: "1px #EBE8E8 solid",
+                  backgroundColor: "#fff",
                 }}>
                   <img
                     src={profileImage || "https://via.placeholder.com/100"}
                     alt="Profile Image"
                     style={{
-                      width: "100px",
+                      width: "100%",
                       height: "100%",
                       borderRadius: "50%",
                       objectFit: "cover",
