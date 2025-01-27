@@ -20,7 +20,7 @@ import PersonIcon from '@mui/icons-material/Person';
 function NavLogIn({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: () => void }) {
   const router = useRouter();
   const { user, logout } = useAuth();
-  const settings = ['Profile', 'Dashboard', 'Logout'];
+  const settings = ["โปรไฟล์", "แดชบอร์ด", "ออกจากระบบ"];
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
 
 

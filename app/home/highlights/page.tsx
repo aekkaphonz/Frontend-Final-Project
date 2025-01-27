@@ -56,7 +56,7 @@ export default function Page() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const response = await fetch("http://localhost:3001/contents/all");
+        const response = await fetch("http://localhost:3001/contents");
         if (!response.ok) throw new Error("Failed to fetch data");
         const posts: Post[] = await response.json();
         setData(posts);

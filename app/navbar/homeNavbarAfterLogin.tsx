@@ -19,7 +19,7 @@ export default function HomeNavbarAfterLogin() {
   const { user, logout } = useAuth();
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
 
-  const settings = ["Profile", "Dashboard", "Logout"];
+  const settings = ["โปรไฟล์", "แดชบอร์ด", "ออกจากระบบ"];
 
   const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElUser(event.currentTarget);

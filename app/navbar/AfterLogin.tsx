@@ -21,7 +21,7 @@ import { useRouter } from "next/navigation";
 function NavLogIn({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: () => void }) {
   const router = useRouter();
   const { user } = useAuth();
-  const settings = ['Profile', 'Dashboard', 'Logout'];
+  const settings = ["โปรไฟล์", "แดชบอร์ด", "ออกจากระบบ"];
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
 
 
@@ -61,7 +61,7 @@ function NavLogIn({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: (
     if (setting === "Logout") {
 
       await logout();
-      router.push("/"); 
+      router.push("/signin"); 
 
     } else if (setting === "Dashboard") {
       router.push("/dashboard"); 
