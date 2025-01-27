@@ -2,12 +2,12 @@
 
 import { useEffect, useState } from "react";
 import axios from "axios";
-import SettingNav from "./components/settingNav";
-import EditPage from "../profile/component/settingPage";
-import Sb from "@/app/sidebarAuther/page";
-import ReadOnlyProfilePage from "../profile/component/profilePage";
 
-const UsersPage = () => {
+import Sb from "@/app/sidebarAuther/page";
+import ReadOnlyProfilePage from "../component/profilePage";
+import EditPage from "../component/settingPage";
+
+const EditUsersPage = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
@@ -15,11 +15,10 @@ const UsersPage = () => {
   return (
     <div>
       <Sb isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
-      <ReadOnlyProfilePage />
-      
+
       <EditPage />
     </div>
   );
 };
 
-export default UsersPage;
+export default EditUsersPage;
