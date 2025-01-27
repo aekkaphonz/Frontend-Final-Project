@@ -26,7 +26,7 @@ const Item = styled(Paper)(({ theme }) => ({
 }));
 
 export default function Page() {
-    const { isLoggedIn } = useAuth();
+    const { user, isLoggedIn } = useAuth();
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [title, setTitle] = useState("");
     const [content, setContent] = useState(""); // ✅ เปลี่ยนจาก `detail` เป็น `content`
@@ -56,11 +56,13 @@ export default function Page() {
     };
 
     const handleSave = async () => {
-        // ✅ ใช้ userId ที่ได้จาก Session หรือ API Authentication
-        const userId = "678dc3849e06f647dac9c181"; // ใช้ค่าจริงจาก session
+        if (!user?.userId) {
+            alert("User not logged in or missing userId.");
+            return;
+        }
 
         const formData = new FormData();
-        formData.append("userId", userId);
+        formData.append("userId", user.userId);
         formData.append("title", title);
         formData.append("detail", content);
         formData.append("description", description);

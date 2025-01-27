@@ -43,7 +43,7 @@ function NavLogIn({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: (
   const handleMenuClick = async (setting: string) => {
     if (setting === "Logout") {
       await logout();
-      router.push("/"); 
+      router.push("/signin"); 
     } else if (setting === "Dashboard") {
       router.push("/dashboard"); // เปลี่ยนเส้นทางไปยัง /dashboard
      }else if (setting === "Profile") {

@@ -40,22 +40,30 @@ const Item = styled(Paper)(({ theme }) => ({
 }));
 
 export default function Page() {
-  const { isLoggedIn } = useAuth();
+  const { user, isLoggedIn } = useAuth();
   const router = useRouter();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [rows, setRows] = useState<any[]>([]);
   const [openModal, setOpenModal] = useState(false);
   const [selectedPost, setSelectedPost] = useState<string | null>(null);
 
-  useEffect(() => {
-    fetchPosts();
-  }, []);
-
   const fetchPosts = async () => {
     try {
-      const response = await fetch("http://localhost:3001/contents");
+      if (!user?.userId) {
+        console.error("❌ userId not found in AuthContext");
+        return;
+      }
+
+      console.log("👉 userId:", user.userId); // Debug userId
+
+      const response = await fetch(`http://localhost:3001/contents?userId=${user.userId}`, {
+        method: "GET",
+        credentials: "include",
+      });
+
       if (response.ok) {
         const data = await response.json();
+        console.log("✅ Fetched data:", data); // Debug data ที่ดึงมา
         setRows(data);
       } else {
         console.error("❌ ไม่สามารถโหลดข้อมูลบทความ");
@@ -64,6 +72,14 @@ export default function Page() {
       console.error("❌ เกิดข้อผิดพลาดในการโหลดบทความ:", error);
     }
   };
+
+  useEffect(() => {
+    console.log("👉 user from AuthProvider:", user); // Debug user object
+    console.log("👉 isLoggedIn:", isLoggedIn);
+    if (isLoggedIn) {
+      fetchPosts(); // เรียก fetchPosts เมื่อผู้ใช้ล็อกอิน
+    }
+  }, [isLoggedIn, user?.userId]);
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
@@ -150,7 +166,7 @@ export default function Page() {
               <TableBody>
                 {rows.length > 0 ? (
                   rows.map((row) => (
-                    <TableRow key={row._id}>
+                    <TableRow key={row._id || row.id}> {/* ใช้ _id หรือ id */}
                       <TableCell component="th" scope="row">
                         <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
                           <img
@@ -183,7 +199,7 @@ export default function Page() {
                           sx={{ color: "red" }}
                           variant="text"
                           onClick={() => {
-                            setSelectedPost(row._id);
+                            setSelectedPost(row._id || row.id);
                             setOpenModal(true);
                           }}
                         >
