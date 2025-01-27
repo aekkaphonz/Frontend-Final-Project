@@ -6,7 +6,7 @@ import axios from "axios";
 interface UserType {
   userName?: string;
   profileImage?: string;
-  userId?: string; // เพิ่ม userId
+  userId?: string; 
 }
 
 interface AuthContextType {
