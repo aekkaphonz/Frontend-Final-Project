@@ -11,6 +11,7 @@ import EditNoteOutlinedIcon from "@mui/icons-material/EditNoteOutlined";
 import PersonIcon from '@mui/icons-material/Person';
 import { useAuth } from "@/app/context/AuthProvider";
 
+
 function Sb({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: () => void }) {
 
   const { user, logout } = useAuth();

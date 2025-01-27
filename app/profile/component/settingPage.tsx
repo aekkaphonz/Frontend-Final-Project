@@ -40,6 +40,10 @@ const EditPage = () => {
   const [error, setError] = useState<string | null>(null);
   const [file, setFile] = useState<File | null>(null);
   const router = useRouter();
+  const [errors, setErrors] = useState({
+    gender: "",
+    dateOfBirth: "",
+  });
   const fetchUserData = async () => {
     try {
       const response = await axios.get<User[]>(
@@ -77,6 +81,25 @@ const EditPage = () => {
   }
 
   const handleProfileUpdate = async () => {
+    let isValid = true;
+    let tempErrors = { gender: "", dateOfBirth: "" };
+
+    if (!user.gender) {
+      tempErrors.gender = "กรุณาเลือกเพศ";
+      isValid = false;
+    }
+
+    if (!user.dateOfBirth) {
+      tempErrors.dateOfBirth = "กรุณาเลือกวันเกิด";
+      isValid = false;
+    } else if (dayjs(user.dateOfBirth).isAfter(dayjs())) {
+      tempErrors.dateOfBirth = "วันเกิดห้ามเป็นวันในอนาคต";
+      isValid = false;
+    }
+
+    setErrors(tempErrors);
+
+    if (!isValid) return;
     try {
       const formData = new FormData();
       formData.append("profileImage", file as Blob);
@@ -229,7 +252,11 @@ const EditPage = () => {
               <Box
                 sx={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}
               >
-                <FormControl variant="standard" fullWidth>
+                <FormControl
+                  variant="standard"
+                  fullWidth
+                  error={Boolean(errors.gender)}
+                >
                   <InputLabel id="gender-select-label">เพศ</InputLabel>
                   <Select
                     labelId="gender-select-label"
@@ -247,7 +274,13 @@ const EditPage = () => {
                     <MenuItem value="หญิง">หญิง</MenuItem>
                     <MenuItem value="อื่นๆ">อื่นๆ</MenuItem>
                   </Select>
+                  {errors.gender && (
+                    <Typography color="error" variant="caption">
+                      {errors.gender}
+                    </Typography>
+                  )}
                 </FormControl>
+
                 <LocalizationProvider
                   dateAdapter={AdapterDayjs}
                   adapterLocale="th"
@@ -269,10 +302,18 @@ const EditPage = () => {
                     label="วัน/เดือน/ปี"
                     format="DD/MM/YYYY"
                     slotProps={{
-                      textField: { fullWidth: true },
+                      textField: {
+                        fullWidth: true,
+                        error: Boolean(errors.dateOfBirth),
+                      },
                     }}
                   />
                 </LocalizationProvider>
+                {errors.dateOfBirth && (
+                  <Typography color="error" variant="caption">
+                    {errors.dateOfBirth}
+                  </Typography>
+                )}
               </Box>
             </Box>
 
