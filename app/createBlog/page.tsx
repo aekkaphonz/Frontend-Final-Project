@@ -2,13 +2,14 @@
 
 import React, { useState, useEffect } from "react";
 import { styled } from "@mui/material/styles";
-import { Typography, Container, TextField, Button, Grid, IconButton } from "@mui/material";
+import { Typography, Container, TextField, Button, Grid, IconButton, Box } from "@mui/material";
 import Paper from "@mui/material/Paper";
 import Navbar from "@/app/navbar/page";
 import AutherAfterLogin from "@/app/navbar/AutherAfterLogin";
 import { useAuth } from "@/app/context/AuthProvider";
 
 import ImageIcon from "@mui/icons-material/Image";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 const Item = styled(Paper)(({ theme }) => ({
     backgroundColor: "#fff",
@@ -121,6 +122,11 @@ export default function Page() {
         setImagePreviews([]);
     };
 
+    const handleRemoveImage = (index: number) => {
+        setImages(images.filter((_, i) => i !== index));
+        setImagePreviews(imagePreviews.filter((_, i) => i !== index));
+    };
+
     return (
         <Container
             maxWidth={false}
@@ -164,6 +170,33 @@ export default function Page() {
                 {/* เนื้อหา */}
                 <Grid item md={12}>
                     <Typography sx={{ fontWeight: "bold", fontSize: 18, mb: 1 }}>เนื้อหา</Typography>
+                    <Box sx={{ display: "flex", alignItems: "center", gap: 2, mb: 1 }}>
+                        <IconButton component="label" title="เพิ่มรูป">
+                            <ImageIcon sx={{ fontSize: 28, color: "#98c9a3" }} />
+                            <input type="file" hidden accept="image/*" multiple onChange={handleImageUpload} />
+                        </IconButton>
+                    </Box>
+                    <Box sx={{ display: "flex", alignItems: "center", gap: 2, mb: 1 }}>
+                        {imagePreviews.map((preview, index) => (
+                            <Grid item key={index} xs={4}>
+                                <Box sx={{ position: "relative" }}>
+                                    <img
+                                        src={preview}
+                                        alt={`รูปที่ ${index + 1}`}
+                                        style={{
+                                            width: "150px",
+                                            height: "100%",
+                                            objectFit: "cover",
+                                            borderRadius: "8px",
+                                        }}
+                                    />
+                                    <IconButton sx={{ position: "absolute", top: -5, right: 285, color: "red" }} onClick={() => handleRemoveImage(index)}>
+                                        <DeleteIcon />
+                                    </IconButton>
+                                </Box>
+                            </Grid>
+                        ))}
+                    </Box>
                     <TextField
                         fullWidth
                         variant="outlined"
@@ -173,39 +206,6 @@ export default function Page() {
                         value={content}
                         onChange={(e) => setContent(e.target.value)}
                     />
-                </Grid>
-
-                {/* อัปโหลดรูป */}
-                <Grid item md={12}>
-                    <Typography sx={{ fontWeight: "bold", fontSize: 18, mb: 1 }}>แนบรูปภาพ</Typography>
-                    <IconButton component="label" title="เพิ่มรูป">
-                        <ImageIcon sx={{ fontSize: 28, color: "#98c9a3" }} />
-                        <input type="file" hidden accept="image/*" multiple onChange={handleImageUpload} />
-                    </IconButton>
-                    {/* <Button
-                        component="label"
-                        variant="contained"
-                        sx={{ mb: 2, backgroundColor: "#77bfa3", color: "#ffffff" }}
-                    >
-                        อัปโหลดรูป
-                        <input type="file" hidden multiple accept="image/*" onChange={handleImageUpload} />
-                    </Button> */}
-                    <Grid container spacing={2}>
-                        {imagePreviews.map((preview, index) => (
-                            <Grid item key={index} xs={4}>
-                                <img
-                                    src={preview}
-                                    alt={`รูปที่ ${index + 1}`}
-                                    style={{
-                                        width: "100%",
-                                        height: "150px",
-                                        objectFit: "cover",
-                                        borderRadius: "8px",
-                                    }}
-                                />
-                            </Grid>
-                        ))}
-                    </Grid>
                 </Grid>
 
                 {/* แท็ก */}

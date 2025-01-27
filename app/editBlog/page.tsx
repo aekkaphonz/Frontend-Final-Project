@@ -145,26 +145,27 @@ export default function EditBlog() {
               <input type="file" hidden accept="image/*" multiple onChange={handleImageUpload} />
             </IconButton>
           </Box>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 2, mb: 1 }}>
+            {imagePreviews.length > 0 && (
+              <Grid item md={12} sx={{ mt: 2 }}>
+                <Typography sx={{ fontWeight: "bold", fontSize: 18, mb: 1 }}>รูปภาพที่แนบ</Typography>
+                <Grid container spacing={2}>
+                  {imagePreviews.map((src, index) => (
+                    <Grid item key={index} xs={4}>
+                      <Box sx={{ position: "relative" }}>
+                        <img src={src} alt={`uploaded ${index}`} style={{ width: "150px", height: "100%", objectFit: "cover", borderRadius: "8px", border: "1px solid #EBE8E8" }} />
+                        <IconButton sx={{ position: "absolute", top: -5, right: 250, color: "red" }} onClick={() => handleRemoveImage(index)}>
+                          <DeleteIcon />
+                        </IconButton>
+                      </Box>
+                    </Grid>
+                  ))}
+                </Grid>
+              </Grid>
+            )}
+          </Box>
           <TextField fullWidth variant="outlined" multiline rows={10} value={content} onChange={(e) => setContent(e.target.value)} />
         </Grid>
-
-        {imagePreviews.length > 0 && (
-          <Grid item md={12} sx={{ mt: 2 }}>
-            <Typography sx={{ fontWeight: "bold", fontSize: 18, mb: 1 }}>รูปภาพที่แนบ</Typography>
-            <Grid container spacing={2}>
-              {imagePreviews.map((src, index) => (
-                <Grid item key={index} xs={4}>
-                  <Box sx={{ position: "relative" }}>
-                    <img src={src} alt={`uploaded ${index}`} style={{ width: "100%", height: "150px", objectFit: "cover", borderRadius: "8px", border: "1px solid #EBE8E8" }} />
-                    <IconButton sx={{ position: "absolute", top: 5, right: 5, color: "red" }} onClick={() => handleRemoveImage(index)}>
-                      <DeleteIcon />
-                    </IconButton>
-                  </Box>
-                </Grid>
-              ))}
-            </Grid>
-          </Grid>
-        )}
 
         <Grid item md={12}>
           <Typography sx={{ fontWeight: "bold", fontSize: 18, mb: 1 }}>แท็ก</Typography>
