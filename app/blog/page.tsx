@@ -166,16 +166,16 @@ export default function Page() {
               <TableBody>
                 {rows.length > 0 ? (
                   rows.map((row) => (
-                    <TableRow key={row._id || row.id}> {/* ใช้ _id หรือ id */}
+                    <TableRow key={row._id || row.id}>
                       <TableCell component="th" scope="row">
                         <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
                           <img
                             src={row.postImage || "https://via.placeholder.com/50"}
                             alt={row.title || "-"}
                             style={{
-                              width: "50px",
-                              height: "50px",
-                              borderRadius: "8px",
+                              width: "80px",
+                              height: "80%",
+                              borderRadius: "3px",
                             }}
                           />
                           {row.title || "-"}
