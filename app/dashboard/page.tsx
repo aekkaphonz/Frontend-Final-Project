@@ -9,8 +9,11 @@ import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
 import LibraryBooksIcon from "@mui/icons-material/LibraryBooks";
 import CommentIcon from "@mui/icons-material/Comment";
 import ThumbUpIcon from "@mui/icons-material/ThumbUp";
+import Navbar from "@/app/navbar/page";
+import AfterLogin from "@/app/navbar/AfterLogin"
+import { useAuth } from "@/app/context/AuthProvider";
 
-import Sb from "@/app/sidebarAuther/page";
+
 
 const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: "#fff",
@@ -27,6 +30,7 @@ const Item = styled(Paper)(({ theme }) => ({
 }));
 
 export default function Page() {
+    const { isLoggedIn } = useAuth();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [userName, setUserName] = useState("กำลังโหลด..."); // เก็บชื่อผู้ใช้งาน
   const [profileImage, setProfileImage] = useState("");
@@ -61,7 +65,7 @@ export default function Page() {
         marginRight: 15,
       }}
     >
-      <Sb isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
+            {isLoggedIn ? <AfterLogin /> : <Navbar />}
 
       <Grid
         container

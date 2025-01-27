@@ -44,6 +44,7 @@ function NavLogIn({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: (
   const handleMenuClick = async (setting: string) => {
     if (setting === "Logout") {
       await logout(); // เรียกใช้ฟังก์ชัน logout
+      router.push("/"); 
     } else if (setting === "Dashboard") {
       router.push("/dashboard"); // เปลี่ยนเส้นทางไปยัง /dashboard
      }else if (setting === "Profile") {
