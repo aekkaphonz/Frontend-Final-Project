@@ -18,11 +18,12 @@ import {
   TableHead,
   TableRow,
 } from "@mui/material";
-import FilterAltOutlinedIcon from "@mui/icons-material/FilterAltOutlined";
 import BorderColorIcon from '@mui/icons-material/BorderColor';
 import DeleteIcon from '@mui/icons-material/Delete';
 
-import Sb from "@/app/sidebarAuther/page";
+import Navbar from "@/app/navbar/page";
+import { useAuth } from "@/app/context/AuthProvider";
+import AutherAfterLogin from "@/app/navbar/AutherAfterLogin";
 
 const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: "#fff",
@@ -39,62 +40,73 @@ const Item = styled(Paper)(({ theme }) => ({
 }));
 
 export default function Page() {
+  const { user, isLoggedIn } = useAuth();
   const router = useRouter();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [rows, setRows] = useState<any[]>([]);
   const [openModal, setOpenModal] = useState(false);
   const [selectedPost, setSelectedPost] = useState<string | null>(null);
-  const toggleSidebar = () => {
-    setIsSidebarOpen(!isSidebarOpen);
-  };
 
   const fetchPosts = async () => {
     try {
-      const response = await fetch(`http://localhost:3001/posts`, {
-        credentials: "include", // ส่ง cookie เพื่อใช้ session
+      if (!user?.userId) {
+        console.error("❌ userId not found in AuthContext");
+        return;
+      }
+
+      console.log("👉 userId:", user.userId); // Debug userId
+
+      const response = await fetch(`http://localhost:3001/contents?userId=${user.userId}`, {
+        method: "GET",
+        credentials: "include",
       });
 
-      if (!response.ok) throw new Error("Failed to fetch posts");
-
-      const data = await response.json();
-      setRows(data);
+      if (response.ok) {
+        const data = await response.json();
+        console.log("✅ Fetched data:", data); // Debug data ที่ดึงมา
+        setRows(data);
+      } else {
+        console.error("❌ ไม่สามารถโหลดข้อมูลบทความ");
+      }
     } catch (error) {
-      console.error("Error fetching posts:", error);
-
-      setRows([]);
+      console.error("❌ เกิดข้อผิดพลาดในการโหลดบทความ:", error);
     }
   };
 
   useEffect(() => {
-    fetchPosts();
-  }, []);
+    console.log("👉 user from AuthProvider:", user); // Debug user object
+    console.log("👉 isLoggedIn:", isLoggedIn);
+    if (isLoggedIn) {
+      fetchPosts(); // เรียก fetchPosts เมื่อผู้ใช้ล็อกอิน
+    }
+  }, [isLoggedIn, user?.userId]);
+
+  const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen);
+  };
 
   const handleEdit = (post: any) => {
-    localStorage.setItem("editPost", JSON.stringify(post)); 
-    router.push(`/editBlog?id=${post._id}`); // ส่งแค่ ID
-  };  
+    localStorage.setItem("editPost", JSON.stringify(post));
+    router.push(`/editBlog?id=${post._id}`);
+  };
 
   const handleDelete = async () => {
     if (selectedPost) {
       try {
-        const response = await fetch(
-          `http://localhost:3001/posts/${selectedPost}`,
-          {
-            method: "DELETE",
-          }
-        );
+        const response = await fetch(`http://localhost:3001/contents/${selectedPost}`, {
+          method: "DELETE",
+        });
 
         if (response.ok) {
-          alert("ลบบทความสำเร็จ!");
           setRows(rows.filter((row) => row._id !== selectedPost));
+          setOpenModal(false);
         } else {
-          throw new Error("Failed to delete post");
+          console.error("❌ ไม่สามารถลบบทความ");
         }
       } catch (error) {
-        console.error("Error deleting post:", error);
+        console.error("❌ เกิดข้อผิดพลาดในการลบบทความ:", error);
       }
     }
-    setOpenModal(false);
   };
 
   return (
@@ -105,7 +117,11 @@ export default function Page() {
         marginRight: 15,
       }}
     >
-      <Sb isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
+      {isLoggedIn ? (
+        <AutherAfterLogin isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
+      ) : (
+        <Navbar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
+      )}
 
       <Grid
         container spacing={3}
@@ -128,16 +144,13 @@ export default function Page() {
               <TableHead>
                 <TableRow
                   sx={{
-                    backgroundColor: "#dde7c7", // สีพื้นหลังของหัวตาราง
-                    "& th": { color: "#000000", fontWeight: "bold" }, // สีและน้ำหนักของข้อความ
+                    backgroundColor: "#dde7c7",
+                    "& th": { color: "#000000", fontWeight: "bold" },
                   }}
                 >
                   <TableCell sx={{ fontWeight: "bold" }}>บทความ</TableCell>
                   <TableCell sx={{ fontWeight: "bold" }} align="right">
                     วันที่
-                  </TableCell>
-                  <TableCell sx={{ fontWeight: "bold" }} align="right">
-                    ยอดอ่าน
                   </TableCell>
                   <TableCell sx={{ fontWeight: "bold" }} align="right">
                     ความคิดเห็น
@@ -153,22 +166,15 @@ export default function Page() {
               <TableBody>
                 {rows.length > 0 ? (
                   rows.map((row) => (
-                    <TableRow
-                      key={row._id}
-                      sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-                    >
+                    <TableRow key={row._id || row.id}> {/* ใช้ _id หรือ id */}
                       <TableCell component="th" scope="row">
-                        <Box
-                          sx={{ display: "flex", alignItems: "center", gap: 2 }}
-                        >
+                        <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
                           <img
-                            src={
-                              row.images[0] || "https://via.placeholder.com/50"
-                            }
+                            src={row.postImage || "https://via.placeholder.com/50"}
                             alt={row.title || "-"}
                             style={{
                               width: "50px",
-                              height: "100%",
+                              height: "50px",
                               borderRadius: "8px",
                             }}
                           />
@@ -178,10 +184,7 @@ export default function Page() {
                       <TableCell align="right">
                         {new Date(row.createdAt).toLocaleDateString() || "-"}
                       </TableCell>
-                      <TableCell align="right">{row.viewPost ?? "-"}</TableCell>
-                      <TableCell align="right">
-                        {row.commentPost ?? "-"}
-                      </TableCell>
+                      <TableCell align="right">{row.comments?.length ?? "-"}</TableCell>
                       <TableCell align="right">
                         <Button
                           sx={{ color: "#FFD500" }}
@@ -196,7 +199,7 @@ export default function Page() {
                           sx={{ color: "red" }}
                           variant="text"
                           onClick={() => {
-                            setSelectedPost(row._id);
+                            setSelectedPost(row._id || row.id);
                             setOpenModal(true);
                           }}
                         >
@@ -207,7 +210,7 @@ export default function Page() {
                   ))
                 ) : (
                   <TableRow>
-                    <TableCell colSpan={6} align="center">
+                    <TableCell colSpan={5} align="center">
                       ไม่มีข้อมูล
                     </TableCell>
                   </TableRow>
@@ -239,23 +242,14 @@ export default function Page() {
             borderRadius: "10px",
           }}
         >
-          <Typography
-            id="modal-modal-title"
-            variant="h6"
-            component="h2"
-            sx={{ mb: 2 }}
-          >
+          <Typography id="modal-modal-title" variant="h6" sx={{ mb: 2 }}>
             ยืนยันการลบ
           </Typography>
           <Typography id="modal-modal-description" sx={{ mb: 2 }}>
             คุณต้องการลบบทความนี้หรือไม่?
           </Typography>
           <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-            <Button
-              variant="outlined"
-              color="primary"
-              onClick={() => setOpenModal(false)}
-            >
+            <Button variant="outlined" onClick={() => setOpenModal(false)}>
               ยกเลิก
             </Button>
             <Button variant="contained" color="error" onClick={handleDelete}>

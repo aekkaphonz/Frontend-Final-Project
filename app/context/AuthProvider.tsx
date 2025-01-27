@@ -3,8 +3,14 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import axios from "axios";
 
+interface UserType {
+  userName?: string;
+  profileImage?: string;
+  userId?: string; // เพิ่ม userId
+}
+
 interface AuthContextType {
-    user: { userName?: string; profileImage?: string } | null;
+  user: UserType | null;
   isLoggedIn: boolean;
   logout: () => Promise<void>;
 }
@@ -12,7 +18,7 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | null>(null);
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  const [user, setUser] = useState<{ userName?: string } | null>(null);
+  const [user, setUser] = useState<UserType | null>(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
@@ -21,18 +27,25 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         const response = await axios.get("http://localhost:3001/user/profile", {
           withCredentials: true,
         });
-        if (response.data) {
-          setUser(response.data);
+  
+        if (response.data && response.data.length > 0) {
+          const userData = response.data[0];
+          setUser({
+            userName: userData.userName,
+            profileImage: userData.profileImage || "https://via.placeholder.com/50",
+            userId: userData._id,
+          });
           setIsLoggedIn(true);
         }
-      } catch {
+      } catch (error) {
+        console.error("Error fetching profile:", error);
         setUser(null);
         setIsLoggedIn(false);
       }
     };
-
+  
     fetchProfile();
-  }, []);
+  }, []);  
 
   const logout = async () => {
     try {

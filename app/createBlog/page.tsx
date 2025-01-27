@@ -1,208 +1,245 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { styled } from "@mui/material/styles";
-import { Typography, Container, TextField, Button, Box, Grid, IconButton } from "@mui/material";
+import { Typography, Container, TextField, Button, Grid, IconButton, Box } from "@mui/material";
 import Paper from "@mui/material/Paper";
-import ImageIcon from "@mui/icons-material/Image";
+import Navbar from "@/app/navbar/page";
+import AutherAfterLogin from "@/app/navbar/AutherAfterLogin";
+import { useAuth } from "@/app/context/AuthProvider";
 
-import Sb from "@/app/sidebarAuther/page";
+import ImageIcon from "@mui/icons-material/Image";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 const Item = styled(Paper)(({ theme }) => ({
-  backgroundColor: "#fff",
-  ...theme.typography.body2,
-  padding: theme.spacing(1),
-  textAlign: "center",
-  border: "1px solid #EBE8E8",
-  boxShadow: "1px 2px 2px rgba(0, 0, 0, 0.3)",
-  borderRadius: 15,
-  color: theme.palette.text.secondary,
-  ...theme.applyStyles("dark", {
-    backgroundColor: "#1A2027",
-  }),
+    backgroundColor: "#fff",
+    ...theme.typography.body2,
+    padding: theme.spacing(1),
+    textAlign: "center",
+    border: "1px solid #EBE8E8",
+    boxShadow: "1px 2px 2px rgba(0, 0, 0, 0.3)",
+    borderRadius: 15,
+    color: theme.palette.text.secondary,
+    ...theme.applyStyles("dark", {
+        backgroundColor: "#1A2027",
+    }),
 }));
 
 export default function Page() {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [title, setTitle] = useState("");
-  const [detail, setDetail] = useState("");
-  const [tags, setTags] = useState("");
-  const [postImage, setImages] = useState<string[]>([]); // สำหรับเก็บ Base64
-  const [imagePreviews, setImagePreviews] = useState<string[]>([]); // สำหรับแสดงตัวอย่างรูป
+    const { user, isLoggedIn } = useAuth();
+    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+    const [title, setTitle] = useState("");
+    const [content, setContent] = useState(""); // ✅ เปลี่ยนจาก `detail` เป็น `content`
+    const [description, setDescription] = useState(""); // ✅ ใช้ `description` ตรงกับ Backend
+    const [images, setImages] = useState<File[]>([]);
+    const [imagePreviews, setImagePreviews] = useState<string[]>([]);
 
-  const toggleSidebar = () => {
-    setIsSidebarOpen(!isSidebarOpen);
-  };
 
-  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target.files) {
-      const files = Array.from(event.target.files);
-      const newImages: string[] = [];
-      const newPreviews: string[] = [];
-
-      files.forEach((file) => {
-        const reader = new FileReader();
-        reader.readAsDataURL(file);
-        reader.onload = () => {
-          if (reader.result) {
-            newImages.push(reader.result as string);
-            newPreviews.push(reader.result as string);
-            setImages((prev) => [...prev, ...newImages]);
-            setImagePreviews((prev) => [...prev, ...newPreviews]);
-          }
-        };
-      });
-    }
-  };
-
-  const handleSave = async () => {
-    const payload = {
-      title,
-      detail,
-      // tags: tags.split(",").map((tag) => tag.trim()),
-      postImage,
-      createdAt: new Date().toISOString(),
+    const toggleSidebar = () => {
+        setIsSidebarOpen(!isSidebarOpen);
     };
 
-    console.log("Sending data to Backend:", payload);
+    const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+        if (event.target.files) {
+            const files = Array.from(event.target.files);
+            const newFiles: File[] = [];
+            const newPreviews: string[] = [];
 
-    try {
-      const response = await fetch("http://localhost:3001/contents/createContent", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(payload),
-      });
+            files.forEach((file) => {
+                newFiles.push(file);
+                newPreviews.push(URL.createObjectURL(file));
+            });
 
-      if (response.ok) {
-        alert("บทความและรูปภาพถูกบันทึกเรียบร้อย!");
-        handleCancel();
-      } else {
-        alert("เกิดข้อผิดพลาดในการบันทึกบทความ");
-      }
-    } catch (error) {
-      console.error("เกิดข้อผิดพลาด:", error);
-      alert("ไม่สามารถเชื่อมต่อกับ Backend ได้");
-    }
-  };
+            setImages((prev) => [...prev, ...newFiles]);
+            setImagePreviews((prev) => [...prev, ...newPreviews]);
+        }
+    };
 
-  const handleCancel = () => {
-    setTitle("");
-    setDetail("");
-    setTags("");
-    setImages([]);
-    setImagePreviews([]);
-  };
+    const handleSave = async () => {
+        if (!user?.userId) {
+            alert("User not logged in or missing userId.");
+            return;
+        }
 
-  return (
-    <Container
-      maxWidth={false}
-      sx={{
-        maxWidth: "1400px",
-        marginRight: 15,
-      }}
-    >
-      <Sb isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
-      <Grid
-        container
-        spacing={3}
-        sx={{
-          marginLeft: isSidebarOpen ? "240px" : "72px",
-          marginTop: "72px",
-          transition: "margin-left 0.3s",
-          padding: "16px",
-        }}
-      >
-        <Grid item md={12}>
-          <Typography sx={{ fontWeight: "bold", fontSize: 26, mb: 1 }}>เขียนบทความ</Typography>
-        </Grid>
+        const formData = new FormData();
+        formData.append("userId", user.userId);
+        formData.append("title", title);
+        formData.append("detail", content);
+        formData.append("description", description);
 
-        {/* หัวข้อ */}
-        <Grid item md={12}>
-          <Typography sx={{ fontWeight: "bold", fontSize: 18, mb: 1 }}>หัวข้อ</Typography>
-          <TextField
-            fullWidth
-            variant="outlined"
-            placeholder="ใส่หัวข้อบทความ..."
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-          />
-        </Grid>
+        if (images.length > 0) {
+            formData.append("postImage", images[0]);
+        }
 
-        {/* เนื้อหา */}
-        <Grid item md={12}>
-          <Typography sx={{ fontWeight: "bold", fontSize: 18, mb: 1 }}>เนื้อหา</Typography>
-          <TextField
-            fullWidth
-            variant="outlined"
-            placeholder="เขียนเนื้อหาบทความ..."
-            multiline
-            rows={10}
-            value={detail}
-            onChange={(e) => setDetail(e.target.value)}
-          />
-        </Grid>
+        console.log("🚀 กำลังส่งข้อมูลไป Backend:", Object.fromEntries(formData.entries()));
 
-        {/* อัปโหลดรูป */}
-        <Grid item md={12}>
-          <Typography sx={{ fontWeight: "bold", fontSize: 18, mb: 1 }}>แนบรูปภาพ</Typography>
-          <Button
-            component="label"
-            variant="contained"
-            sx={{ mb: 2, backgroundColor: "#77bfa3", color: "#ffffff" }}
-          >
-            อัปโหลดรูป
-            <input type="file" hidden multiple accept="image/*" onChange={handleImageUpload} />
-          </Button>
-          <Grid container spacing={2}>
-            {imagePreviews.map((preview, index) => (
-              <Grid item key={index} xs={4}>
-                <img
-                  src={preview}
-                  alt={`รูปที่ ${index + 1}`}
-                  style={{
-                    width: "100%",
-                    height: "150px",
-                    objectFit: "cover",
-                    borderRadius: "8px",
-                  }}
-                />
-              </Grid>
-            ))}
-          </Grid>
-        </Grid>
+        try {
+            const response = await fetch("http://localhost:3001/contents/createContent", {
+                method: "POST",
+                body: formData,
+            });
 
-        {/* แท็ก */}
-        <Grid item md={12}>
-          <Typography sx={{ fontWeight: "bold", fontSize: 18, mb: 1 }}>แท็ก</Typography>
-          <TextField
-            fullWidth
-            variant="outlined"
-            placeholder="เพิ่มแท็ก (คั่นด้วยเครื่องหมายจุลภาค)"
-            value={tags}
-            onChange={(e) => setTags(e.target.value)}
-          />
-        </Grid>
+            if (response.ok) {
+                alert("📌 บันทึกบทความและรูปภาพเรียบร้อยแล้ว!");
+                handleCancel();
+            } else {
+                const errorText = await response.text();
+                console.error("❌ เกิดข้อผิดพลาด:", errorText);
+                alert("เกิดข้อผิดพลาดในการบันทึกบทความ: " + errorText);
+            }
+        } catch (error) {
+            console.error("❌ ไม่สามารถเชื่อมต่อกับ Backend ได้:", error);
+            alert("ไม่สามารถเชื่อมต่อกับ Backend ได้");
+        }
+    };
 
-        {/* ปุ่มบันทึก */}
-        <Grid item md={12} sx={{ textAlign: "right", mt: 3 }}>
-          <Button
-            variant="contained"
-            onClick={handleSave}
-            sx={{ backgroundColor: "#77bfa3", color: "#ffffff", mr: 2 }}
-          >
-            บันทึก
-          </Button>
-          <Button
-            variant="contained"
-            onClick={handleCancel}
-            sx={{ backgroundColor: "#FF3366", color: "#ffffff" }}
-          >
-            ยกเลิก
-          </Button>
-        </Grid>
-      </Grid>
-    </Container>
-  );
+    const [userId, setUserId] = useState("");
+
+    useEffect(() => {
+        // ดึงข้อมูลผู้ใช้จาก Session หรือ API
+        const fetchUser = async () => {
+            try {
+                const response = await fetch("http://localhost:3001/auth/user", {
+                    credentials: "include", // ใช้ cookie จาก session
+                });
+
+                if (response.ok) {
+                    const userData = await response.json();
+                    setUserId(userData.userId); // ตั้งค่า userId
+                }
+            } catch (error) {
+                console.error("❌ ไม่สามารถดึงข้อมูลผู้ใช้:", error);
+            }
+        };
+
+        fetchUser();
+    }, []);
+
+
+    const handleCancel = () => {
+        setTitle("");
+        setContent("");
+        setDescription("");
+        setImages([]);
+        setImagePreviews([]);
+    };
+
+    const handleRemoveImage = (index: number) => {
+        setImages(images.filter((_, i) => i !== index));
+        setImagePreviews(imagePreviews.filter((_, i) => i !== index));
+    };
+
+    return (
+        <Container
+            maxWidth={false}
+            sx={{
+                maxWidth: "1400px",
+                marginRight: 15,
+            }}
+        >
+            {isLoggedIn ? (
+                <AutherAfterLogin isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
+            ) : (
+                <Navbar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
+            )}
+
+            <Grid
+                container
+                spacing={3}
+                sx={{
+                    marginLeft: isSidebarOpen ? "240px" : "72px",
+                    marginTop: "72px",
+                    transition: "margin-left 0.3s",
+                    padding: "16px",
+                }}
+            >
+                <Grid item md={12}>
+                    <Typography sx={{ fontWeight: "bold", fontSize: 26, mb: 1 }}>เขียนบทความ</Typography>
+                </Grid>
+
+                {/* หัวข้อ */}
+                <Grid item md={12}>
+                    <Typography sx={{ fontWeight: "bold", fontSize: 18, mb: 1 }}>หัวข้อ</Typography>
+                    <TextField
+                        fullWidth
+                        variant="outlined"
+                        placeholder="ใส่หัวข้อบทความ..."
+                        value={title}
+                        onChange={(e) => setTitle(e.target.value)}
+                    />
+                </Grid>
+
+                {/* เนื้อหา */}
+                <Grid item md={12}>
+                    <Typography sx={{ fontWeight: "bold", fontSize: 18, mb: 1 }}>เนื้อหา</Typography>
+                    <Box sx={{ display: "flex", alignItems: "center", gap: 2, mb: 1 }}>
+                        <IconButton component="label" title="เพิ่มรูป">
+                            <ImageIcon sx={{ fontSize: 28, color: "#98c9a3" }} />
+                            <input type="file" hidden accept="image/*" multiple onChange={handleImageUpload} />
+                        </IconButton>
+                    </Box>
+                    <Box sx={{ display: "flex", alignItems: "center", gap: 2, mb: 1 }}>
+                        {imagePreviews.map((preview, index) => (
+                            <Grid item key={index} xs={4}>
+                                <Box sx={{ position: "relative" }}>
+                                    <img
+                                        src={preview}
+                                        alt={`รูปที่ ${index + 1}`}
+                                        style={{
+                                            width: "150px",
+                                            height: "100%",
+                                            objectFit: "cover",
+                                            borderRadius: "8px",
+                                        }}
+                                    />
+                                    <IconButton sx={{ position: "absolute", top: -5, right: 285, color: "red" }} onClick={() => handleRemoveImage(index)}>
+                                        <DeleteIcon />
+                                    </IconButton>
+                                </Box>
+                            </Grid>
+                        ))}
+                    </Box>
+                    <TextField
+                        fullWidth
+                        variant="outlined"
+                        placeholder="เขียนเนื้อหาบทความ..."
+                        multiline
+                        rows={10}
+                        value={content}
+                        onChange={(e) => setContent(e.target.value)}
+                    />
+                </Grid>
+
+                {/* แท็ก */}
+                <Grid item md={12}>
+                    <Typography sx={{ fontWeight: "bold", fontSize: 18, mb: 1 }}>แท็ก</Typography>
+                    <TextField
+                        fullWidth
+                        variant="outlined"
+                        placeholder="เพิ่มแท็ก (คั่นด้วยเครื่องหมายจุลภาค)"
+                        value={description}
+                        onChange={(e) => setDescription(e.target.value)}
+                    />
+                </Grid>
+
+                {/* ปุ่มบันทึก */}
+                <Grid item md={12} sx={{ textAlign: "right", mt: 3 }}>
+                    <Button
+                        variant="contained"
+                        onClick={handleSave}
+                        sx={{ backgroundColor: "#77bfa3", color: "#ffffff", mr: 2 }}
+                    >
+                        บันทึก
+                    </Button>
+                    <Button
+                        variant="contained"
+                        onClick={handleCancel}
+                        sx={{ backgroundColor: "#FF3366", color: "#ffffff" }}
+                    >
+                        ล้างค่า
+                    </Button>
+                </Grid>
+            </Grid>
+        </Container>
+    );
 }

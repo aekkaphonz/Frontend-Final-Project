@@ -41,16 +41,60 @@ export default function EditBlog() {
   };
 
   useEffect(() => {
-    const savedPost = localStorage.getItem("editPost");
-    if (savedPost) {
-      const postData = JSON.parse(savedPost);
-      setTitle(postData.title || "");
-      setContent(postData.content || "");
-      setTags(postData.tags?.join(", ") || "");
-      setImagePreviews(postData.images || []);
-      setCreatedAt(postData.createdAt || new Date().toISOString());
+    const fetchPost = async () => {
+      if (!postId) return; // ถ้าไม่มี ID ไม่ต้องโหลด
+
+      try {
+        const response = await fetch(`http://localhost:3001/contents/${postId}`);
+        if (response.ok) {
+          const postData = await response.json();
+          setTitle(postData.title || "");
+          setContent(postData.detail || ""); // Backend ใช้ `detail` แทน `content`
+          setTags(postData.description || ""); // Backend ใช้ `description` แทน `tags`
+          setImagePreviews(postData.postImage ? [postData.postImage] : []);
+          setCreatedAt(postData.createdAt || new Date().toISOString());
+        } else {
+          console.error("❌ ไม่สามารถโหลดบทความ");
+        }
+      } catch (error) {
+        console.error("❌ เกิดข้อผิดพลาดในการโหลดบทความ:", error);
+      }
+    };
+
+    fetchPost();
+  }, [postId]);
+
+  const handleUpdate = async () => {
+    if (!postId) return alert("❌ ไม่พบบทความที่ต้องการแก้ไข");
+
+    const formData = new FormData();
+    formData.append("title", title);
+    formData.append("detail", content);
+    formData.append("description", tags);
+
+    if (images.length > 0) {
+      formData.append("postImage", images[0]); // อัปโหลดรูปใหม่
     }
-  }, []);  
+
+    try {
+      const response = await fetch(`http://localhost:3001/contents/updateContent/${postId}`, {
+        method: "PUT",
+        body: formData,
+      });
+
+      if (response.ok) {
+        alert("📌 แก้ไขบทความสำเร็จ!");
+        router.push("/dashboard"); // กลับไปหน้า dashboard
+      } else {
+        const errorText = await response.text();
+        console.error("❌ เกิดข้อผิดพลาด:", errorText);
+        alert("เกิดข้อผิดพลาด: " + errorText);
+      }
+    } catch (error) {
+      console.error("❌ ไม่สามารถเชื่อมต่อกับ Backend ได้:", error);
+      alert("ไม่สามารถเชื่อมต่อกับ Backend ได้");
+    }
+  };
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files) {
@@ -66,40 +110,6 @@ export default function EditBlog() {
     setImages(images.filter((_, i) => i !== index));
     setImagePreviews(imagePreviews.filter((_, i) => i !== index));
   };
-
-  const handleSave = async () => {
-    const formData = new FormData();
-    formData.append("title", title);
-    formData.append("content", content);
-    formData.append("tags", JSON.stringify(tags.split(",").map((tag) => tag.trim())));
-    formData.append("createdAt", createdAt);
-  
-    images.forEach((image, index) => {
-      formData.append(`images`, image);
-    });
-  
-    try {
-      const response = await fetch(`http://localhost:3001/posts/${postId}`, {
-        method: "PUT",
-        body: formData,
-      });
-  
-      console.log("🔍 Response Status:", response.status);
-      console.log("🔍 Response Headers:", response.headers);
-      const result = await response.json();
-      console.log("🔍 Response Body:", result);
-  
-      if (!response.ok) {
-        throw new Error("การแก้ไขข้อมูลล้มเหลว");
-      }
-  
-      alert("แก้ไขบทความสำเร็จ!");
-      router.push("/blog");
-    } catch (error) {
-      console.error("เกิดข้อผิดพลาด:", error);
-      alert("เกิดข้อผิดพลาดในการแก้ไขบทความ");
-    }
-  };  
 
   return (
     <Container maxWidth={false} sx={{ maxWidth: "1400px", marginRight: 15 }}>
@@ -135,26 +145,27 @@ export default function EditBlog() {
               <input type="file" hidden accept="image/*" multiple onChange={handleImageUpload} />
             </IconButton>
           </Box>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 2, mb: 1 }}>
+            {imagePreviews.length > 0 && (
+              <Grid item md={12} sx={{ mt: 2 }}>
+                <Typography sx={{ fontWeight: "bold", fontSize: 18, mb: 1 }}>รูปภาพที่แนบ</Typography>
+                <Grid container spacing={2}>
+                  {imagePreviews.map((src, index) => (
+                    <Grid item key={index} xs={4}>
+                      <Box sx={{ position: "relative" }}>
+                        <img src={src} alt={`uploaded ${index}`} style={{ width: "150px", height: "100%", objectFit: "cover", borderRadius: "8px", border: "1px solid #EBE8E8" }} />
+                        <IconButton sx={{ position: "absolute", top: -5, right: 250, color: "red" }} onClick={() => handleRemoveImage(index)}>
+                          <DeleteIcon />
+                        </IconButton>
+                      </Box>
+                    </Grid>
+                  ))}
+                </Grid>
+              </Grid>
+            )}
+          </Box>
           <TextField fullWidth variant="outlined" multiline rows={10} value={content} onChange={(e) => setContent(e.target.value)} />
         </Grid>
-
-        {imagePreviews.length > 0 && (
-          <Grid item md={12} sx={{ mt: 2 }}>
-            <Typography sx={{ fontWeight: "bold", fontSize: 18, mb: 1 }}>รูปภาพที่แนบ</Typography>
-            <Grid container spacing={2}>
-              {imagePreviews.map((src, index) => (
-                <Grid item key={index} xs={4}>
-                  <Box sx={{ position: "relative" }}>
-                    <img src={src} alt={`uploaded ${index}`} style={{ width: "100%", height: "150px", objectFit: "cover", borderRadius: "8px", border: "1px solid #EBE8E8" }} />
-                    <IconButton sx={{ position: "absolute", top: 5, right: 5, color: "red" }} onClick={() => handleRemoveImage(index)}>
-                      <DeleteIcon />
-                    </IconButton>
-                  </Box>
-                </Grid>
-              ))}
-            </Grid>
-          </Grid>
-        )}
 
         <Grid item md={12}>
           <Typography sx={{ fontWeight: "bold", fontSize: 18, mb: 1 }}>แท็ก</Typography>
@@ -162,7 +173,11 @@ export default function EditBlog() {
         </Grid>
 
         <Grid item md={12} sx={{ textAlign: "center", mt: 2, display: "flex", justifyContent: "flex-end", gap: 2 }}>
-          <Button variant="contained" sx={{ fontWeight: "bold", fontSize: 16, backgroundColor: "#FFCC66", color: "#fff" }} onClick={handleSave}>
+          <Button
+            variant="contained"
+            sx={{ fontWeight: "bold", fontSize: 16, backgroundColor: "#FFCC66", color: "#fff" }}
+            onClick={handleUpdate}
+          >
             แก้ไขบทความ
           </Button>
         </Grid>

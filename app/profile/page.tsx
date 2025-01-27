@@ -7,15 +7,17 @@ import {
   InputAdornment,
   TextField,
 } from "@mui/material";
-import { useEffect, useState } from "react";
-import axios from "axios";
 import React from "react";
 
 
+import { useEffect, useState } from "react";
+import axios from "axios";
 
 
-import EditPage from "../profile/component/settingPage";
-import Sb from "@/app/sidebarAuther/page";
+import Navbar from "@/app/navbar/page";
+import AutherAfterLogin from "@/app/navbar/AutherAfterLogin";
+import { useAuth } from "@/app/context/AuthProvider";
+
 import ReadOnlyProfilePage from "../profile/component/profilePage";
 
 const UsersPage = () => {
@@ -23,9 +25,14 @@ const UsersPage = () => {
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
+  const { isLoggedIn } = useAuth();
   return (
     <div>
-      <Sb isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
+      {isLoggedIn ? (
+        <AutherAfterLogin isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
+      ) : (
+        <Navbar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
+      )}
       <ReadOnlyProfilePage />
     </div>
   );
