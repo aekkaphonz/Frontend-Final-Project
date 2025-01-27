@@ -56,10 +56,14 @@ export default function Page() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const response = await fetch("http://localhost:3001/contents/all");
-        if (!response.ok) throw new Error("Failed to fetch data");
-        const posts: Post[] = await response.json();
-        setData(posts);
+
+        const res = await fetch("http://localhost:3001/contents");
+        if (!res.ok) throw new Error("Failed to fetch data");
+        const result: Post[] = await res.json();
+        console.log(result); // ตรวจสอบ postImage ใน console
+        setData(result);
+        setFilteredData(result);
+
       } catch (error) {
         console.error("Error fetching data:", error);
         setData([]);
