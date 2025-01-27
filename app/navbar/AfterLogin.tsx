@@ -20,8 +20,13 @@ import { useRouter } from "next/navigation";
 
 function NavLogIn({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: () => void }) {
   const router = useRouter();
+<<<<<<< HEAD
   const { user } = useAuth();
   const settings = ["โปรไฟล์", "แดชบอร์ด", "ออกจากระบบ"];
+=======
+  const { user, logout } = useAuth();
+  const settings = ['Profile', 'Dashboard', 'Logout'];
+>>>>>>> 617bf8990479f416cef7776971bf23e052e6904c
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
 
 
@@ -31,24 +36,6 @@ function NavLogIn({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: (
     buttonBorder: "#000000",
     buttonGreen: "#77bfa3",
   };
-
-  const logout = async () => {
-    try {
-      const response = await axios.post("http://localhost:3001/auth/logout", null, {
-        withCredentials: true,
-      });
-  
-      if (response.status === 200) {
-        console.log("Logout successful");
-        
-      } else {
-        console.error("Logout failed");
-      }
-    } catch (error) {
-      console.error("Error during logout:", error);
-    }
-  };
-
 
   const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElUser(event.currentTarget);
@@ -61,7 +48,11 @@ function NavLogIn({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: (
     if (setting === "Logout") {
 
       await logout();
+<<<<<<< HEAD
       router.push("/signin"); 
+=======
+      router.push("/sigin"); 
+>>>>>>> 617bf8990479f416cef7776971bf23e052e6904c
 
     } else if (setting === "Dashboard") {
       router.push("/dashboard"); 

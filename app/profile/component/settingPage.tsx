@@ -23,7 +23,7 @@ import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import Swal from "sweetalert2";
 import dayjs from "dayjs";
 
-type User = {
+interface User {
   _id: string;
   email: string;
   password: string;
@@ -32,7 +32,7 @@ type User = {
   dateOfBirth: string;
   profileImage: string;
   content: any[];
-};
+}
 
 const EditPage = () => {
   const [user, setUser] = useState<User | null>(null);
@@ -43,6 +43,7 @@ const EditPage = () => {
   const [errors, setErrors] = useState({
     gender: "",
     dateOfBirth: "",
+    userName: "",
   });
   const fetchUserData = async () => {
     try {
@@ -82,7 +83,7 @@ const EditPage = () => {
 
   const handleProfileUpdate = async () => {
     let isValid = true;
-    let tempErrors = { gender: "", dateOfBirth: "" };
+    let tempErrors = { gender: "", dateOfBirth: "", userName: "" };
 
     if (!user.gender) {
       tempErrors.gender = "กรุณาเลือกเพศ";
@@ -242,13 +243,24 @@ const EditPage = () => {
                 fullWidth
                 disabled
               />
+
               <TextField
+                id="userName"
                 label="ชื่อผู้ใช้"
                 value={user.userName}
                 variant="outlined"
                 fullWidth
                 onChange={(e) => setUser({ ...user, userName: e.target.value })}
+                error={user.userName === "" || user.userName.length < 3}
+                helperText={
+                  user.userName === ""
+                    ? "กรุณากรอกชื่อผู้ใช้"
+                    : user.userName.length < 3
+                    ? "ชื่อผู้ใช้ต้องมีอย่างน้อย 3 ตัวอักษร"
+                    : ""
+                }
               />
+
               <Box
                 sx={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}
               >
