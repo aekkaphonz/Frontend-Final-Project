@@ -32,13 +32,11 @@ import AfterLogin from "@/app/navbar/AfterLogin"
 import { useAuth } from "@/app/context/AuthProvider";
 
 
-
-
 interface Post {
   _id: string;
   title: string;
-  content: string;
-  images: string[];
+  detail: string;
+  postImage: string[];
   views: number;
   comments: number;
   likes: number;
@@ -58,9 +56,10 @@ export default function Page() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const res = await fetch("http://localhost:3001/posts");
+        const res = await fetch("http://localhost:3001/contents");
         if (!res.ok) throw new Error("Failed to fetch data");
         const result: Post[] = await res.json();
+        console.log(result); // ตรวจสอบ postImage ใน console
         setData(result);
         setFilteredData(result);
       } catch (error) {
@@ -68,7 +67,7 @@ export default function Page() {
       }
     }
     fetchData();
-  }, []);
+  }, []);  
 
   const handleSearch = async (query: string) => {
     setSearchQuery(query);
@@ -103,9 +102,9 @@ export default function Page() {
       >
         <Box
           sx={{
-            backgroundColor: "#f6f6e7",
-            borderRadius: 2,
-            border: "2px solid #c9dbc4",
+            // backgroundColor: "#f6f6e7",
+            // borderRadius: 2,
+            // border: "2px solid #c9dbc4",
             padding: 3,
           }}
         >
@@ -322,13 +321,19 @@ function RegionCard({ post }: { post: Post }) {
           <CardMedia
             component="img"
             height="150"
-            image={post.images.length > 0 ? post.images[0] : ""}
-            alt="ยังไม่ไม่มีรูภาพ"
+            image={post.postImage} // ใช้ placeholder หากไม่มีรูป
+            alt={post.title || "ยังไม่ไม่มีรูปภาพ"}
+            sx={{
+              objectFit: "cover",
+              borderRadius: "8px",
+              height:"150px",
+            }}
           />
+
           <CardContent>
             <Typography variant="h6">{post.title}</Typography>
             <Typography variant="body2">
-              {post.content.substring(0, 100)}...
+              {post.detail?.substring(0, 100) || "ไม่มีเนื้อหา"}...
             </Typography>
           </CardContent>
         </CardActionArea>
@@ -338,7 +343,7 @@ function RegionCard({ post }: { post: Post }) {
           </Box>
           <Box sx={{ display: "flex", alignItems: "center" }}>
             <Comment /> {post.comments}
-          </Box> 
+          </Box>
           <Box sx={{ display: "flex", alignItems: "center" }}>
             <ThumbUp /> {post.likes}
           </Box>

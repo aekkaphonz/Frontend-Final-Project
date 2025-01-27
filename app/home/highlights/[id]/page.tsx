@@ -23,8 +23,8 @@ interface User {
 interface Attraction {
   _id: string;
   title: string;
-  content: string;
-  images: string[];
+  detail: string;
+  postImage: string[];
   likeCount: number;
 }
 interface Comment {
@@ -32,7 +32,7 @@ interface Comment {
   name: string;
   message: string;
   replies?: Comment[];
-  timestamp: string; // เก็บวันและเวลา
+  timestamp: string;
 }
 
 export default function Page() {
@@ -167,15 +167,15 @@ export default function Page() {
   useEffect(() => {
     async function fetchData(postId: string) {
       try {
-        const res = await fetch(`http://localhost:3001/posts/${postId}`);
+        const res = await fetch(`http://localhost:3001/contents/${postId}`);
         if (!res.ok) throw new Error("Failed to fetch post data");
         const result = await res.json();
 
         setData({
           _id: result._id,
           title: result.title,
-          content: result.content,
-          images: result.images || [],
+          detail: result.detail,
+          postImage: result.postImage || [],
           likeCount: result.likeCount || 0,
         });
         setLoading(false);
@@ -373,7 +373,7 @@ export default function Page() {
             <CardMedia
               component="img"
               sx={{ height: 300 }}
-              image={data.images.length > 0 ? data.images[0] : ""}
+               image={data.postImage} 
               alt="ยังไม่ไม่มีรูภาพ"
             />
             <CardContent sx={{ textAlign: "center" }}>
@@ -386,7 +386,7 @@ export default function Page() {
                 {data.title}
               </Typography>
               <Typography variant="body1" sx={{ color: "#616161", mt: 2 }}>
-                {data.content}
+              {data.detail?.substring(0, 100) || "ไม่มีเนื้อหา"}...
               </Typography>
             </CardContent>
             <Box
