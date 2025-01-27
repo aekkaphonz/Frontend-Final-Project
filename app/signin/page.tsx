@@ -23,23 +23,25 @@ import { useForm } from "react-hook-form";
 import axios from "axios";
 import Swal from "sweetalert2";
 
-
 function signin() {
   const [isFormSubmitted, setIsFormSubmitted] = useState(false);
 
   const router = useRouter();
 
-  const { register, handleSubmit, control } = useForm();
+  const {
+    register,
+    handleSubmit,
+    control,
+    formState: { errors },
+  } = useForm();
 
   const handleGoogleLogin = async () => {
     try {
-     
       window.location.href = "http://localhost:3001/auth/google";
     } catch (error) {
       console.error("Login failed:", error);
     }
   };
-  
 
   const handleFormSubmit = async (formData: any) => {
     try {
@@ -53,12 +55,11 @@ function signin() {
           withCredentials: true,
         }
       );
-  
+
       console.log("Response data:", response.data);
       console.log("Response status:", response.status);
-  
+
       if (response.data) {
-    
         Swal.fire({
           title: "เข้าสู่ระบบสำเร็จ!",
           text: "ยินดีต้อนรับกลับเข้าสู่ระบบ!",
@@ -66,10 +67,9 @@ function signin() {
           confirmButtonText: "ตกลง",
           confirmButtonColor: "#77bfa3",
         });
-  
+
         router.push("/");
       } else {
-     
         Swal.fire({
           title: "การเข้าสู่ระบบล้มเหลว",
           text: "ข้อมูลของคุณไม่ถูกต้อง กรุณาลองใหม่อีกครั้ง",
@@ -100,7 +100,6 @@ function signin() {
       }
     }
   };
-  
 
   const [showPassword, setShowPassword] = useState(false);
 
@@ -121,48 +120,57 @@ function signin() {
             maxWidth="500px"
             mx="auto"
           >
-            <div
-              className="font-bold text-3xl text-center flex items-center justify-center "
-            >
+            <div className="font-bold text-3xl text-center flex items-center justify-center ">
               เข้าสู่ระบบ
             </div>
-            
+
             <div className="w-full">
               <TextField
                 id="Email"
                 label="อีเมล"
                 variant="outlined"
                 fullWidth
-                {...register("email")}
-                InputProps={{
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      <EmailIcon />
-                    </InputAdornment>
-                  ),
-                }}
+                {...register("email", {
+                  required: "กรุณากรอกอีเมล",
+                  pattern: {
+                    value: /^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/,
+                    message: "รูปแบบอีเมลไม่ถูกต้อง",
+                  },
+                })}
+                error={!!errors.email}
+                helperText={
+                  errors.email?.message ? String(errors.email.message) : ""
+                }
               />
             </div>
             <div className="w-full">
-              <TextField
-                type={showPassword ? "text" : "password"}
-                id="password"
-                label="รหัสผ่าน"
-                variant="outlined"
-                fullWidth
-                {...register("password")}
-                InputProps={{
-                  endAdornment: (
-                    <IconButton
-                      aria-label="toggle password visibility"
-                      onClick={handleClickShowPassword}
-                      edge="end"
-                    >
-                      {showPassword ? <VisibilityOff /> : <Visibility />}
-                    </IconButton>
-                  ),
-                }}
-              />
+            <TextField
+            type={showPassword ? "text" : "password"}
+            id="password"
+            label="รหัสผ่าน"
+            variant="outlined"
+            fullWidth
+            {...register("password", {
+              required: "กรุณากรอกรหัสผ่าน",
+              minLength: {
+                value: 6,
+                message: "รหัสผ่านต้องมีความยาวอย่างน้อย 6 ตัวอักษร",
+              },
+            })}
+            error={!!errors.password}
+            helperText={errors.password?.message  ? String(errors.password.message) : ""}
+            InputProps={{
+              endAdornment: (
+                <IconButton
+                  aria-label="toggle password visibility"
+                  onClick={handleClickShowPassword}
+                  edge="end"
+                >
+                  {showPassword ? <VisibilityOff /> : <Visibility />}
+                </IconButton>
+              ),
+            }}
+          />
             </div>
 
             <div className="grid grid-cols-2 justify-between items-center">
@@ -179,11 +187,11 @@ function signin() {
                 />
               </div>
               <div className="text-right">
-                <a 
-                  href="http://localhost:3000/signup" 
-                  className="text-red-500 underline" 
+                <a
+                  href="http://localhost:3000/signup"
+                  className="text-red-500 underline"
                 >
-                  ลืมรหัสผ่าน? 
+                  ลืมรหัสผ่าน?
                 </a>
               </div>
             </div>
@@ -209,7 +217,7 @@ function signin() {
                 เข้าสู่ระบบ
               </Button>
             </div>
-            
+
             <div className="flex justify-center items-center gap-2 ">
               <a className="text-right  ">ยังไม่เป็นสมาชิก?</a>
               <a href="http://localhost:3000/signup" className="text-blue-500">

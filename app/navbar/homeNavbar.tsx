@@ -4,6 +4,7 @@ import React from "react";
 import { AppBar, Toolbar, Button, Box, TextField, InputAdornment, Typography } from "@mui/material";
 import Link from "next/link";
 import EditNoteOutlinedIcon from "@mui/icons-material/EditNoteOutlined";
+import SwitchTheme from "@/app/darkMode/components/SwitchTheme";
 
 const themeColors = {
     primary: "#ffffff",

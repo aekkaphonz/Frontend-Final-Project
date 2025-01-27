@@ -6,7 +6,9 @@ import { Typography, Container, Box, Button } from "@mui/material";
 import Paper from "@mui/material/Paper";
 import Grid from "@mui/material/Grid";
 
-import Sb from "@/app/sidebarAuther/page";
+import Navbar from "@/app/navbar/page";
+import AutherAfterLogin from "@/app/navbar/AutherAfterLogin";
+import { useAuth } from "@/app/context/AuthProvider";
 
 import ReactECharts from "echarts-for-react"; // ใช้สำหรับสร้าง ECharts
 
@@ -25,6 +27,7 @@ const Item = styled(Paper)(({ theme }) => ({
 }));
 
 export default function Page() {
+    const { isLoggedIn } = useAuth();
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [chartType, setChartType] = useState("all");
 
@@ -63,13 +66,25 @@ export default function Page() {
 
     return (
         <Container
-            maxWidth={false}
-            sx={{
-                maxWidth: "1400px",
-                marginRight: 15,
-            }}
+        sx={{
+            marginRight: 15,
+            marginLeft: isSidebarOpen ? "240px" : "72px", 
+            marginTop: "72px", 
+            transition: "margin-left 0.3s", // เพิ่มการเปลี่ยนแปลงแบบ Smooth
+            padding: "16px",
+            maxWidth: {
+              xs: "100%",
+              sm: isSidebarOpen ? "calc(100% - 240px)" : "calc(100% - 72px)", // ขนาด Container บนหน้าจอเล็ก
+              md: isSidebarOpen ? "calc(100% - 240px)" : "calc(100% - 72px)", // ขนาด Container บนหน้าจอกลาง
+            },
+          }}
         >
-            <Sb isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
+            {isLoggedIn ? (
+                <AutherAfterLogin isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
+            ) : (
+                <Navbar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
+            )}
+
             <Grid container spacing={2} sx={{ marginLeft: isSidebarOpen ? "240px" : "72px", marginTop: "72px", transition: "margin-left 0.3s" }}>
                 <Grid item md={12}>
                     <Typography sx={{ fontWeight: "bold", fontSize: 26, mb: 1 }}>สถิติการอ่าน</Typography>
@@ -80,11 +95,11 @@ export default function Page() {
                             variant={chartType === "all" ? "contained" : "text"}
                             onClick={() => setChartType("all")}
                             sx={{
-                            backgroundColor: chartType === "all" ? "#77bfa3" : "transparent", // สีพื้นหลัง
-                            color: chartType === "all" ? "#fff" : "#77bfa3", // สีข้อความ
-                            "&:hover": {
-                                backgroundColor: chartType === "all" ? "#77bfa3" : "#e3f2fd", // สีเมื่อ hover
-                            },
+                                backgroundColor: chartType === "all" ? "#77bfa3" : "transparent", // สีพื้นหลัง
+                                color: chartType === "all" ? "#fff" : "#77bfa3", // สีข้อความ
+                                "&:hover": {
+                                    backgroundColor: chartType === "all" ? "#77bfa3" : "#e3f2fd", // สีเมื่อ hover
+                                },
                             }}
                         >
                             ทั้งหมด
@@ -94,11 +109,11 @@ export default function Page() {
                             variant={chartType === "content" ? "contained" : "text"}
                             onClick={() => setChartType("content")}
                             sx={{
-                            backgroundColor: chartType === "content" ? "#77bfa3" : "transparent", // สีพื้นหลัง
-                            color: chartType === "content" ? "#fff" : "#77bfa3", // สีข้อความ
-                            "&:hover": {
-                                backgroundColor: chartType === "content" ? "#77bfa3" : "#e3f2fd", // สีเมื่อ hover
-                            },
+                                backgroundColor: chartType === "content" ? "#77bfa3" : "transparent", // สีพื้นหลัง
+                                color: chartType === "content" ? "#fff" : "#77bfa3", // สีข้อความ
+                                "&:hover": {
+                                    backgroundColor: chartType === "content" ? "#77bfa3" : "#e3f2fd", // สีเมื่อ hover
+                                },
                             }}
                         >
                             เนื้อหา

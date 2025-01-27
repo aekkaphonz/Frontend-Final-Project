@@ -9,8 +9,10 @@ import {
 } from "@mui/material";
 import React from "react";
 
+
 import { useEffect, useState } from "react";
 import axios from "axios";
+
 
 import Navbar from "@/app/navbar/page";
 import AutherAfterLogin from "@/app/navbar/AutherAfterLogin";
@@ -25,7 +27,7 @@ const UsersPage = () => {
   };
   const { isLoggedIn } = useAuth();
   return (
-    <div>
+    <div >
       {isLoggedIn ? (
         <AutherAfterLogin isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
       ) : (
@@ -37,3 +39,4 @@ const UsersPage = () => {
 };
 
 export default UsersPage;
+
