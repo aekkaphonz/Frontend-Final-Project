@@ -10,7 +10,6 @@ import InsertChartIcon from "@mui/icons-material/InsertChart";
 import EditNoteOutlinedIcon from "@mui/icons-material/EditNoteOutlined";
 import PersonIcon from '@mui/icons-material/Person';
 import { useAuth } from "@/app/context/AuthProvider";
-import PersonIcon from '@mui/icons-material/Person';
 
 function Sb({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: () => void }) {
 
