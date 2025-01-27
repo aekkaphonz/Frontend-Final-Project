@@ -28,7 +28,7 @@ import Link from "next/link";
 import { Visibility, Comment, ThumbUp } from "@mui/icons-material";
 import { useRouter } from "next/navigation";
 import Navbar from "@/app/navbar/page";
-import AfterLogin from "@/app/navbar/AfterLogin"
+import AfterLogin from "@/app/navbar/AfterLogin";
 import { useAuth } from "@/app/context/AuthProvider";
 
 
@@ -56,14 +56,17 @@ export default function Page() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const res = await fetch("http://localhost:3001/contents/all");
+
+        const res = await fetch("http://localhost:3001/contents");
         if (!res.ok) throw new Error("Failed to fetch data");
         const result: Post[] = await res.json();
         console.log(result); // ตรวจสอบ postImage ใน console
         setData(result);
         setFilteredData(result);
+
       } catch (error) {
-        console.error("Error fetching posts:", error);
+        console.error("Error fetching data:", error);
+        setData([]);
       }
     }
     fetchData();
@@ -321,8 +324,8 @@ function RegionCard({ post }: { post: Post }) {
           <CardMedia
             component="img"
             height="150"
-            image={post.postImage} // ใช้ placeholder หากไม่มีรูป
-            alt={post.title || "ยังไม่ไม่มีรูปภาพ"}
+            image={typeof post.postImage === "string" ? post.postImage : ""}
+            alt={"ไม่ไม่มีรูปภาพ"}
             sx={{
               objectFit: "cover",
               borderRadius: "8px",
