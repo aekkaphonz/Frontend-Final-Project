@@ -57,9 +57,7 @@ export default function Page() {
     async function fetchData() {
       try {
 
-
-        const res = await fetch("http://localhost:3001/contents/all");
-
+        const res = await fetch("http://localhost:3001/contents");
         if (!res.ok) throw new Error("Failed to fetch data");
         const result: Post[] = await res.json();
         console.log(result); // ตรวจสอบ postImage ใน console
@@ -74,14 +72,16 @@ export default function Page() {
     fetchData();
   }, []);  
 
-  const handleSearch = (query) => {
+  const handleSearch = async (query: string) => {
     setSearchQuery(query);
+
     if (query.trim() === "") {
       setFilteredData(data);
       return;
     }
+
     const filtered = data.filter((item) =>
-      item?.title?.toLowerCase().includes(query.toLowerCase())
+      item.title.toLowerCase().includes(query.toLowerCase())
     );
     setFilteredData(filtered);
   };
@@ -89,16 +89,7 @@ export default function Page() {
   return (
     <Box sx={{ display: "flex", minHeight: "100vh" }}>
       {/* Sidebar and Navbar */}
-      {isLoggedIn ?   <AfterLogin
-        isOpen={isSidebarOpen}
-        toggleSidebar={toggleSidebar}
-        handleSearch={handleSearch}
-      /> :
-      <Navbar
-        isOpen={isSidebarOpen}
-        toggleSidebar={toggleSidebar}
-        handleSearch={handleSearch}
-      />}
+      {isLoggedIn ? <AfterLogin /> : <Navbar />}
 
       {/* Main Content */}
       <Box
@@ -351,16 +342,15 @@ function RegionCard({ post }: { post: Post }) {
         </CardActionArea>
         <Box sx={{ display: "flex", justifyContent: "space-between", padding: "10px" }}>
           <Box sx={{ display: "flex", alignItems: "center" }}>
-            <Visibility /> {post.views} ยอดวิว
+            <Visibility /> {post.views}
           </Box>
           <Box sx={{ display: "flex", alignItems: "center" }}>
-            {/* <Comment /> {post.comments} */}
+        
           </Box>
           <Box sx={{ display: "flex", alignItems: "center" }}>
-            <ThumbUp /> {post.likes} ถูกใจ
+            <ThumbUp /> {post.likes}
           </Box>
         </Box>
-
       </Card>
     </Grid>
   );

@@ -275,7 +275,7 @@ export default function Page() {
 
     try {
       const res = await fetch(`http://localhost:3001/comments/${commentId}`, {
-        method: "PATCH",
+        method: "Put",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ comment: newMessage }), // ใช้คีย์ "comment" ตามโครงสร้าง Backend
       });
