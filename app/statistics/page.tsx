@@ -66,11 +66,18 @@ export default function Page() {
 
     return (
         <Container
-            maxWidth={false}
-            sx={{
-                maxWidth: "1400px",
-                marginRight: 15,
-            }}
+        sx={{
+            marginRight: 15,
+            marginLeft: isSidebarOpen ? "240px" : "72px", 
+            marginTop: "72px", 
+            transition: "margin-left 0.3s", // เพิ่มการเปลี่ยนแปลงแบบ Smooth
+            padding: "16px",
+            maxWidth: {
+              xs: "100%",
+              sm: isSidebarOpen ? "calc(100% - 240px)" : "calc(100% - 72px)", // ขนาด Container บนหน้าจอเล็ก
+              md: isSidebarOpen ? "calc(100% - 240px)" : "calc(100% - 72px)", // ขนาด Container บนหน้าจอกลาง
+            },
+          }}
         >
             {isLoggedIn ? (
                 <AutherAfterLogin isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />

@@ -12,6 +12,8 @@ import EditNoteOutlinedIcon from '@mui/icons-material/EditNoteOutlined';
 import HomeIcon from '@mui/icons-material/Home';
 import ArticleIcon from '@mui/icons-material/Article';
 import WhatshotIcon from '@mui/icons-material/Whatshot';
+import SwitchTheme from "@/app/darkMode/components/SwitchTheme";
+import { useTheme } from "@mui/material/styles";
 
 const themeColors = {
   primary: "#ffffff",
@@ -25,6 +27,9 @@ function Sb({ isOpen, toggleSidebar, handleSearch }: { isOpen: boolean; toggleSi
   const [filteredData, setFilteredData] = useState<any[]>([]);
   const [data, setData] = useState<any[]>([]);
 
+  const theme = useTheme(); // ใช้ useTheme เพื่อดึงธีมปัจจุบัน
+  const isDarkMode = theme.palette.mode === "dark"; // ตรวจสอบว่าเป็นโหมดมืดหรือไม่
+  
   // Fetch all data on load
   useEffect(() => {
     async function fetchData() {
@@ -45,15 +50,16 @@ function Sb({ isOpen, toggleSidebar, handleSearch }: { isOpen: boolean; toggleSi
     <>
       {/* Navbar */}
       <AppBar
-        position="fixed"
-        sx={{
-          backgroundColor: "#fff",
-          boxShadow: "0px 3px 3px rgba(0,0,0,0.1)",
-          borderBottom: "1px solid #ddd",
-          zIndex: 1300,
-        }}
+         position="fixed"
+         className="navbar"
+         sx={{
+           backgroundColor: "inherit", // ใช้ค่า background สีจากคลาส Tailwind
+           color: "inherit",
+           boxShadow: "0px 3px 3px rgba(0,0,0,0.1)",
+           zIndex: 1300,
+         }}
       >
-        <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
+        <Toolbar sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", px: 2  }}>
           {/* Sidebar Menu */}
           <Box sx={{
             display: "flex",
@@ -161,7 +167,6 @@ function Sb({ isOpen, toggleSidebar, handleSearch }: { isOpen: boolean; toggleSi
               เข้าสู่ระบบ
             </Button>
 
-
             {/* Signup Button */}
             <Button
               href="/signup"
@@ -180,6 +185,9 @@ function Sb({ isOpen, toggleSidebar, handleSearch }: { isOpen: boolean; toggleSi
             >
               ลงทะเบียน
             </Button>
+
+            <SwitchTheme />
+
           </Box>
           
         </Toolbar>
@@ -190,7 +198,8 @@ function Sb({ isOpen, toggleSidebar, handleSearch }: { isOpen: boolean; toggleSi
         sx={{
           width: isOpen ? 240 : 72,
           height: "100vh",
-          backgroundColor: "#fff",
+          backgroundColor: "inherit", // ใช้ค่า background สีจากคลาส Tailwind
+          color: "inherit",
           transition: "width 0.3s",
           position: "fixed",
           top: 64,
