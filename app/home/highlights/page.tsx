@@ -56,10 +56,14 @@ export default function Page() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const response = await fetch("http://localhost:3001/contents/all");
-        if (!response.ok) throw new Error("Failed to fetch data");
-        const posts: Post[] = await response.json();
-        setData(posts);
+
+        const res = await fetch("http://localhost:3001/contents/all");
+        if (!res.ok) throw new Error("Failed to fetch data");
+        const result: Post[] = await res.json();
+        console.log(result); // ตรวจสอบ postImage ใน console
+        setData(result);
+        setFilteredData(result);
+
       } catch (error) {
         console.error("Error fetching data:", error);
         setData([]);
@@ -68,16 +72,14 @@ export default function Page() {
     fetchData();
   }, []);  
 
-  const handleSearch = async (query: string) => {
+  const handleSearch = (query) => {
     setSearchQuery(query);
-
     if (query.trim() === "") {
       setFilteredData(data);
       return;
     }
-
     const filtered = data.filter((item) =>
-      item.title.toLowerCase().includes(query.toLowerCase())
+      item?.title?.toLowerCase().includes(query.toLowerCase())
     );
     setFilteredData(filtered);
   };
@@ -85,7 +87,16 @@ export default function Page() {
   return (
     <Box sx={{ display: "flex", minHeight: "100vh" }}>
       {/* Sidebar and Navbar */}
-      {isLoggedIn ? <AfterLogin /> : <Navbar />}
+      {isLoggedIn ?   <AfterLogin
+        isOpen={isSidebarOpen}
+        toggleSidebar={toggleSidebar}
+        handleSearch={handleSearch}
+      /> :
+      <Navbar
+        isOpen={isSidebarOpen}
+        toggleSidebar={toggleSidebar}
+        handleSearch={handleSearch}
+      />}
 
       {/* Main Content */}
       <Box
@@ -338,15 +349,16 @@ function RegionCard({ post }: { post: Post }) {
         </CardActionArea>
         <Box sx={{ display: "flex", justifyContent: "space-between", padding: "10px" }}>
           <Box sx={{ display: "flex", alignItems: "center" }}>
-            <Visibility /> {post.views}
+            <Visibility /> {post.views} ยอดวิว
           </Box>
           <Box sx={{ display: "flex", alignItems: "center" }}>
-            <Comment /> {post.comments}
+            {/* <Comment /> {post.comments} */}
           </Box>
           <Box sx={{ display: "flex", alignItems: "center" }}>
-            <ThumbUp /> {post.likes}
+            <ThumbUp /> {post.likes} ถูกใจ
           </Box>
         </Box>
+
       </Card>
     </Grid>
   );
