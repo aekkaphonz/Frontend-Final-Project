@@ -56,14 +56,10 @@ export default function Page() {
   useEffect(() => {
     async function fetchData() {
       try {
-
-        const res = await fetch("http://localhost:3001/contents/all");
-        if (!res.ok) throw new Error("Failed to fetch data");
-        const result: Post[] = await res.json();
-        console.log(result); // ตรวจสอบ postImage ใน console
-        setData(result);
-        setFilteredData(result);
-
+        const response = await fetch("http://localhost:3001/contents/all");
+        if (!response.ok) throw new Error("Failed to fetch data");
+        const posts: Post[] = await response.json();
+        setData(posts);
       } catch (error) {
         console.error("Error fetching data:", error);
         setData([]);
@@ -345,7 +341,7 @@ function RegionCard({ post }: { post: Post }) {
             <Visibility /> {post.views}
           </Box>
           <Box sx={{ display: "flex", alignItems: "center" }}>
-        
+            {/* <Comment /> {post.comments} */}
           </Box>
           <Box sx={{ display: "flex", alignItems: "center" }}>
             <ThumbUp /> {post.likes}
