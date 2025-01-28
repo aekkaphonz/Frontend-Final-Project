@@ -57,7 +57,8 @@ function NavLogIn({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: (
       <AppBar
         position="fixed"
         sx={{
-          backgroundColor: "#fff", // พื้นหลังสีขาว
+          backgroundColor: "inherit", // ใช้ค่า background สีจากคลาส Tailwind
+          color: "inherit",
           boxShadow: "0px 3px 3px rgba(0,0,0,0.1)",
           borderBottom: "1px solid #ddd",
           zIndex: 1300, // ให้อยู่เหนือ Sidebar
@@ -197,7 +198,8 @@ function NavLogIn({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: (
         sx={{
           width: isOpen ? 240 : 72, // ความกว้างเมื่อเปิด/ปิด
           height: "100vh",
-          backgroundColor: "#fff",
+          backgroundColor: "inherit", // ใช้ค่า background สีจากคลาส Tailwind
+          color: "inherit",
           transition: "width 0.3s",
           position: "fixed",
           top: 64, // เลื่อน Sidebar ให้เริ่มหลัง Navbar
