@@ -155,7 +155,7 @@ export default function SignUp() {
   
             <div className="w-full">
               <TextField
-                id="userName"
+                id="firstname"
                 label={
                   <span>
                     ชื่อผู้ใช้ <span style={{ color: "red" }}>*</span>

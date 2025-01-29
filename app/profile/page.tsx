@@ -1,18 +1,8 @@
 "use client";
-import {
-  Box,
-  Button,
-  Card,
-  CardContent,
-  InputAdornment,
-  TextField,
-} from "@mui/material";
+
 import React from "react";
 
-
-import { useEffect, useState } from "react";
-import axios from "axios";
-
+import { useState } from "react";
 
 import Navbar from "@/app/navbar/page";
 import AutherAfterLogin from "@/app/navbar/AutherAfterLogin";
@@ -26,12 +16,21 @@ const UsersPage = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
   const { isLoggedIn } = useAuth();
+
+  const handleSearch = (query: string) => {};
   return (
-    <div >
+    <div>
       {isLoggedIn ? (
-        <AutherAfterLogin isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
+        <AutherAfterLogin
+          isOpen={isSidebarOpen}
+          toggleSidebar={toggleSidebar}
+        />
       ) : (
-        <Navbar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
+        <Navbar
+          isOpen={isSidebarOpen}
+          toggleSidebar={toggleSidebar}
+          handleSearch={handleSearch}
+        />
       )}
       <ReadOnlyProfilePage />
     </div>
@@ -39,4 +38,3 @@ const UsersPage = () => {
 };
 
 export default UsersPage;
-

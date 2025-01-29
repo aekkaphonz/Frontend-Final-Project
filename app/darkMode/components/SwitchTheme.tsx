@@ -21,19 +21,14 @@ const SwitchTheme = () => {
 
   return (
     <button
-      className={`border relative mt-4 h-[3rem] w-[3rem] p-2 rounded-full 
-        ${
-            theme === "dark"
-              ? "bg-gray-800 text-yellow-400 shadow-yellow-400/50"
-              : "bg-gray-100 text-blue-600 shadow-blue-400/50"
-          }`}
+      className={`border h-[3rem] w-[3rem] rounded-full flex items-center justify-center transition-colors duration-300 ${
+        theme === "dark"
+          ? "bg-gray-800 text-yellow-400"
+          : "bg-gray-100 text-blue-600"
+      }`}
       onClick={handleSwitchTheme}
     >
-      {theme === "dark" ? (
-        <SunIcon className="h-6 w-6 mx-auto" />
-      ) : (
-        <MoonIcon className="h-6 w-6 mx-auto" />
-      )}
+      {theme === "dark" ? <SunIcon className="h-6 w-6" /> : <MoonIcon className="h-6 w-6" />}
     </button>
   );
 };

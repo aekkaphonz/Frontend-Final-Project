@@ -30,11 +30,11 @@ export default function HomeNavbarAfterLogin() {
   };
 
   const handleMenuClick = async (setting: string) => {
-    if (setting === "Logout") {
+    if (setting === "ออกจากระบบ") {
       await logout(); // เรียกใช้ฟังก์ชัน logout
-    } else if (setting === "Dashboard") {
+    } else if (setting === "แดชบอร์ด") {
       router.push("/dashboard"); // เปลี่ยนเส้นทางไปยัง /dashboard
-     }else if (setting === "Profile") {
+     }else if (setting === "โปรไฟล์") {
        router.push("/profile"); 
      }
     handleCloseUserMenu(); // ปิดเมนู

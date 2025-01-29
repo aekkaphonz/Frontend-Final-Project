@@ -5,7 +5,7 @@ import axios from "axios";
 import { useRouter } from "next/navigation";
 import dayjs from "dayjs";
 
-interface User {
+type User = {
   _id: string;
   email: string;
   userName: string;

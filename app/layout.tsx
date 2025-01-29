@@ -6,7 +6,6 @@ import { ThemeProvider } from "@/app/darkMode/components/ThemeProvider";
 import { ThemeWrapper } from "@/app/darkMode/components/ThemeWrapper";
 import SwitchTheme from "@/app/darkMode/components/SwitchTheme";
 
-
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -17,10 +16,7 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-const inter = Inter({
-   subsets: ["latin"],
-  variable: "--font-inter" 
-});
+const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -35,14 +31,9 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${inter.variable} antialiased`}
+        className={`${inter.className} ${geistSans.variable} ${geistMono.variable}  antialiased`}
       >
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="system"
-            enableSystem
-            disableTransitionOnChange
-          >
+          <ThemeProvider>
             <ThemeWrapper>
               <AuthProvider>
                 {children}
