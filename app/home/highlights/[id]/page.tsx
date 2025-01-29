@@ -13,6 +13,7 @@ import { useParams } from "next/navigation";
 import Navbar from "@/app/navbar/page";
 import AfterLogin from "@/app/navbar/AfterLogin"
 import { useAuth } from "@/app/context/AuthProvider";
+import LocalOfferIcon from '@mui/icons-material/LocalOffer';
 
 interface User {
   id: string;
@@ -24,6 +25,7 @@ interface Attraction {
   _id: string;
   title: string;
   detail: string;
+  tags: string[];
   postImage: string;
   likeCount: number;
 }
@@ -191,6 +193,7 @@ export default function Page() {
           _id: result._id,
           title: result.title,
           detail: result.detail,
+          tags: result.tags,
           postImage: result.postImage || [],
           likeCount: result.likeCount || 0,
         });
@@ -368,6 +371,15 @@ export default function Page() {
     setMenuCommentId(null);
   };
 
+  // ฟังก์ชันแสดงแท็ก
+  const renderTags = (tags: string[]) => {
+    return tags.map((tag, index) => (
+      <Box key={index} sx={{border:"1px solid #b3b6b7 ", marginBottom:1, padding: "5px 10px", boxShadow: "0 1px 2px rgba(0, 0, 0, 0.1)", fontSize: "14px", color: "#333" }}>
+        <Typography variant="body2"><LocalOfferIcon sx={{color:"#77bfa3", mr:"0.5px"}} fontSize="small" />{tag}</Typography>
+      </Box>
+    ));
+  };
+
   return (
     <Box sx={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
       {isLoggedIn ? <AfterLogin /> : <Navbar />}
@@ -393,13 +405,7 @@ export default function Page() {
               backgroundColor: "#f9fbe7",
             }}
           >
-            <CardMedia
-              component="img"
-              sx={{ height: 300 }}
-              image={data.postImage}
-              alt="ยังไม่ไม่มีรูภาพ"
-            />
-            <CardContent sx={{ textAlign: "center" }}>
+            <CardContent sx={{ textAlign: "start",  ml:5 ,mr:5}}>
               <Typography
                 gutterBottom
                 variant="h4"
@@ -408,8 +414,15 @@ export default function Page() {
               >
                 {data.title}
               </Typography>
+              <Box display="flex" gap={1}>{renderTags(data.tags)}</Box>
+              <CardMedia
+                component="img"
+                sx={{ height: "100%" }}
+                image={data.postImage}
+                alt="ยังไม่ไม่มีรูภาพ"
+              />
               <Typography variant="body1" sx={{ color: "#616161", mt: 2 }}>
-                {data.detail?.substring(0, 100) || "ไม่มีเนื้อหา"}...
+                {data.detail?.substring(0, 100) || "ไม่มีเนื้อหา"}
               </Typography>
             </CardContent>
             <Box
@@ -417,7 +430,7 @@ export default function Page() {
                 display: "flex",
                 justifyContent: "space-between",
                 padding: 2,
-                backgroundColor: "#f5f5f5",
+                backgroundColor: "#f9fbe7",
               }}
             >
               <Box>
