@@ -124,7 +124,7 @@ export default function Page() {
       )}
 
       <Grid
-        container 
+        container
         spacing={3}
         sx={{
           marginLeft: isSidebarOpen ? "240px" : "72px",
@@ -165,6 +165,7 @@ export default function Page() {
                   <TableCell sx={{ fontWeight: "bold" }} align="right">
                     ความคิดเห็น
                   </TableCell>
+                  <TableCell sx={{ fontWeight: "bold" }} align="right">แท็ก</TableCell>
                   <TableCell sx={{ fontWeight: "bold" }} align="right">
                     <BorderColorIcon />
                   </TableCell>
@@ -194,8 +195,16 @@ export default function Page() {
                       <TableCell align="right">
                         {new Date(row.createdAt).toLocaleDateString() || "-"}
                       </TableCell>
-                      <TableCell align="right">{Array.isArray(row.views) ? row.views.length : row.viewCount ?? "-"}</TableCell>
+                      <TableCell align="right">
+                        {Array.isArray(row.views) ? row.views.length : row.viewCount ?? "-"}
+                      </TableCell>
                       <TableCell align="right">{row.comments?.length ?? "-"}</TableCell>
+                      <TableCell align="right">
+                        {Array.isArray(row.tags) && row.tags.length > 0
+                          ? row.tags.join(", ") // ✅ แสดงค่าแท็กให้ถูกต้อง
+                          : "ไม่มีแท็ก"}
+                      </TableCell>
+
                       <TableCell align="right">
                         <Button
                           sx={{ color: "#FFD500" }}

@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { styled } from "@mui/material/styles";
-import { Typography, Container, TextField, Button, Grid, IconButton, Box } from "@mui/material";
+import { Typography, Container, TextField, Button, Grid, IconButton, Box, FormControlLabel, Checkbox } from "@mui/material";
 import Paper from "@mui/material/Paper";
 import Navbar from "@/app/navbar/page";
 import AutherAfterLogin from "@/app/navbar/AutherAfterLogin";
@@ -33,7 +33,23 @@ export default function Page() {
     const [description, setDescription] = useState(""); // ✅ ใช้ `description` ตรงกับ Backend
     const [images, setImages] = useState<File[]>([]);
     const [imagePreviews, setImagePreviews] = useState<string[]>([]);
+    const [selectedTags, setSelectedTags] = useState<string[]>([]);
+    const [titleError, setTitleError] = useState<string | null>(null);
+    const [contentError, setContentError] = useState<string | null>(null);
 
+    const blogCategories = [
+        "เทคโนโลยี", "สุขภาพ", "อาหาร", "ท่องเที่ยว", "การเงิน",
+        "ธุรกิจ", "ไลฟ์สไตล์", "การศึกษา", "ศิลปะ", "วิทยาศาสตร์",
+        "กีฬา", "ดนตรี", "การ์ตูน", "อนิเมะ"
+    ];
+
+    const handleTagChange = (tag: string) => {
+        setSelectedTags((prevTags) =>
+            prevTags.includes(tag)
+                ? prevTags.filter((t) => t !== tag) // เอาออกถ้ามีอยู่แล้ว
+                : [...prevTags, tag] // เพิ่มเข้าไปถ้ายังไม่มี
+        );
+    };
 
     const toggleSidebar = () => {
         setIsSidebarOpen(!isSidebarOpen);
@@ -61,17 +77,34 @@ export default function Page() {
             return;
         }
 
+        if (!title.trim()) {
+            setTitleError("กรุณากรอกชื่อบทความ");
+            return;
+        } else {
+            setTitleError(null);
+        }
+
+        if (!content.trim()) {
+            setContentError("กรุณากรอกเนื้อหาของบทความ");
+            return;
+        } else {
+            setContentError(null);
+        }
+
         const formData = new FormData();
         formData.append("userId", user.userId);
         formData.append("title", title);
         formData.append("detail", content);
-        formData.append("description", description);
+
+        selectedTags.forEach(tag => {
+            formData.append("tags[]", tag);
+        });
 
         if (images.length > 0) {
             formData.append("postImage", images[0]);
         }
 
-        console.log("🚀 กำลังส่งข้อมูลไป Backend:", Object.fromEntries(formData.entries()));
+        console.log(" กำลังส่งข้อมูลไป Backend:", Object.fromEntries(formData.entries()));
 
         try {
             const response = await fetch("http://localhost:3001/contents/createContent", {
@@ -122,6 +155,7 @@ export default function Page() {
         setDescription("");
         setImages([]);
         setImagePreviews([]);
+        setSelectedTags([]);
     };
 
     const handleRemoveImage = (index: number) => {
@@ -171,6 +205,8 @@ export default function Page() {
                         placeholder="ใส่หัวข้อบทความ..."
                         value={title}
                         onChange={(e) => setTitle(e.target.value)}
+                        error={Boolean(titleError)} // ✅ แสดง error ถ้ามี
+                        helperText={titleError} // ✅ ข้อความแจ้งเตือน
                     />
                 </Grid>
 
@@ -212,19 +248,30 @@ export default function Page() {
                         rows={10}
                         value={content}
                         onChange={(e) => setContent(e.target.value)}
+                        error={Boolean(contentError)} // ✅ แสดง error ถ้ามี
+                        helperText={contentError} // ✅ ข้อความแจ้งเตือน
                     />
                 </Grid>
 
                 {/* แท็ก */}
                 <Grid item md={12}>
-                    <Typography sx={{ fontWeight: "bold", fontSize: 18, mb: 1 }}>แท็ก</Typography>
-                    <TextField
-                        fullWidth
-                        variant="outlined"
-                        placeholder="เพิ่มแท็ก (คั่นด้วยเครื่องหมายจุลภาค)"
-                        value={description}
-                        onChange={(e) => setDescription(e.target.value)}
-                    />
+                    <Typography sx={{ fontWeight: "bold", fontSize: 18, mb: 1 }}>เลือกแท็ก</Typography>
+                    <Grid container spacing={2}>
+                        {blogCategories.map((tag) => (
+                            <Grid item key={tag} xs={6} sm={4} md={3}>
+                                <FormControlLabel
+                                    control={
+                                        <Checkbox
+                                            checked={selectedTags.includes(tag)}
+                                            onChange={() => handleTagChange(tag)}
+                                            sx={{ color: "#77bfa3" }}
+                                        />
+                                    }
+                                    label={tag}
+                                />
+                            </Grid>
+                        ))}
+                    </Grid>
                 </Grid>
 
                 {/* ปุ่มบันทึก */}
