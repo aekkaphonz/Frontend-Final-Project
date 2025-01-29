@@ -17,11 +17,10 @@ import { useAuth } from "@/app/context/AuthProvider";
 import EditNoteOutlinedIcon from "@mui/icons-material/EditNoteOutlined";
 import { useRouter } from "next/navigation";
 
-
-function NavLogIn({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: () => void }) {
+function NavLogIn({ isOpen, toggleSidebar, handleSearch }: { isOpen: boolean; toggleSidebar: () => void; handleSearch: (query: string) => void }) {
   const router = useRouter();
   const { user } = useAuth();
-  const settings = ['Profile', 'Dashboard', 'Logout'];
+  const settings = ["โปรไฟล์", "แดชบอร์ด", "ออกจากระบบ"];
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
 
 
@@ -32,24 +31,6 @@ function NavLogIn({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: (
     buttonGreen: "#77bfa3",
   };
 
-  const logout = async () => {
-    try {
-      const response = await axios.post("http://localhost:3001/auth/logout", null, {
-        withCredentials: true,
-      });
-  
-      if (response.status === 200) {
-        console.log("Logout successful");
-        
-      } else {
-        console.error("Logout failed");
-      }
-    } catch (error) {
-      console.error("Error during logout:", error);
-    }
-  };
-
-
   const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElUser(event.currentTarget);
   };
@@ -58,18 +39,13 @@ function NavLogIn({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: (
     setAnchorElUser(null);
   };
   const handleMenuClick = async (setting: string) => {
-    if (setting === "Logout") {
-
-      await logout();
-
-      router.push("/signin"); 
-
-
-    } else if (setting === "Dashboard") {
-      router.push("/dashboard"); 
-     }else if (setting === "Profile") {
-      router.push("/profile"); 
-    }
+    if (setting === "ออกจากระบบ") {
+      await logout(); // เรียกใช้ฟังก์ชัน logout
+    } else if (setting === "แดชบอร์ด") {
+      router.push("/dashboard"); // เปลี่ยนเส้นทางไปยัง /dashboard
+     }else if (setting === "โปรไฟล์") {
+       router.push("/profile"); 
+     }
     handleCloseUserMenu(); // ปิดเมนู
   };
 
@@ -121,6 +97,7 @@ function NavLogIn({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: (
                 width: "60%",
                 backgroundColor: "#f6f6f6",
               }}
+              onChange={(e) => handleSearch(e.target.value)}
               InputProps={{
                 endAdornment: (
                   <IconButton>

@@ -32,8 +32,6 @@ function NavLogIn({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: (
     buttonGreen: "#77bfa3",
   };
 
-
-
   const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElUser(event.currentTarget);
   };
@@ -83,11 +81,11 @@ function NavLogIn({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: (
               <MenuIcon />
             </IconButton>
 
-            <Link href="/" >
+            <Link href="http://localhost:3000/home/highlights" >
               <img
                 src="/images/logo-blogs.png"
                 alt="Cleaning Illustration"
-                style={{ maxWidth: "142px", height: "auto" }} // ขนาดโลโก้
+                style={{ maxWidth: "142px", height: "auto" }}
               />
             </Link>
           </Box>

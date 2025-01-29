@@ -17,7 +17,7 @@ const UsersPage = () => {
   };
   const { isLoggedIn } = useAuth();
 
-  const handleSearch = (query: string) => {};
+  
   return (
     <div>
       {isLoggedIn ? (
@@ -29,7 +29,7 @@ const UsersPage = () => {
         <Navbar
           isOpen={isSidebarOpen}
           toggleSidebar={toggleSidebar}
-          handleSearch={handleSearch}
+    
         />
       )}
       <ReadOnlyProfilePage />
