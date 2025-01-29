@@ -23,14 +23,13 @@ function NavLogIn({ isOpen, toggleSidebar, handleSearch }: { isOpen: boolean; to
   const settings = ['Profile', 'Dashboard', 'Logout'];
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
 
-
   const themeColors = {
     primary: "#ffffff",
     text: "#000000",
     buttonBorder: "#000000",
     buttonGreen: "#77bfa3",
   };
-
+  
   const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElUser(event.currentTarget);
   };

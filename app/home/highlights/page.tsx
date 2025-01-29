@@ -72,33 +72,54 @@ export default function Page() {
       }
     }
     fetchData();
-  }, []);  
+  }, []);
 
-  const handleSearch = (query) => {
+  
+
+  const handleSearch = async (query: string) => {
     setSearchQuery(query);
-    if (query.trim() === "") {
+  
+    if (!query.trim()) {
       setFilteredData(data);
       return;
     }
-    const filtered = data.filter((item) =>
-      item?.title?.toLowerCase().includes(query.toLowerCase())
-    );
-    setFilteredData(filtered);
-  };
+  
+    try {
+      console.log(`🔍 Searching for: '${query}'`);
+      const encodedQuery = encodeURIComponent(query);
+      const res = await fetch(`http://localhost:3001/contents/${encodedQuery}`);
+      console.log(" API Response:", res.status, res.statusText);
+
+      if (!res.ok) {
+        const errorText = await res.text();
+        console.error("Search API Error:", res.status, errorText);
+        throw new Error(`Failed to fetch search results`);
+      }
+
+      const searchResults: Post = await res.json();
+      console.log("Search Results:", searchResults);
+
+      // ถ้า API คืนเป็น Object เดียว ต้องใส่ลงใน Array เพื่อให้ .map() ใช้งานได้
+      setFilteredData([searchResults]);
+    } catch (error) {
+      console.error("Error during search:", error);
+      setFilteredData([]);
+    }
+};
 
   return (
     <Box sx={{ display: "flex", minHeight: "100vh" }}>
       {/* Sidebar and Navbar */}
-      {isLoggedIn ?   <AfterLogin
+      {isLoggedIn ? <AfterLogin
         isOpen={isSidebarOpen}
         toggleSidebar={toggleSidebar}
         handleSearch={handleSearch}
       /> :
-      <Navbar
-        isOpen={isSidebarOpen}
-        toggleSidebar={toggleSidebar}
-        handleSearch={handleSearch}
-      />}
+        <Navbar
+          isOpen={isSidebarOpen}
+          toggleSidebar={toggleSidebar}
+          handleSearch={handleSearch}
+        />}
 
       {/* Main Content */}
       <Box
@@ -198,11 +219,10 @@ function Sb({
           </Box>
           <TextField
             placeholder="ค้นหา"
+            variant="outlined"
+            size="small"
             value={searchQuery}
-            onChange={(e) => {
-              setSearchQuery(e.target.value);
-              handleSearch(e.target.value);
-            }}
+            onChange={(e) => handleSearch(e.target.value)}
             InputProps={{
               endAdornment: (
                 <IconButton onClick={() => handleSearch(searchQuery)}>
@@ -210,8 +230,8 @@ function Sb({
                 </IconButton>
               ),
             }}
-            sx={{ width: "60%" }}
           />
+
           <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
             <Link href="/signin">
               <Button>เข้าสู่ระบบ</Button>
@@ -338,7 +358,7 @@ function RegionCard({ post }: { post: Post }) {
             sx={{
               objectFit: "cover",
               borderRadius: "8px",
-              height:"150px",
+              height: "150px",
             }}
           />
 
@@ -362,6 +382,8 @@ function RegionCard({ post }: { post: Post }) {
         </Box>
 
       </Card>
+      
     </Grid>
+    
   );
 }

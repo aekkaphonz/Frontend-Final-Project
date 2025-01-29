@@ -85,7 +85,6 @@ function Sb({ isOpen, toggleSidebar, handleSearch }: { isOpen: boolean; toggleSi
             </Link>
           </Box>
 
-          {/* Search Bar */}
            {/* Search Bar */}
            <Box sx={{ flexGrow: 1, mx: 2, display: "flex", justifyContent: "center" }}>
             <TextField

@@ -397,7 +397,7 @@ export default function Page() {
               component="img"
               sx={{ height: 300 }}
               image={data.postImage}
-              alt="ยังไม่ไม่มีรูภาพ"
+              alt="ยังไม่มีรูปภาพ"
             />
             <CardContent sx={{ textAlign: "center" }}>
               <Typography
