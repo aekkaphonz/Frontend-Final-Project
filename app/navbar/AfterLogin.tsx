@@ -20,7 +20,7 @@ import { useRouter } from "next/navigation";
 
 function NavLogIn({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: () => void }) {
   const router = useRouter();
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
   const settings = ['Profile', 'Dashboard', 'Logout'];
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
 
@@ -31,6 +31,24 @@ function NavLogIn({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: (
     buttonBorder: "#000000",
     buttonGreen: "#77bfa3",
   };
+
+  const logout = async () => {
+    try {
+      const response = await axios.post("http://localhost:3001/auth/logout", null, {
+        withCredentials: true,
+      });
+  
+      if (response.status === 200) {
+        console.log("Logout successful");
+        
+      } else {
+        console.error("Logout failed");
+      }
+    } catch (error) {
+      console.error("Error during logout:", error);
+    }
+  };
+
 
   const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElUser(event.currentTarget);
@@ -43,7 +61,9 @@ function NavLogIn({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: (
     if (setting === "Logout") {
 
       await logout();
+
       router.push("/signin"); 
+
 
     } else if (setting === "Dashboard") {
       router.push("/dashboard"); 

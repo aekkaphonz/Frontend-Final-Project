@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono , Inter,} from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/app/context/AuthProvider";
-
+import { ThemeProvider } from "@/app/darkMode/components/ThemeProvider";
+import { ThemeWrapper } from "@/app/darkMode/components/ThemeWrapper";
+import SwitchTheme from "@/app/darkMode/components/SwitchTheme";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -13,6 +15,8 @@ const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
 });
+
+const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -25,13 +29,18 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${inter.className} ${geistSans.variable} ${geistMono.variable}  antialiased`}
       >
-        <AuthProvider>
-          {children}
-        </AuthProvider>
+          <ThemeProvider
+          >
+            <ThemeWrapper>
+              <AuthProvider>
+                {children}
+              </AuthProvider>
+            </ThemeWrapper>
+          </ThemeProvider>
       </body>
     </html>
   );

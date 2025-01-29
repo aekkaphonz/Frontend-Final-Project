@@ -132,10 +132,6 @@ function signin() {
                 fullWidth
                 {...register("email", {
                   required: "กรุณากรอกอีเมล",
-                  pattern: {
-                    value: /^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/,
-                    message: "รูปแบบอีเมลไม่ถูกต้อง",
-                  },
                 })}
                 error={!!errors.email}
                 helperText={
@@ -144,33 +140,33 @@ function signin() {
               />
             </div>
             <div className="w-full">
-            <TextField
-            type={showPassword ? "text" : "password"}
-            id="password"
-            label="รหัสผ่าน"
-            variant="outlined"
-            fullWidth
-            {...register("password", {
-              required: "กรุณากรอกรหัสผ่าน",
-              minLength: {
-                value: 6,
-                message: "รหัสผ่านต้องมีความยาวอย่างน้อย 6 ตัวอักษร",
-              },
-            })}
-            error={!!errors.password}
-            helperText={errors.password?.message  ? String(errors.password.message) : ""}
-            InputProps={{
-              endAdornment: (
-                <IconButton
-                  aria-label="toggle password visibility"
-                  onClick={handleClickShowPassword}
-                  edge="end"
-                >
-                  {showPassword ? <VisibilityOff /> : <Visibility />}
-                </IconButton>
-              ),
-            }}
-          />
+              <TextField
+                type={showPassword ? "text" : "password"}
+                id="password"
+                label="รหัสผ่าน"
+                variant="outlined"
+                fullWidth
+                {...register("password", {
+                  required: "กรุณากรอกรหัสผ่าน",
+                })}
+                error={!!errors.password}
+                helperText={
+                  errors.password?.message
+                    ? String(errors.password.message)
+                    : ""
+                }
+                InputProps={{
+                  endAdornment: (
+                    <IconButton
+                      aria-label="toggle password visibility"
+                      onClick={handleClickShowPassword}
+                      edge="end"
+                    >
+                      {showPassword ? <VisibilityOff /> : <Visibility />}
+                    </IconButton>
+                  ),
+                }}
+              />
             </div>
 
             <div className="grid grid-cols-2 justify-between items-center">

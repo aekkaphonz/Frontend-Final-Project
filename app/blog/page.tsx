@@ -124,7 +124,8 @@ export default function Page() {
       )}
 
       <Grid
-        container spacing={3}
+        container 
+        spacing={3}
         sx={{
           marginLeft: isSidebarOpen ? "240px" : "72px",
           marginTop: "72px",
