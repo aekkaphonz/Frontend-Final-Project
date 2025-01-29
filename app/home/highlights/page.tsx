@@ -333,6 +333,7 @@ function RegionCard({ post }: { post: Post }) {
   const handleCardClick = async (postId: string) => {
     if (!userId) {
       console.error("User ID is not available");
+      alert('กรุณาเข้าสู่ระบบ')
       return;
     }
 
