@@ -29,10 +29,12 @@ const Item = styled(Paper)(({ theme }) => ({
 }));
 
 export default function Page() {
-  const { isLoggedIn } = useAuth();
+  const { user, isLoggedIn } = useAuth();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [userName, setUserName] = useState("กำลังโหลด..."); // เก็บชื่อผู้ใช้งาน
   const [profileImage, setProfileImage] = useState("");
+  const [totalViews, setTotalViews] = useState(0);
+  const [totalPosts, setTotalPosts] = useState(0);
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
@@ -41,7 +43,7 @@ export default function Page() {
   const fetchUserData = async () => {
     try {
       const response = await fetch("http://localhost:3001/user/profile", {
-        credentials: "include", // ส่ง cookie
+        credentials: "include",
       });
       if (!response.ok) throw new Error("Failed to fetch user data");
       const data = await response.json();
@@ -52,9 +54,55 @@ export default function Page() {
     }
   };
 
+  const fetchTotalPosts = async () => {
+    if (!user?.userId) return; // ถ้าไม่มี userId ไม่ต้องโหลดข้อมูล
+
+    try {
+      const response = await fetch(`http://localhost:3001/contents?userId=${user.userId}`);
+      if (!response.ok) throw new Error("Failed to fetch posts");
+
+      const posts = await response.json();
+      setTotalPosts(posts.length); // ✅ นับจำนวนโพสต์ทั้งหมด
+    } catch (error) {
+      console.error("Error fetching total posts:", error);
+    }
+  };
+
+  const fetchTotalViews = async () => {
+    if (!user?.userId) return; // ถ้าไม่มี userId ไม่ต้องโหลดข้อมูล
+
+    try {
+      const response = await fetch(`http://localhost:3001/contents?userId=${user.userId}`);
+      if (!response.ok) throw new Error("Failed to fetch posts");
+
+      const posts = await response.json();
+
+      // ✅ ตรวจสอบว่า `views` เป็น array หรือค่าเดี่ยว (นับจำนวนตามโครงสร้าง)
+      const total = posts.reduce((sum: number, post: any) => {
+        if (Array.isArray(post.views)) {
+          return sum + post.views.length; // ถ้า `views` เป็น array นับจำนวนสมาชิก
+        } else if (typeof post.viewCount === "number") {
+          return sum + post.viewCount; // ถ้า `viewCount` เป็นค่าจำนวน ใช้ได้เลย
+        }
+        return sum;
+      }, 0);
+
+      setTotalViews(total);
+    } catch (error) {
+      console.error("Error fetching total views:", error);
+    }
+  };
+
   useEffect(() => {
     fetchUserData();
   }, []);
+
+  useEffect(() => {
+    if (isLoggedIn) {
+      fetchTotalPosts();
+      fetchTotalViews();
+    }
+  }, [isLoggedIn, user?.userId]);
 
   return (
     <Container
@@ -70,7 +118,7 @@ export default function Page() {
         <Navbar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
       )}
 
-      <Grid
+      <Grid 
         container
         spacing={3}
         sx={{
@@ -86,13 +134,13 @@ export default function Page() {
         }}
       >
         <Grid item md={8}>
-          <Typography sx={{ fontWeight: "bold", fontSize: 26, mb: 1 }}>
+          <Typography sx={{ fontWeight: "bold", fontSize: 26, mb: 1, color: "#98c9a3", }}>
             แดชบอร์ดผู้เขียน
           </Typography>
         </Grid>
 
         <Grid item md={12}>
-          <Item sx={{ height: 150, textAlign: "start", padding: 3 }}>
+          <Item sx={{ height: 150, textAlign: "start", padding: 3, borderTop: "6px solid #dde7c7", }}>
             <Typography
               sx={{ fontWeight: "bold", fontSize: 18, color: "black" }}
             >
@@ -137,7 +185,16 @@ export default function Page() {
           </Item>
         </Grid>
 
-        <Grid item md={3}>
+        <Grid
+          item
+          md={3}
+          sx={{
+            "&:hover #profile-icon, &:hover .profile-text": {
+              transform: "scale(1.13)",
+              transition: "transform 0.3s ease",
+            },
+          }}
+        >
           <Item id="profile-item" sx={{ height: 150, textAlign: "start" }}>
             <Typography
               sx={{
@@ -159,22 +216,31 @@ export default function Page() {
                 color: "#577BC1",
               }}
             >
-              0
+              {totalPosts}
             </Typography>
             <LibraryBooksIcon
               id="profile-icon"
               sx={{
                 fontSize: 78,
-                marginLeft: 14,
+                marginLeft: 22,
                 marginTop: -30,
                 color: "#577BC1",
                 filter: "drop-shadow(2px 4px 3px rgba(0, 0, 0, 0.3))",
+                transition: "transform 0.3s ease",
               }}
             />
           </Item>
         </Grid>
 
-        <Grid item md={3}>
+        <Grid
+          item
+          md={3}
+          sx={{
+            "&:hover #profile-icon, &:hover .profile-text": {
+              transform: "scale(1.13)",
+              transition: "transform 0.3s ease",
+            },
+          }}>
           <Item id="profile-item" sx={{ height: 150, textAlign: "start" }}>
             <Typography
               sx={{
@@ -196,13 +262,13 @@ export default function Page() {
                 color: "#FFD65A",
               }}
             >
-              0
+              {totalViews}
             </Typography>
             <VisibilityOutlinedIcon
               id="profile-icon"
               sx={{
                 fontSize: 78,
-                marginLeft: 14,
+                marginLeft: 22,
                 marginTop: -30,
                 color: "#FFD65A",
                 filter: "drop-shadow(2px 4px 3px rgba(0, 0, 0, 0.3))",
@@ -211,7 +277,15 @@ export default function Page() {
           </Item>
         </Grid>
 
-        <Grid item md={3}>
+        <Grid
+          item
+          md={3}
+          sx={{
+            "&:hover #profile-icon, &:hover .profile-text": {
+              transform: "scale(1.13)",
+              transition: "transform 0.3s ease",
+            },
+          }}>
           <Item id="profile-item" sx={{ height: 150, textAlign: "start" }}>
             <Typography
               sx={{
@@ -239,7 +313,7 @@ export default function Page() {
               id="profile-icon"
               sx={{
                 fontSize: 78,
-                marginLeft: 14,
+                marginLeft: 22,
                 marginTop: -30,
                 color: "#85A947",
                 filter: "drop-shadow(2px 4px 3px rgba(0, 0, 0, 0.3))",
@@ -248,7 +322,16 @@ export default function Page() {
           </Item>
         </Grid>
 
-        <Grid item md={3}>
+        <Grid
+          item
+          md={3}
+          sx={{
+            "&:hover #profile-icon, &:hover .profile-text": {
+              transform: "scale(1.13)",
+              transition: "transform 0.3s ease",
+            },
+          }}
+        >
           <Item id="profile-item" sx={{ height: 150, textAlign: "start" }}>
             <Typography
               sx={{
@@ -276,7 +359,7 @@ export default function Page() {
               id="profile-icon"
               sx={{
                 fontSize: 78,
-                marginLeft: 14,
+                marginLeft: 22,
                 marginTop: -30,
                 color: "#FF8383",
                 filter: "drop-shadow(2px 4px 3px rgba(0, 0, 0, 0.3))",

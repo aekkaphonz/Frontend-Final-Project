@@ -43,7 +43,7 @@ function NavLogIn({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: (
     if (setting === "Logout") {
 
       await logout();
-      router.push("/sigin"); 
+      router.push("/signin"); 
 
     } else if (setting === "Dashboard") {
       router.push("/dashboard"); 
