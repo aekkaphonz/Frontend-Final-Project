@@ -12,6 +12,8 @@ import EditNoteOutlinedIcon from '@mui/icons-material/EditNoteOutlined';
 import HomeIcon from '@mui/icons-material/Home';
 import ArticleIcon from '@mui/icons-material/Article';
 import WhatshotIcon from '@mui/icons-material/Whatshot';
+import SwitchTheme from "@/app/darkMode/components/SwitchTheme";
+import { useTheme } from "@mui/material/styles";
 
 const themeColors = {
   primary: "#ffffff",
@@ -20,11 +22,14 @@ const themeColors = {
   buttonGreen: "#77bfa3",
 };
 
-function Sb({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: () => void }) {
+function Sb({ isOpen, toggleSidebar, handleSearch }: { isOpen: boolean; toggleSidebar: () => void; handleSearch: (query: string) => void }) {
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [filteredData, setFilteredData] = useState<any[]>([]);
   const [data, setData] = useState<any[]>([]);
 
+  const theme = useTheme(); // ใช้ useTheme เพื่อดึงธีมปัจจุบัน
+  const isDarkMode = theme.palette.mode === "dark"; // ตรวจสอบว่าเป็นโหมดมืดหรือไม่
+  
   // Fetch all data on load
   useEffect(() => {
     async function fetchData() {
@@ -41,46 +46,20 @@ function Sb({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: () => v
     fetchData();
   }, []);
 
-  // Handle search functionality
-  const handleSearch = async (query: string) => {
-    setSearchQuery(query);
-
-    if (query.trim() === "") {
-      setFilteredData(data); // Show all data when search query is empty
-      return;
-    }
-
-    try {
-      // Send search request to the API
-      const res = await fetch(`http://localhost:3001/posts?search=${query}`);
-      if (!res.ok) throw new Error("Failed to fetch search results");
-
-      const result = await res.json();
-      setFilteredData(result); // Update the filtered data from the API response
-    } catch (error) {
-      console.error("Error fetching search results:", error);
-
-      // Fallback: Filter data on the client-side
-      const filtered = data.filter((item) =>
-        item.title.toLowerCase().includes(query.toLowerCase())
-      );
-      setFilteredData(filtered);
-    }
-  };
-
   return (
     <>
       {/* Navbar */}
       <AppBar
-        position="fixed"
-        sx={{
-          backgroundColor: "#fff",
-          boxShadow: "0px 3px 3px rgba(0,0,0,0.1)",
-          borderBottom: "1px solid #ddd",
-          zIndex: 1300,
-        }}
+         position="fixed"
+         className="navbar"
+         sx={{
+           backgroundColor: "inherit", // ใช้ค่า background สีจากคลาส Tailwind
+           color: "inherit",
+           boxShadow: "0px 3px 3px rgba(0,0,0,0.1)",
+           zIndex: 1300,
+         }}
       >
-        <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
+        <Toolbar sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", px: 2  }}>
           {/* Sidebar Menu */}
           <Box sx={{
             display: "flex",
@@ -107,17 +86,17 @@ function Sb({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: () => v
           </Box>
 
           {/* Search Bar */}
-          <Box sx={{ flexGrow: 1, mx: 2, display: "flex", justifyContent: "center" }}>
+           {/* Search Bar */}
+           <Box sx={{ flexGrow: 1, mx: 2, display: "flex", justifyContent: "center" }}>
             <TextField
               placeholder="ค้นหา"
-              value={searchQuery}
-              onChange={(e) => handleSearch(e.target.value)}
               variant="outlined"
               size="small"
               sx={{
                 width: "60%",
                 backgroundColor: "#f6f6f6",
               }}
+              onChange={(e) => handleSearch(e.target.value)}
               InputProps={{
                 endAdornment: (
                   <IconButton>
@@ -125,11 +104,6 @@ function Sb({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: () => v
                   </IconButton>
                 ),
               }}
-              
-              // sx={{
-              //   width: "60%",
-              //   backgroundColor: "#f6f6f6",
-              // }}
             />
           </Box>
 
@@ -193,7 +167,6 @@ function Sb({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: () => v
               เข้าสู่ระบบ
             </Button>
 
-
             {/* Signup Button */}
             <Button
               href="/signup"
@@ -212,6 +185,9 @@ function Sb({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: () => v
             >
               ลงทะเบียน
             </Button>
+
+            <SwitchTheme />
+
           </Box>
           
         </Toolbar>
@@ -222,7 +198,8 @@ function Sb({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: () => v
         sx={{
           width: isOpen ? 240 : 72,
           height: "100vh",
-          backgroundColor: "#fff",
+          backgroundColor: "inherit", // ใช้ค่า background สีจากคลาส Tailwind
+          color: "inherit",
           transition: "width 0.3s",
           position: "fixed",
           top: 64,

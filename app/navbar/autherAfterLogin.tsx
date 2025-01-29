@@ -16,6 +16,7 @@ import DashboardIcon from '@mui/icons-material/Dashboard';
 import CollectionsBookmarkIcon from '@mui/icons-material/CollectionsBookmark';
 import InsertChartIcon from '@mui/icons-material/InsertChart';
 import PersonIcon from '@mui/icons-material/Person';
+import SwitchTheme from "@/app/darkMode/components/SwitchTheme";
 
 function NavLogIn({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: () => void }) {
   const router = useRouter();
@@ -183,6 +184,9 @@ function NavLogIn({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: (
                 ))}
               </Menu>
             </Box>
+
+            <SwitchTheme />
+
           </Box>
         </Toolbar>
       </AppBar>

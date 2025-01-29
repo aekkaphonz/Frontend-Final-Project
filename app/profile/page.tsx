@@ -27,7 +27,7 @@ const UsersPage = () => {
   };
   const { isLoggedIn } = useAuth();
   return (
-    <div>
+    <div >
       {isLoggedIn ? (
         <AutherAfterLogin isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
       ) : (

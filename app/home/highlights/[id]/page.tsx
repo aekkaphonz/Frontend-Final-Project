@@ -24,7 +24,7 @@ interface Attraction {
   _id: string;
   title: string;
   detail: string;
-  postImage: string[];
+  postImage: string;
   likeCount: number;
 }
 interface Comment {

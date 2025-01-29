@@ -151,6 +151,11 @@ export default function Page() {
                     marginTop: "72px",
                     transition: "margin-left 0.3s",
                     padding: "16px",
+                    maxWidth: {
+                        xs: "100%",
+                        sm: isSidebarOpen ? "calc(100% - 240px)" : "calc(100% - 72px)",
+                        md: isSidebarOpen ? "calc(100% - 240px)" : "calc(100% - 72px)",
+                    },
                 }}
             >
                 <Grid item md={12}>
