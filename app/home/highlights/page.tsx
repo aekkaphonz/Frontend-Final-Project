@@ -31,12 +31,11 @@ import Navbar from "@/app/navbar/page";
 import AfterLogin from "@/app/navbar/AfterLogin";
 import { useAuth } from "@/app/context/AuthProvider";
 
-
 interface Post {
   _id: string;
   title: string;
   detail: string;
-  postImage: string[];
+  postImage: string;
   views: number;
   comments: number;
   likes: number;
@@ -48,6 +47,9 @@ export default function Page() {
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [data, setData] = useState<Post[]>([]);
   const [filteredData, setFilteredData] = useState<Post[]>([]);
+  const router = useRouter();
+  const { user } = useAuth();
+  const userId = user?.userId; // ตรวจสอบว่ามี userId หรือไม่
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
@@ -56,38 +58,34 @@ export default function Page() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const response = await fetch("http://localhost:3001/contents/all");
-        if (!response.ok) throw new Error("Failed to fetch data");
-        const posts: Post[] = await response.json();
-        setData(posts);
-
         const res = await fetch("http://localhost:3001/contents/all");
         if (!res.ok) throw new Error("Failed to fetch data");
         const result: Post[] = await res.json();
         console.log(result); // ตรวจสอบ postImage ใน console
         setData(result);
         setFilteredData(result);
-
       } catch (error) {
-        console.error("Error fetching data:", error);
-        setData([]);
+        console.error("Error fetching posts:", error);
       }
     }
     fetchData();
-  }, []);  
+  }, []);
 
-  const handleSearch = async (query: string) => {
-    setSearchQuery(query);
-
-    if (query.trim() === "") {
-      setFilteredData(data);
+  const handleCardClick = async (postId: string) => {
+    if (!userId) {
+      console.error("User ID is not available");
       return;
     }
-
-    const filtered = data.filter((item) =>
-      item.title.toLowerCase().includes(query.toLowerCase())
-    );
-    setFilteredData(filtered);
+    try {
+      await fetch(`http://localhost:3001/contents/updateViews/${postId}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId }),
+      });
+      router.push(`/home/highlights/${postId}`);
+    } catch (error) {
+      console.error("Error updating views:", error);
+    }
   };
 
   return (
@@ -133,7 +131,9 @@ export default function Page() {
 
           <Grid container spacing={3} justifyContent="center">
             {filteredData.length > 0 ? (
-              filteredData.map((post) => <RegionCard key={post._id} post={post} />)
+              filteredData.map((post) => (
+                <RegionCard key={post._id} post={post} />
+              ))
             ) : (
               <Typography
                 variant="body1"
@@ -249,10 +249,18 @@ function Sb({
                 },
               }}
             >
-              <ListItemIcon sx={{ justifyContent: "center", color: "#000", minWidth: "40px" }}>
+              <ListItemIcon
+                sx={{
+                  justifyContent: "center",
+                  color: "#000",
+                  minWidth: "40px",
+                }}
+              >
                 <HomeIcon />
               </ListItemIcon>
-              {isOpen && <ListItemText primary="หน้าหลัก" sx={{ color: "#000" }} />}
+              {isOpen && (
+                <ListItemText primary="หน้าหลัก" sx={{ color: "#000" }} />
+              )}
             </ListItem>
           </Link>
           <Link href="/home/article">
@@ -269,10 +277,18 @@ function Sb({
                 },
               }}
             >
-              <ListItemIcon sx={{ justifyContent: "center", color: "#000", minWidth: "40px" }}>
+              <ListItemIcon
+                sx={{
+                  justifyContent: "center",
+                  color: "#000",
+                  minWidth: "40px",
+                }}
+              >
                 <ArticleIcon />
               </ListItemIcon>
-              {isOpen && <ListItemText primary="น่าสนใจ" sx={{ color: "#000" }} />}
+              {isOpen && (
+                <ListItemText primary="น่าสนใจ" sx={{ color: "#000" }} />
+              )}
             </ListItem>
           </Link>
           <Link href="/home/popular">
@@ -289,10 +305,18 @@ function Sb({
                 },
               }}
             >
-              <ListItemIcon sx={{ justifyContent: "center", color: "#000", minWidth: "40px" }}>
+              <ListItemIcon
+                sx={{
+                  justifyContent: "center",
+                  color: "#000",
+                  minWidth: "40px",
+                }}
+              >
                 <WhatshotIcon />
               </ListItemIcon>
-              {isOpen && <ListItemText primary="มาแรง" sx={{ color: "#000" }} />}
+              {isOpen && (
+                <ListItemText primary="มาแรง" sx={{ color: "#000" }} />
+              )}
             </ListItem>
           </Link>
         </List>
@@ -303,9 +327,28 @@ function Sb({
 
 function RegionCard({ post }: { post: Post }) {
   const router = useRouter();
+  const { user } = useAuth(); // ดึง user จาก Context
+  const userId = user?.userId; // ตรวจสอบว่า userId มีค่าหรือไม่
 
-  const handleCardClick = () => {
-    router.push(`/home/highlights/${post._id}`);
+  const handleCardClick = async (postId: string) => {
+    if (!userId) {
+      console.error("User ID is not available");
+      return;
+    }
+
+    try {
+      // ส่ง request เพื่ออัปเดตยอดวิว
+      await fetch(`http://localhost:3001/contents/updateViews/${postId}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId }),
+      });
+
+      // นำผู้ใช้ไปยังหน้ารายละเอียดบทความ
+      router.push(`/home/highlights/${postId}`);
+    } catch (error) {
+      console.error("Error updating views:", error);
+    }
   };
 
   return (
@@ -324,35 +367,46 @@ function RegionCard({ post }: { post: Post }) {
           backgroundColor: "#f6f6e7",
         }}
       >
-        <CardActionArea onClick={handleCardClick}>
+        <CardActionArea onClick={() => handleCardClick(post._id)}>
           <CardMedia
             component="img"
             height="150"
-            image={typeof post.postImage === "string" ? post.postImage : ""}
-            alt={"ไม่ไม่มีรูปภาพ"}
+            image={post.postImage || "https://via.placeholder.com/150"}
+            alt={post.title || "ยังไม่มีรูปภาพ"}
             sx={{
               objectFit: "cover",
               borderRadius: "8px",
-              height:"150px",
+              height: "150px",
             }}
           />
 
           <CardContent>
             <Typography variant="h6">{post.title}</Typography>
-            <Typography variant="body2">
-              {post.detail?.substring(0, 100) || "ไม่มีเนื้อหา"}...
-            </Typography>
+            <Typography variant="body2"></Typography>
           </CardContent>
         </CardActionArea>
-        <Box sx={{ display: "flex", justifyContent: "space-between", padding: "10px" }}>
-          <Box sx={{ display: "flex", alignItems: "center" }}>
-            <Visibility /> {post.views}
+        <Box
+          sx={{
+            display: "flex",
+            padding: "10px",
+            justifyContent: "space-between",
+          }}
+        >
+          <Box sx={{ display: "flex", alignItems: "center", fontSize: 12 }}>
+            <Typography sx={{ mr: 2, fontSize: 12 }}>ผู้เขียน</Typography>
+            การอ่าน {Array.isArray(post.views) ? post.views.length : 0} ครั้ง
           </Box>
-          <Box sx={{ display: "flex", alignItems: "center" }}>
-            {/* <Comment /> {post.comments} */}
-          </Box>
+
+          <Box sx={{ display: "flex", alignItems: "center" }}></Box>
           <Box sx={{ display: "flex", alignItems: "center" }}>
             <ThumbUp /> {post.likes}
+            {/* <Box sx={{ display: "flex", alignItems: "center", fontSize: 12  }}>
+            <Box sx={{ alignItems: "center", mr: 2 }}>
+              <Comment sx={{ fontSize: 12 }}/> <Typography sx={{ fontSize: 12 }}>0 {post.comments}</Typography>
+            </Box>
+            <Box sx={{ alignItems: "center" }}>
+              <ThumbUp sx={{ fontSize: 12 }}/> <Typography sx={{ fontSize: 12 }}>0 {post.likes}</Typography>
+            </Box> */}
           </Box>
         </Box>
       </Card>

@@ -17,8 +17,7 @@ import { useAuth } from "@/app/context/AuthProvider";
 import EditNoteOutlinedIcon from "@mui/icons-material/EditNoteOutlined";
 import { useRouter } from "next/navigation";
 
-
-function NavLogIn({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: () => void }) {
+function NavLogIn({ isOpen, toggleSidebar, handleSearch }: { isOpen: boolean; toggleSidebar: () => void; handleSearch: (query: string) => void }) {
   const router = useRouter();
   const { user } = useAuth();
   const settings = ["โปรไฟล์", "แดชบอร์ด", "ออกจากระบบ"];
@@ -31,24 +30,6 @@ function NavLogIn({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: (
     buttonBorder: "#000000",
     buttonGreen: "#77bfa3",
   };
-
-  const logout = async () => {
-    try {
-      const response = await axios.post("http://localhost:3001/auth/logout", null, {
-        withCredentials: true,
-      });
-  
-      if (response.status === 200) {
-        console.log("Logout successful");
-        
-      } else {
-        console.error("Logout failed");
-      }
-    } catch (error) {
-      console.error("Error during logout:", error);
-    }
-  };
-
 
   const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElUser(event.currentTarget);
@@ -116,6 +97,7 @@ function NavLogIn({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: (
                 width: "60%",
                 backgroundColor: "#f6f6f6",
               }}
+              onChange={(e) => handleSearch(e.target.value)}
               InputProps={{
                 endAdornment: (
                   <IconButton>

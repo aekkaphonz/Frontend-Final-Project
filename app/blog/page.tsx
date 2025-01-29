@@ -138,20 +138,29 @@ export default function Page() {
           },
         }}
       >
+        <Grid item md={8}>
+          <Typography sx={{ fontWeight: "bold", fontSize: 26, mb: 1, color: "#98c9a3", }}>
+            เนื้อหาทั้งหมด
+          </Typography>
+        </Grid>
 
         <Grid item md={12}>
           <TableContainer component={Paper}>
             <Table sx={{ minWidth: 650 }} aria-label="simple table">
-              <TableHead>
+              <TableHead sx={{
+                borderTop: "4px solid #dde7c7",
+              }}>
                 <TableRow
                   sx={{
-                    backgroundColor: "#dde7c7",
                     "& th": { color: "#000000", fontWeight: "bold" },
                   }}
                 >
                   <TableCell sx={{ fontWeight: "bold" }}>บทความ</TableCell>
                   <TableCell sx={{ fontWeight: "bold" }} align="right">
                     วันที่
+                  </TableCell>
+                  <TableCell sx={{ fontWeight: "bold" }} align="right">
+                    การอ่าน
                   </TableCell>
                   <TableCell sx={{ fontWeight: "bold" }} align="right">
                     ความคิดเห็น
@@ -185,6 +194,7 @@ export default function Page() {
                       <TableCell align="right">
                         {new Date(row.createdAt).toLocaleDateString() || "-"}
                       </TableCell>
+                      <TableCell align="right">{Array.isArray(row.views) ? row.views.length : row.viewCount ?? "-"}</TableCell>
                       <TableCell align="right">{row.comments?.length ?? "-"}</TableCell>
                       <TableCell align="right">
                         <Button

@@ -17,8 +17,7 @@ const EditUsersPage = () => {
 
   const { isLoggedIn } = useAuth();
 
-  const handleSearch = (query: string) => {
-  };
+
   return (
     <div>
       {isLoggedIn ? (
@@ -30,7 +29,7 @@ const EditUsersPage = () => {
         <Navbar
           isOpen={isSidebarOpen}
           toggleSidebar={toggleSidebar}
-          handleSearch={handleSearch}
+  
         />
       )}
 
