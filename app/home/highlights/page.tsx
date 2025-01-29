@@ -30,6 +30,9 @@ import { useRouter } from "next/navigation";
 import Navbar from "@/app/navbar/page";
 import AfterLogin from "@/app/navbar/AfterLogin";
 import { useAuth } from "@/app/context/AuthProvider";
+import CommentIcon from '@mui/icons-material/Comment';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+
 
 interface Post {
   _id: string;
@@ -39,6 +42,14 @@ interface Post {
   views: number;
   comments: number;
   likes: number;
+  userId: string;
+  userName: string;
+}
+interface Comment {
+  _id: string;
+  userName: string;
+  content: string;
+  replies: Comment[];
 }
 
 export default function Page() {
@@ -49,7 +60,9 @@ export default function Page() {
   const [filteredData, setFilteredData] = useState<Post[]>([]);
   const router = useRouter();
   const { user } = useAuth();
-  const userId = user?.userId; // ตรวจสอบว่ามี userId หรือไม่
+  const userId = user?.userId; // ตรวจสอบว่า userId มีค่าหรือไม่
+  const [comments, setComments] = useState<Comment[]>([]);
+  
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
@@ -325,10 +338,25 @@ function Sb({
   );
 }
 
+
+async function fetchComments(postId: string) {
+  try {
+    const res = await fetch(`http://localhost:3001/comments/content/${postId}`);
+    if (!res.ok) throw new Error("Failed to fetch comments");
+
+    const result = await res.json();
+    return result; // ส่งกลับข้อมูลคอมเมนต์ทั้งหมด (รวมทั้งการตอบกลับ)
+  } catch (error) {
+    console.error("Error fetching comments:", error);
+    return [];
+  }
+}
+
 function RegionCard({ post }: { post: Post }) {
   const router = useRouter();
   const { user } = useAuth(); // ดึง user จาก Context
   const userId = user?.userId; // ตรวจสอบว่า userId มีค่าหรือไม่
+  const [comments, setComments] = useState<Comment[]>([]);
 
   const handleCardClick = async (postId: string) => {
     if (!userId) {
@@ -344,12 +372,21 @@ function RegionCard({ post }: { post: Post }) {
         body: JSON.stringify({ userId }),
       });
 
-      // นำผู้ใช้ไปยังหน้ารายละเอียดบทความ
       router.push(`/home/highlights/${postId}`);
     } catch (error) {
       console.error("Error updating views:", error);
     }
   };
+
+  useEffect(() => {
+    async function loadComments() {
+      const fetchedComments = await fetchComments(post._id);
+      setComments(fetchedComments);
+    }
+    loadComments();
+  }, [post._id]);
+  const totalComments = comments.length + comments.reduce((acc, comment) => acc + (comment.replies?.length || 0), 0);
+
 
   return (
     <Grid item xs={12} sm={6} md={4} lg={3}>
@@ -382,7 +419,7 @@ function RegionCard({ post }: { post: Post }) {
 
           <CardContent>
             <Typography variant="h6">{post.title}</Typography>
-            <Typography variant="body2"></Typography>
+            {/* <Typography variant="body2"></Typography> */}
           </CardContent>
         </CardActionArea>
         <Box
@@ -393,20 +430,19 @@ function RegionCard({ post }: { post: Post }) {
           }}
         >
           <Box sx={{ display: "flex", alignItems: "center", fontSize: 12 }}>
-            <Typography sx={{ mr: 2, fontSize: 12 }}>ผู้เขียน</Typography>
-            การอ่าน {Array.isArray(post.views) ? post.views.length : 0} ครั้ง
+            <Typography sx={{ mr: 1, fontSize: 12, fontWeight: 'bold' }}>
+              {post.userId}
+            </Typography>
           </Box>
 
-          <Box sx={{ display: "flex", alignItems: "center" }}></Box>
           <Box sx={{ display: "flex", alignItems: "center" }}>
-            <ThumbUp /> {post.likes}
-            {/* <Box sx={{ display: "flex", alignItems: "center", fontSize: 12  }}>
-            <Box sx={{ alignItems: "center", mr: 2 }}>
-              <Comment sx={{ fontSize: 12 }}/> <Typography sx={{ fontSize: 12 }}>0 {post.comments}</Typography>
-            </Box>
-            <Box sx={{ alignItems: "center" }}>
-              <ThumbUp sx={{ fontSize: 12 }}/> <Typography sx={{ fontSize: 12 }}>0 {post.likes}</Typography>
-            </Box> */}
+          <Typography sx={{ ml: 1,mr:1, fontSize: 12 }} variant="body2">
+          การอ่าน {Array.isArray(post.views) ? post.views.length : 0} ครั้ง
+          </Typography>
+            <CommentIcon color="action" fontSize="small" />
+            <Typography sx={{ ml: 1, fontSize: 12 }} variant="body2">
+              {totalComments}
+            </Typography>
           </Box>
         </Box>
       </Card>
