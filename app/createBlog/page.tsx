@@ -205,6 +205,24 @@ export default function Page() {
                         placeholder="ใส่หัวข้อบทความ..."
                         value={title}
                         onChange={(e) => setTitle(e.target.value)}
+                        sx={{
+                            backgroundColor: "var(--comment-bg)",
+                            color: "var(--comment-text)",
+                            "& .MuiInputBase-input": {
+                                color: "var(--comment-text)", // สีข้อความของ Input
+                            },
+                            "& .MuiOutlinedInput-root": {
+                                "& fieldset": {
+                                borderColor: "var(--comment-text)", // สีเส้นขอบของช่องป้อนข้อความ
+                                },
+                                "&:hover fieldset": {
+                                borderColor: "var(--comment-text)",
+                                },
+                                "&.Mui-focused fieldset": {
+                                borderColor: "var(--comment-text)",
+                                },
+                            },
+                        }}
                         error={Boolean(titleError)} // ✅ แสดง error ถ้ามี
                         helperText={titleError} // ✅ ข้อความแจ้งเตือน
                     />
@@ -248,6 +266,24 @@ export default function Page() {
                         rows={10}
                         value={content}
                         onChange={(e) => setContent(e.target.value)}
+                        sx={{
+                            backgroundColor: "var(--comment-bg)",
+                            color: "var(--comment-text)",
+                            "& .MuiInputBase-input": {
+                                color: "var(--comment-text)", // สีข้อความของ Input
+                            },
+                            "& .MuiOutlinedInput-root": {
+                                "& fieldset": {
+                                borderColor: "var(--comment-text)", // สีเส้นขอบของช่องป้อนข้อความ
+                                },
+                                "&:hover fieldset": {
+                                borderColor: "var(--comment-text)",
+                                },
+                                "&.Mui-focused fieldset": {
+                                borderColor: "var(--comment-text)",
+                                },
+                            },
+                        }}
                         error={Boolean(contentError)} // ✅ แสดง error ถ้ามี
                         helperText={contentError} // ✅ ข้อความแจ้งเตือน
                     />

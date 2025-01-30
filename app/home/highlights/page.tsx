@@ -441,9 +441,49 @@ function RegionCard({ post }: { post: Post }) {
 
 
   return (
-    <>
-      <Grid item xs={12} sm={6} md={4} lg={3}>
-        <Card
+    <Grid item xs={12} sm={6} md={4} lg={3}>
+      <Card
+        sx={{
+          borderRadius: "15px",
+          overflow: "hidden",
+          boxShadow: "0 4px 10px rgba(0, 0, 0, 0.1)",
+          position: "relative",
+          transition: "transform 0.2s",
+          "&:hover": {
+            transform: "scale(1.05)",
+            boxShadow: "0 6px 15px rgba(0, 0, 0, 0.2)",
+          },
+          backgroundColor: "var(--post-bg)",
+          color: "var(--post-text)",
+        }}
+      >
+        <CardActionArea onClick={() => handleCardClick(post._id)}>
+          <CardMedia
+            component="img"
+            height="150"
+            image={post.postImage || "https://via.placeholder.com/150"}
+            alt={post.title || "ยังไม่มีรูปภาพ"}
+            sx={{
+              objectFit: "cover",
+              borderRadius: "8px",
+              height: "150px",
+            }}
+          />
+
+          <CardContent>
+            <Typography variant="h6">{post.title}</Typography>
+            <Typography 
+              variant="body2"
+              sx={{ 
+                backgroundColor: "var(--post-bg)", 
+                color: "var(--post-text)",
+              }}
+            >
+              {post.detail?.substring(0, 100) || "ไม่มีเนื้อหา"}...
+            </Typography>
+          </CardContent>
+        </CardActionArea>
+        <Box
           sx={{
             borderRadius: "15px",
             overflow: "hidden",

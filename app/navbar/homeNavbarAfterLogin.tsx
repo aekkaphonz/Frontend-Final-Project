@@ -7,6 +7,7 @@ import { useAuth } from "@/app/context/AuthProvider";
 import Link from "next/link";
 import EditNoteOutlinedIcon from "@mui/icons-material/EditNoteOutlined";
 import { useRouter } from "next/navigation";
+import SwitchTheme from "@/app/darkMode/components/SwitchTheme";
 
 const themeColors = {
   primary: "#ffffff",
@@ -43,9 +44,11 @@ export default function HomeNavbarAfterLogin() {
     <AppBar
       position="static"
       sx={{
-        backgroundColor: themeColors.primary,
-        boxShadow: "none",
-        borderBottom: "1px solid #e0e0e0",
+        backgroundColor: "var(--nav-bg)", // ดึงค่าพื้นหลังจาก CSS Variables
+        color: "var(--nav-text)",
+        borderBottom: "2px solid var(--nav-border)",
+        zIndex: 1300, // ระดับชั้นของ Navbar
+        transition: "all 0.3s ease-in-out", // ให้การเปลี่ยนแปลงราบรื่น
       }}
     >
       <Toolbar sx={{ justifyContent: "space-between" }}>
@@ -58,7 +61,7 @@ export default function HomeNavbarAfterLogin() {
           }}
         >
           <img
-            src="/images/logo-blogs.png"
+            src="/images/logo-blogs-removebg.png"
             alt="Logo"
             style={{ maxWidth: "180px", height: "auto" }}
           />
@@ -66,7 +69,8 @@ export default function HomeNavbarAfterLogin() {
             variant="h6"
             sx={{
               fontWeight: "bold",
-              color: themeColors.text,
+              backgroundColor: "inherit", 
+              color: "inherit"
             }}
           >
             Blogger DeeDee
@@ -130,6 +134,9 @@ export default function HomeNavbarAfterLogin() {
               ))}
             </Menu>
           </Box>
+
+          <SwitchTheme />
+
         </Box>
       </Toolbar>
     </AppBar>

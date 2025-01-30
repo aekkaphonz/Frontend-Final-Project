@@ -140,15 +140,23 @@ export default function Page() {
         </Grid>
 
         <Grid item md={12}>
-          <Item sx={{ height: 150, textAlign: "start", padding: 3, borderTop: "6px solid #dde7c7", }}>
+          <Item 
+            sx={{ 
+              height: 150, 
+              textAlign: "start", 
+              padding: 3 ,  
+              backgroundColor: "var(--comment-bg)",
+              color: "var(--comment-text)",
+            }}
+          >
             <Typography
-              sx={{ fontWeight: "bold", fontSize: 18, color: "black" }}
+              sx={{ fontWeight: "bold", fontSize: 18,color: "var(--comment-text)", }}
             >
               ข้อมูลช่องนักเขียน
             </Typography>
             <Box sx={{ display: "flex" }}>
-              <Box sx={{ my: 1, mr: 8 }}>
-                <Typography sx={{ fontSize: 18, color: "black" }}>
+              <Box sx={{ my: 1, mr: 8 , }}>
+                <Typography sx={{ fontSize: 18, color: "var(--comment-text)", }}>
                   {userName}
                 </Typography>
                 <Typography>ผู้เขียน/นักเขียน</Typography>
@@ -160,7 +168,8 @@ export default function Page() {
                   height: "124px",
                   borderRadius: "50%",
                   border: "1px #EBE8E8 solid",
-                  backgroundColor: "#fff",
+                  backgroundColor: "var(--comment-bg)",
+                  color: "var(--comment-text)",
                 }}>
                   <img
                     src={profileImage || "https://via.placeholder.com/100"}
@@ -195,7 +204,15 @@ export default function Page() {
             },
           }}
         >
-          <Item id="profile-item" sx={{ height: 150, textAlign: "start" }}>
+          <Item 
+            id="profile-item" 
+            sx={{ 
+              height: 150, 
+              textAlign: "start",
+              backgroundColor: "var(--comment-bg)",
+              color: "var(--comment-text)",
+            }}
+          >
             <Typography
               sx={{
                 fontWeight: "bold",
@@ -203,10 +220,10 @@ export default function Page() {
                 marginTop: 3.5,
                 ml: 1,
                 mt: 8,
+                
               }}
             >
-              จำนวนบทความ
-            </Typography>
+              จำนวนบทความ          </Typography>
             <Typography
               sx={{
                 textAlign: "start",
@@ -241,7 +258,15 @@ export default function Page() {
               transition: "transform 0.3s ease",
             },
           }}>
-          <Item id="profile-item" sx={{ height: 150, textAlign: "start" }}>
+         <Item 
+            id="profile-item" 
+            sx={{ 
+              height: 150, 
+              textAlign: "start",
+              backgroundColor: "var(--comment-bg)",
+              color: "var(--comment-text)",
+            }}
+          >
             <Typography
               sx={{
                 fontWeight: "bold",
@@ -286,7 +311,15 @@ export default function Page() {
               transition: "transform 0.3s ease",
             },
           }}>
-          <Item id="profile-item" sx={{ height: 150, textAlign: "start" }}>
+          <Item 
+            id="profile-item" 
+            sx={{ 
+              height: 150, 
+              textAlign: "start",
+              backgroundColor: "var(--comment-bg)",
+              color: "var(--comment-text)",
+            }}
+          >
             <Typography
               sx={{
                 fontWeight: "bold",
@@ -332,7 +365,15 @@ export default function Page() {
             },
           }}
         >
-          <Item id="profile-item" sx={{ height: 150, textAlign: "start" }}>
+          <Item 
+            id="profile-item" 
+            sx={{ 
+              height: 150, 
+              textAlign: "start",
+              backgroundColor: "var(--comment-bg)",
+              color: "var(--comment-text)",
+            }}
+          >
             <Typography
               sx={{
                 fontWeight: "bold",
@@ -363,6 +404,7 @@ export default function Page() {
                 marginTop: -30,
                 color: "#FF8383",
                 filter: "drop-shadow(2px 4px 3px rgba(0, 0, 0, 0.3))",
+                
               }}
             />
           </Item>

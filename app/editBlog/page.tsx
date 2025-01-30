@@ -129,12 +129,34 @@ export default function EditBlog() {
         }}
       >
         <Grid item md={12} sx={{ boxShadow: "0px 2px 1px rgba(0, 0, 0, 0.1)" }}>
-          <Typography sx={{ fontWeight: "bold", fontSize: 26, mb: 1 }}>แก้ไขบทความ</Typography>
+          <Typography sx={{ fontWeight: "bold", fontSize: 26, mb: 1, }}>แก้ไขบทความ</Typography>
         </Grid>
 
         <Grid item md={12}>
           <Typography sx={{ fontWeight: "bold", fontSize: 18, mb: 1 }}>หัวข้อ</Typography>
-          <TextField fullWidth variant="outlined" value={title} onChange={(e) => setTitle(e.target.value)} />
+          <TextField 
+          fullWidth variant="outlined" 
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          sx={{
+            backgroundColor: "var(--comment-bg)",
+            color: "var(--comment-text)",
+            "& .MuiInputBase-input": {
+                color: "var(--comment-text)", // สีข้อความของ Input
+            },
+            "& .MuiOutlinedInput-root": {
+                "& fieldset": {
+                borderColor: "var(--comment-text)", // สีเส้นขอบของช่องป้อนข้อความ
+                },
+                "&:hover fieldset": {
+                borderColor: "var(--comment-text)",
+                },
+                "&.Mui-focused fieldset": {
+                borderColor: "var(--comment-text)",
+                },
+            },
+          }}
+          />
         </Grid>
 
         <Grid item md={12}>
@@ -164,12 +186,60 @@ export default function EditBlog() {
               </Grid>
             )}
           </Box>
-          <TextField fullWidth variant="outlined" multiline rows={10} value={content} onChange={(e) => setContent(e.target.value)} />
+          <TextField 
+            fullWidth 
+            variant="outlined" 
+            multiline 
+            rows={10} 
+            value={content} 
+            onChange={(e) => setContent(e.target.value)} 
+            sx={{
+              backgroundColor: "var(--comment-bg)",
+              color: "var(--comment-text)",
+              "& .MuiInputBase-input": {
+                  color: "var(--comment-text)", // สีข้อความของ Input
+              },
+              "& .MuiOutlinedInput-root": {
+                  "& fieldset": {
+                  borderColor: "var(--comment-text)", // สีเส้นขอบของช่องป้อนข้อความ
+                  },
+                  "&:hover fieldset": {
+                  borderColor: "var(--comment-text)",
+                  },
+                  "&.Mui-focused fieldset": {
+                  borderColor: "var(--comment-text)",
+                  },
+              },
+            }}
+            />
         </Grid>
 
         <Grid item md={12}>
           <Typography sx={{ fontWeight: "bold", fontSize: 18, mb: 1 }}>แท็ก</Typography>
-          <TextField fullWidth variant="outlined" value={tags} onChange={(e) => setTags(e.target.value)} />
+          <TextField 
+            fullWidth 
+            variant="outlined" 
+            value={tags} 
+            onChange={(e) => setTags(e.target.value)} 
+            sx={{
+              backgroundColor: "var(--comment-bg)",
+              color: "var(--comment-text)",
+              "& .MuiInputBase-input": {
+                  color: "var(--comment-text)", // สีข้อความของ Input
+              },
+              "& .MuiOutlinedInput-root": {
+                  "& fieldset": {
+                  borderColor: "var(--comment-text)", // สีเส้นขอบของช่องป้อนข้อความ
+                  },
+                  "&:hover fieldset": {
+                  borderColor: "var(--comment-text)",
+                  },
+                  "&.Mui-focused fieldset": {
+                  borderColor: "var(--comment-text)",
+                  },
+              },
+            }}
+          />
         </Grid>
 
         <Grid item md={12} sx={{ textAlign: "center", mt: 2, display: "flex", justifyContent: "flex-end", gap: 2 }}>
