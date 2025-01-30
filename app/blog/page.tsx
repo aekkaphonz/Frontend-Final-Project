@@ -17,6 +17,8 @@ import {
   TableContainer,
   TableHead,
   TableRow,
+  TextField,
+  MenuItem, Select, FormControl, InputLabel, SelectChangeEvent
 } from "@mui/material";
 import BorderColorIcon from '@mui/icons-material/BorderColor';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -46,6 +48,20 @@ export default function Page() {
   const [rows, setRows] = useState<any[]>([]);
   const [openModal, setOpenModal] = useState(false);
   const [selectedPost, setSelectedPost] = useState<string | null>(null);
+  const [searchTag, setSearchTag] = useState("");
+
+  const fetchComments = async (postId: string) => {
+    try {
+      const res = await fetch(`http://localhost:3001/comments/content/${postId}`);
+      if (!res.ok) throw new Error("Failed to fetch comments");
+
+      const result = await res.json();
+      return result.length; // ส่งกลับจำนวนคอมเมนต์ทั้งหมด
+    } catch (error) {
+      console.error("Error fetching comments:", error);
+      return 0;
+    }
+  };
 
   const fetchPosts = async () => {
     try {
@@ -54,8 +70,6 @@ export default function Page() {
         return;
       }
 
-      console.log("👉 userId:", user.userId); // Debug userId
-
       const response = await fetch(`http://localhost:3001/contents?userId=${user.userId}`, {
         method: "GET",
         credentials: "include",
@@ -63,8 +77,13 @@ export default function Page() {
 
       if (response.ok) {
         const data = await response.json();
-        console.log("✅ Fetched data:", data); // Debug data ที่ดึงมา
-        setRows(data);
+        const postsWithCommentCount = await Promise.all(
+          data.map(async (post: any) => {
+            const commentCount = await fetchComments(post._id || post.id);
+            return { ...post, commentCount };
+          })
+        );
+        setRows(postsWithCommentCount);
       } else {
         console.error("❌ ไม่สามารถโหลดข้อมูลบทความ");
       }
@@ -74,8 +93,6 @@ export default function Page() {
   };
 
   useEffect(() => {
-    console.log("👉 user from AuthProvider:", user); // Debug user object
-    console.log("👉 isLoggedIn:", isLoggedIn);
     if (isLoggedIn) {
       fetchPosts(); // เรียก fetchPosts เมื่อผู้ใช้ล็อกอิน
     }
@@ -198,11 +215,11 @@ export default function Page() {
                       <TableCell align="right">
                         {Array.isArray(row.views) ? row.views.length : row.viewCount ?? "-"}
                       </TableCell>
-                      <TableCell align="right">{row.comments?.length ?? "-"}</TableCell>
                       <TableCell align="right">
-                        {Array.isArray(row.tags) && row.tags.length > 0
-                          ? row.tags.join(", ") // ✅ แสดงค่าแท็กให้ถูกต้อง
-                          : "ไม่มีแท็ก"}
+                        {row.comments?.length ?? "-"}
+                      </TableCell>
+                      <TableCell align="right">
+                        {row.tags?.join(", ") || "ไม่มีแท็ก"} {/* แสดงแท็ก */}
                       </TableCell>
 
                       <TableCell align="right">
