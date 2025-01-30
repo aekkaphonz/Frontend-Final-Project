@@ -223,8 +223,7 @@ export default function Page() {
                 
               }}
             >
-              จำนวนบทความ
-            </Typography>
+              จำนวนบทความ          </Typography>
             <Typography
               sx={{
                 textAlign: "start",
