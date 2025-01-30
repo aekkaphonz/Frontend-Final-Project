@@ -484,15 +484,7 @@ function RegionCard({ post }: { post: Post }) {
 
           <CardContent>
             <Typography variant="h6">{post.title}</Typography>
-            <Typography
-              variant="body2"
-              sx={{
-                backgroundColor: "var(--post-bg)",
-                color: "var(--post-text)",
-              }}
-            >
-              {post.detail?.substring(0, 50) || "ไม่มีเนื้อหา"}...
-            </Typography>
+          
           </CardContent>
         </CardActionArea>
         <Box
