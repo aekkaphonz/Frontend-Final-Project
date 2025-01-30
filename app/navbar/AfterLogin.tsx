@@ -20,7 +20,7 @@ import SwitchTheme from "@/app/darkMode/components/SwitchTheme";
 
 function NavLogIn({ isOpen, toggleSidebar, handleSearch }: { isOpen: boolean; toggleSidebar: () => void; handleSearch: (query: string) => void }) {
   const router = useRouter();
-  const {logout, user } = useAuth();
+  const { user, logout } = useAuth();
   const settings = ["โปรไฟล์", "แดชบอร์ด", "ออกจากระบบ"];
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
 
@@ -91,7 +91,7 @@ function NavLogIn({ isOpen, toggleSidebar, handleSearch }: { isOpen: boolean; to
 
           {/* Search Bar */}
           <Box sx={{ flexGrow: 1, mx: 2, display: "flex", justifyContent: "center" }}>
-            <TextField
+           <TextField
               placeholder="ค้นหา"
               variant="outlined"
               size="small"

@@ -391,13 +391,13 @@ export default function Page() {
         sx={{ mt: 4, textAlign: "center", flexGrow: 1, paddingTop: "80px" }}
       >
         {loading ? (
-          <Typography 
-            variant="h5" 
+          <Typography
+            variant="h5"
             sx={{
-              mt: 4, 
+              mt: 4,
               color: "var(--comment-text)",
             }}
-            >
+          >
             กำลังโหลด...
           </Typography>
         ) : error ? (
@@ -431,7 +431,7 @@ export default function Page() {
                 alt="ยังไม่ไม่มีรูภาพ"
               />
               <Typography variant="body1" sx={{ color: "#616161", mt: 2 }}>
-                {data.detail|| "ไม่มีเนื้อหา"}
+                {data.detail || "ไม่มีเนื้อหา"}
               </Typography>
             </CardContent>
             <Box
@@ -465,7 +465,7 @@ export default function Page() {
               </Box>
 
               <Box sx={{ display: "flex", alignItems: "center" }}>
-                <IconButton onClick={handleLike} sx={{ color: "var(--comment-text)"}}>
+                <IconButton onClick={handleLike} sx={{ color: "var(--comment-text)" }}>
                   <FavoriteBorderIcon />
                 </IconButton>
                 <Typography variant="body2" sx={{ ml: 1 }}>
@@ -479,10 +479,10 @@ export default function Page() {
             ไม่พบข้อมูล
           </Typography>
         )}
-        <Box sx={{ display: "flex", alignItems: "center", width: "100%" , mt:5}}>
+        <Box sx={{ display: "flex", alignItems: "center", width: "100%", mt: 5 }}>
           <Box sx={{ borderBottom: '1px solid #c4c4c4', flexGrow: 1 }} />
           <Typography variant="body2" sx={{ ml: 2 }}>
-            <ForumOutlinedIcon sx={{mr:1}}/>{comments.length + comments.reduce((acc, comment) => acc + (comment.replies?.length || 0), 0)} ความคิดเห็น
+            <ForumOutlinedIcon sx={{ mr: 1 }} />{comments.length + comments.reduce((acc, comment) => acc + (comment.replies?.length || 0), 0)} ความคิดเห็น
           </Typography>
           <Box sx={{ borderBottom: '1px solid #c4c4c4', flexGrow: 1 }} />
         </Box>
@@ -506,7 +506,7 @@ export default function Page() {
             rows={3}
             value={newComment}
             onChange={(e) => setNewComment(e.target.value)}
-            sx={{ 
+            sx={{
               mb: 2,
               backgroundColor: "var(--comment-bg)",
               color: "var(--comment-text)",
@@ -550,6 +550,8 @@ export default function Page() {
                 color: "var(--comment-text)",
                 borderRadius: 1,
                 textAlign: "left",
+                borderBottom: 1 ,
+                width:"100%"
               }}
             >
               <Box
@@ -562,10 +564,10 @@ export default function Page() {
                 <Box>
                   {/* ส่วนที่แสดง userName ของผู้แสดงความคิดเห็น */}
                   <Typography variant="body1">
-                    <strong>{comment.name}:</strong> {comment.message}
-                  </Typography>
-                  <Typography variant="caption" sx={{ color: "var(--comment-text)" }}>
-                    {comment.timestamp}
+                    <strong>{comment.name}:</strong>    <Typography variant="caption" sx={{ color: "var(--comment-text)" }}>
+                      {comment.timestamp}
+                    </Typography>
+                    <Typography> {comment.message}</Typography>
                   </Typography>
                 </Box>
                 <IconButton
@@ -596,7 +598,7 @@ export default function Page() {
                     deleteComment(comment.id.toString()); // แปลง id เป็น string ก่อนส่งไปยังฟังก์ชัน
                     handleMenuClose(); // ปิดเมนู
                   }}
-                  
+
                 >
                   ลบ
                 </MenuItem>
@@ -639,7 +641,7 @@ export default function Page() {
                       pl: 2,
                       borderLeft: "2px solid #ccc",
                       textAlign: "left",
-                      
+
                     }}
                   >
                     <Box
@@ -717,7 +719,7 @@ export default function Page() {
                 <IconButton
                   size="small"
                   onClick={() => setReplyingToCommentId(comment.id)}
-                  sx={{ color: "var(--comment-text)"}}
+                  sx={{ color: "var(--comment-text)" }}
                 >
                   <ReplyIcon /> ตอบกลับ
                 </IconButton>
@@ -729,7 +731,7 @@ export default function Page() {
                   placeholder="ตอบกลับ..."
                   value={replyMessage}
                   onChange={(e) => setReplyMessage(e.target.value)}
-                  sx={{ 
+                  sx={{
                     backgroundColor: "var(--comment-bg)",
                     color: "var(--comment-text)",
                     "& .MuiInputBase-input": {

@@ -35,6 +35,7 @@ export default function Page() {
   const [profileImage, setProfileImage] = useState("");
   const [totalViews, setTotalViews] = useState(0);
   const [totalPosts, setTotalPosts] = useState(0);
+  const [totalComments, setTotalComments] = useState(0);
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
@@ -77,12 +78,11 @@ export default function Page() {
 
       const posts = await response.json();
 
-      // ✅ ตรวจสอบว่า `views` เป็น array หรือค่าเดี่ยว (นับจำนวนตามโครงสร้าง)
       const total = posts.reduce((sum: number, post: any) => {
         if (Array.isArray(post.views)) {
-          return sum + post.views.length; // ถ้า `views` เป็น array นับจำนวนสมาชิก
+          return sum + post.views.length;
         } else if (typeof post.viewCount === "number") {
-          return sum + post.viewCount; // ถ้า `viewCount` เป็นค่าจำนวน ใช้ได้เลย
+          return sum + post.viewCount;
         }
         return sum;
       }, 0);
@@ -90,6 +90,28 @@ export default function Page() {
       setTotalViews(total);
     } catch (error) {
       console.error("Error fetching total views:", error);
+    }
+  };
+
+  const fetchTotalComments = async () => {
+    if (!user?.userId) return;
+  
+    try {
+      const response = await fetch(`http://localhost:3001/contents?userId=${user.userId}`);
+      if (!response.ok) throw new Error('Failed to fetch posts');
+      const posts = await response.json();
+  
+      let totalComments = 0;
+      for (const post of posts) {
+        const commentResponse = await fetch(`http://localhost:3001/comments/content/${post._id}`);
+        if (!commentResponse.ok) throw new Error('Failed to fetch comments');
+        const comments = await commentResponse.json();
+        totalComments += comments.length;
+      }
+  
+      setTotalComments(totalComments);
+    } catch (error) {
+      console.error('Error fetching total comments:', error);
     }
   };
 
@@ -101,6 +123,7 @@ export default function Page() {
     if (isLoggedIn) {
       fetchTotalPosts();
       fetchTotalViews();
+      fetchTotalComments();
     }
   }, [isLoggedIn, user?.userId]);
 
@@ -118,7 +141,7 @@ export default function Page() {
         <Navbar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
       )}
 
-      <Grid 
+      <Grid
         container
         spacing={3}
         sx={{
@@ -340,7 +363,7 @@ export default function Page() {
                 color: "#85A947",
               }}
             >
-              0
+              {totalComments}
             </Typography>
             <CommentIcon
               id="profile-icon"

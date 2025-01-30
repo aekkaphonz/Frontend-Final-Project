@@ -70,6 +70,37 @@ export default function Page() {
     setIsSidebarOpen(!isSidebarOpen);
   };
 
+  const handleSearch = async (query: string) => {
+    setSearchQuery(query);
+  
+    if (!query.trim()) {
+      setFilteredData(data);
+      return;
+    }
+  
+    try {
+      console.log(`🔍 Searching for: '${query}'`);
+      const encodedQuery = encodeURIComponent(query);
+      const res = await fetch(`http://localhost:3001/contents/${encodedQuery}`);
+      console.log(" API Response:", res.status, res.statusText);
+
+      if (!res.ok) {
+        const errorText = await res.text();
+        console.error("Search API Error:", res.status, errorText);
+        throw new Error(`Failed to fetch search results`);
+      }
+
+      const searchResults: Post = await res.json();
+      console.log("Search Results:", searchResults);
+
+      // ถ้า API คืนเป็น Object เดียว ต้องใส่ลงใน Array เพื่อให้ .map() ใช้งานได้
+      setFilteredData([searchResults]);
+    } catch (error) {
+      console.error("Error during search:", error);
+      setFilteredData([]);
+    }
+};
+
   useEffect(() => {
     async function fetchData() {
       try {
@@ -135,8 +166,16 @@ export default function Page() {
   return (
     <Box sx={{ display: "flex", minHeight: "100vh" }}>
       {/* Sidebar and Navbar */}
-      {isLoggedIn ? <AfterLogin /> : <Navbar />}
-
+      {isLoggedIn ? <AfterLogin
+        isOpen={isSidebarOpen}
+        toggleSidebar={toggleSidebar}
+        handleSearch={handleSearch}
+      /> :
+        <Navbar
+          isOpen={isSidebarOpen}
+          toggleSidebar={toggleSidebar}
+          handleSearch={handleSearch}
+        />}
       {/* Main Content */}
       <Box
         component="main"
@@ -453,8 +492,43 @@ function RegionCard({ post }: { post: Post }) {
 
   return (
     <>
-      <Grid item xs={12} sm={6} md={4} lg={3}>
-        <Card
+
+    <Grid item xs={12} sm={6} md={4} lg={3}>
+      <Card
+        sx={{
+          borderRadius: "15px",
+          overflow: "hidden",
+          boxShadow: "0 4px 10px rgba(0, 0, 0, 0.1)",
+          position: "relative",
+          transition: "transform 0.2s",
+          "&:hover": {
+            transform: "scale(1.05)",
+            boxShadow: "0 6px 15px rgba(0, 0, 0, 0.2)",
+          },
+          backgroundColor: "var(--post-bg)",
+          color: "var(--post-text)",
+        }}
+      >
+        <CardActionArea onClick={() => handleCardClick(post._id)}>
+          <CardMedia
+            component="img"
+            height="150"
+            image={post.postImage || "https://via.placeholder.com/150"}
+            alt={post.title || "ยังไม่มีรูปภาพ"}
+            sx={{
+              objectFit: "cover",
+              borderRadius: "8px",
+              height: "150px",
+            }}
+          />
+
+          <CardContent>
+            <Typography variant="h6">{post.title}</Typography>
+          
+          </CardContent>
+        </CardActionArea>
+        <Box
+
           sx={{
             borderRadius: "15px",
             overflow: "hidden",

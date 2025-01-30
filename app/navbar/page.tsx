@@ -21,7 +21,7 @@ const themeColors = {
   buttonGreen: "#77bfa3",
 };
 
-function Sb({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: () => void }) {
+function Sb({ isOpen, toggleSidebar, handleSearch }: { isOpen: boolean; toggleSidebar: () => void; handleSearch: (query: string) => void }) {
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [filteredData, setFilteredData] = useState<any[]>([]);
   const [data, setData] = useState<any[]>([]);
@@ -41,34 +41,7 @@ function Sb({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: () => v
     }
     fetchData();
   }, []);
-
-  // Handle search functionality
-  const handleSearch = async (query: string) => {
-    setSearchQuery(query);
-
-    if (query.trim() === "") {
-      setFilteredData(data); // Show all data when search query is empty
-      return;
-    }
-
-    try {
-      // Send search request to the API
-      const res = await fetch(`http://localhost:3001/posts?search=${query}`);
-      if (!res.ok) throw new Error("Failed to fetch search results");
-
-      const result = await res.json();
-      setFilteredData(result); // Update the filtered data from the API response
-    } catch (error) {
-      console.error("Error fetching search results:", error);
-
-      // Fallback: Filter data on the client-side
-      const filtered = data.filter((item) =>
-        item.title.toLowerCase().includes(query.toLowerCase())
-      );
-      setFilteredData(filtered);
-    }
-  };
-
+  
   return (
     <>
       {/* Navbar */}
@@ -111,10 +84,8 @@ function Sb({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: () => v
 
           {/* Search Bar */}
           <Box sx={{ flexGrow: 1, mx: 2, display: "flex", justifyContent: "center" }}>
-            <TextField
+          <TextField
               placeholder="ค้นหา"
-              value={searchQuery}
-              onChange={(e) => handleSearch(e.target.value)}
               variant="outlined"
               size="small"
             
@@ -136,24 +107,16 @@ function Sb({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: () => v
                     borderColor: "var(--comment-text)",
                     },
                 },
+
               }}
+              onChange={(e) => handleSearch(e.target.value)}
               InputProps={{
                 endAdornment: (
-                  <IconButton 
-                    sx={{
-                      backgroundColor: "var(--comment-bg)",
-                      color:"var(--comment-text)"
-                    }}
-                  >
+                  <IconButton>
                     <SearchIcon />
                   </IconButton>
                 ),
               }}
-              
-              // sx={{
-              //   width: "60%",
-              //   backgroundColor: "#f6f6f6",
-              // }}
             />
           </Box>
 
