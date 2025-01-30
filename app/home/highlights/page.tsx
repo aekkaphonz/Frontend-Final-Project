@@ -70,6 +70,37 @@ export default function Page() {
     setIsSidebarOpen(!isSidebarOpen);
   };
 
+  const handleSearch = async (query: string) => {
+    setSearchQuery(query);
+  
+    if (!query.trim()) {
+      setFilteredData(data);
+      return;
+    }
+  
+    try {
+      console.log(`🔍 Searching for: '${query}'`);
+      const encodedQuery = encodeURIComponent(query);
+      const res = await fetch(`http://localhost:3001/contents/${encodedQuery}`);
+      console.log(" API Response:", res.status, res.statusText);
+
+      if (!res.ok) {
+        const errorText = await res.text();
+        console.error("Search API Error:", res.status, errorText);
+        throw new Error(`Failed to fetch search results`);
+      }
+
+      const searchResults: Post = await res.json();
+      console.log("Search Results:", searchResults);
+
+      // ถ้า API คืนเป็น Object เดียว ต้องใส่ลงใน Array เพื่อให้ .map() ใช้งานได้
+      setFilteredData([searchResults]);
+    } catch (error) {
+      console.error("Error during search:", error);
+      setFilteredData([]);
+    }
+};
+
   useEffect(() => {
     async function fetchData() {
       try {
@@ -135,8 +166,16 @@ export default function Page() {
   return (
     <Box sx={{ display: "flex", minHeight: "100vh" }}>
       {/* Sidebar and Navbar */}
-      {isLoggedIn ? <AfterLogin /> : <Navbar />}
-
+      {isLoggedIn ? <AfterLogin
+        isOpen={isSidebarOpen}
+        toggleSidebar={toggleSidebar}
+        handleSearch={handleSearch}
+      /> :
+        <Navbar
+          isOpen={isSidebarOpen}
+          toggleSidebar={toggleSidebar}
+          handleSearch={handleSearch}
+        />}
       {/* Main Content */}
       <Box
         component="main"
