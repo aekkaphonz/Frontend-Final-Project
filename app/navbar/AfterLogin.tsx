@@ -18,11 +18,10 @@ import EditNoteOutlinedIcon from "@mui/icons-material/EditNoteOutlined";
 import { useRouter } from "next/navigation";
 import SwitchTheme from "@/app/darkMode/components/SwitchTheme";
 
-
-function NavLogIn({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: () => void }) {
+function NavLogIn({ isOpen, toggleSidebar, handleSearch }: { isOpen: boolean; toggleSidebar: () => void; handleSearch: (query: string) => void }) {
   const router = useRouter();
-  const { user, logout } = useAuth();
-  const settings = ['Profile', 'Dashboard', 'Logout'];
+  const {logout, user } = useAuth();
+  const settings = ["โปรไฟล์", "แดชบอร์ด", "ออกจากระบบ"];
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
 
 
@@ -41,16 +40,13 @@ function NavLogIn({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: (
     setAnchorElUser(null);
   };
   const handleMenuClick = async (setting: string) => {
-    if (setting === "Logout") {
-
-      await logout();
-      router.push("/sigin"); 
-
-    } else if (setting === "Dashboard") {
-      router.push("/dashboard"); 
-     }else if (setting === "Profile") {
-      router.push("/profile"); 
-    }
+    if (setting === "ออกจากระบบ") {
+      await logout(); // เรียกใช้ฟังก์ชัน logout
+    } else if (setting === "แดชบอร์ด") {
+      router.push("/dashboard"); // เปลี่ยนเส้นทางไปยัง /dashboard
+     }else if (setting === "โปรไฟล์") {
+       router.push("/profile"); 
+     }
     handleCloseUserMenu(); // ปิดเมนู
   };
 
@@ -103,6 +99,7 @@ function NavLogIn({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: (
                 width: "60%",
                 backgroundColor: "#f6f6f6",
               }}
+              onChange={(e) => handleSearch(e.target.value)}
               InputProps={{
                 endAdornment: (
                   <IconButton>

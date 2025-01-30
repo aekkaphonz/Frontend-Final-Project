@@ -20,8 +20,10 @@ const AuthContext = createContext<AuthContextType | null>(null);
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<UserType | null>(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  
 
   useEffect(() => {
+
     const fetchProfile = async () => {
       try {
         const response = await axios.get("http://localhost:3001/user/profile", {

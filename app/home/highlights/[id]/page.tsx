@@ -13,6 +13,7 @@ import { useParams } from "next/navigation";
 import Navbar from "@/app/navbar/page";
 import AfterLogin from "@/app/navbar/AfterLogin"
 import { useAuth } from "@/app/context/AuthProvider";
+import LocalOfferIcon from '@mui/icons-material/LocalOffer';
 
 interface User {
   id: string;
@@ -24,7 +25,8 @@ interface Attraction {
   _id: string;
   title: string;
   detail: string;
-  postImage: string[];
+  tags: string[];
+  postImage: string;
   likeCount: number;
 }
 interface Comment {
@@ -36,6 +38,7 @@ interface Comment {
 }
 
 export default function Page() {
+  const { user } = useAuth();
   const { isLoggedIn } = useAuth();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [data, setData] = useState<Attraction | null>(null);
@@ -135,7 +138,6 @@ export default function Page() {
     }
   };
 
-
   // ดึงความคิดเห็น
   useEffect(() => {
     async function fetchComments(postId: string) {
@@ -144,13 +146,29 @@ export default function Page() {
         if (!res.ok) throw new Error("Failed to fetch comments");
 
         const result = await res.json();
-        const mappedComments = result.map((comment: any) => ({
-          id: comment._id,
-          name: "Anonymous", // หรือดึงชื่อผู้ใช้จาก comment.userId
-          message: comment.comment,
-          timestamp: new Date(comment.createdAt).toLocaleString(),
-          replies: comment.replies || [],
-        }));
+        const mappedComments = await Promise.all(
+          result.map(async (comment: any) => {
+            let userName = comment.userName || "Anonymous";  // ดึงจาก API ถ้ามี
+
+            // ดึง userName จาก API users ถ้าไม่ถูกส่งมา
+            if (!comment.userName && comment.userId) {
+              const userRes = await fetch(`http://localhost:3001/users/${comment.userId}`);
+              if (userRes.ok) {
+                const user = await userRes.json();
+                userName = user.userName || "Anonymous";
+              }
+            }
+
+            return {
+              id: comment._id,
+              name: userName,  // ใช้ userName ที่ได้มา
+              message: comment.comment,
+              timestamp: new Date(comment.createdAt).toLocaleString(),
+              replies: comment.replies || [],
+            };
+          })
+        );
+
         setComments(mappedComments);
       } catch (error) {
         console.error("Error fetching comments:", error);
@@ -175,6 +193,7 @@ export default function Page() {
           _id: result._id,
           title: result.title,
           detail: result.detail,
+          tags: result.tags,
           postImage: result.postImage || [],
           likeCount: result.likeCount || 0,
         });
@@ -195,14 +214,20 @@ export default function Page() {
 
   // เพิ่มความคิดเห็นใหม่
   const handleAddComment = async () => {
+    if (!user?.userId) {
+      console.error("User not logged in");
+      alert("กรุณาเข้าสู่ระบบก่อนแสดงความคิดเห็น");
+      return;
+    }
+
     if (newComment.trim() && data?._id) {
       try {
-        const userId = "507f1f77bcf86cd799439011"; // แก้ไขเป็น ObjectId ที่ถูกต้อง
         const res = await fetch("http://localhost:3001/comments/addComment", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            userId,
+            userId: user.userId, // ใช้ userId จาก session
+            userName: user.userName, // เพิ่ม userName
             postId: data._id,
             comment: newComment,
           }),
@@ -219,7 +244,7 @@ export default function Page() {
           ...prevComments,
           {
             id: addedComment._id,
-            name: "Anonymous",
+            name: user.userName || "Anonymous",
             message: newComment,
             timestamp: new Date().toLocaleString(),
             replies: [],
@@ -228,6 +253,7 @@ export default function Page() {
         setNewComment("");
       } catch (error) {
         console.error("Error adding comment:", error);
+        alert("เกิดข้อผิดพลาดในการเพิ่มความคิดเห็น");
       }
     }
   };
@@ -275,7 +301,7 @@ export default function Page() {
 
     try {
       const res = await fetch(`http://localhost:3001/comments/${commentId}`, {
-        method: "PATCH",
+        method: "Put",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ comment: newMessage }), // ใช้คีย์ "comment" ตามโครงสร้าง Backend
       });
@@ -345,6 +371,15 @@ export default function Page() {
     setMenuCommentId(null);
   };
 
+  // ฟังก์ชันแสดงแท็ก
+  const renderTags = (tags: string[]) => {
+    return tags.map((tag, index) => (
+      <Box key={index} sx={{border:"1px solid #b3b6b7 ", marginBottom:1, padding: "5px 10px", boxShadow: "0 1px 2px rgba(0, 0, 0, 0.1)", fontSize: "14px", color: "#333" }}>
+        <Typography variant="body2"><LocalOfferIcon sx={{color:"#77bfa3", mr:"0.5px"}} fontSize="small" />{tag}</Typography>
+      </Box>
+    ));
+  };
+
   return (
     <Box sx={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
       {isLoggedIn ? <AfterLogin /> : <Navbar />}
@@ -377,13 +412,7 @@ export default function Page() {
               color: "var(--post-text)",
             }}
           >
-            <CardMedia
-              component="img"
-              sx={{ height: 300 }}
-               image={data.postImage} 
-              alt="ยังไม่ไม่มีรูภาพ"
-            />
-            <CardContent sx={{ textAlign: "center" }}>
+            <CardContent sx={{ textAlign: "start",  ml:5 ,mr:5}}>
               <Typography
                 gutterBottom
                 variant="h4"
@@ -392,8 +421,15 @@ export default function Page() {
               >
                 {data.title}
               </Typography>
+              <Box display="flex" gap={1}>{renderTags(data.tags)}</Box>
+              <CardMedia
+                component="img"
+                sx={{ height: "100%" }}
+                image={data.postImage}
+                alt="ยังไม่ไม่มีรูภาพ"
+              />
               <Typography variant="body1" sx={{ color: "#616161", mt: 2 }}>
-              {data.detail?.substring(0, 100) || "ไม่มีเนื้อหา"}...
+                {data.detail?.substring(0, 100) || "ไม่มีเนื้อหา"}
               </Typography>
             </CardContent>
             <Box
@@ -514,8 +550,8 @@ export default function Page() {
                 }}
               >
                 <Box>
-                  <Typography 
-                    variant="body1">
+                  {/* ส่วนที่แสดง userName ของผู้แสดงความคิดเห็น */}
+                  <Typography variant="body1">
                     <strong>{comment.name}:</strong> {comment.message}
                   </Typography>
                   <Typography variant="caption" sx={{ color: "var(--comment-text)" }}>

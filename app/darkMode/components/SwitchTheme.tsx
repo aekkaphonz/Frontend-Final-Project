@@ -35,11 +35,7 @@ const SwitchTheme = () => {
           }`}
       onClick={handleSwitchTheme}
     >
-      {theme === "dark" ? (
-        <SunIcon className="h-6 w-6 mx-auto" />
-      ) : (
-        <MoonIcon className="h-6 w-6 mx-auto" />
-      )}
+      {theme === "dark" ? <SunIcon className="h-6 w-6" /> : <MoonIcon className="h-6 w-6" />}
     </button>
   );
 };

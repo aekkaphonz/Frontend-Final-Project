@@ -124,7 +124,7 @@ export default function Page() {
       )}
 
       <Grid
-        container 
+        container
         spacing={3}
         sx={{
           marginLeft: isSidebarOpen ? "240px" : "72px",
@@ -138,14 +138,20 @@ export default function Page() {
           },
         }}
       >
+        <Grid item md={8}>
+          <Typography sx={{ fontWeight: "bold", fontSize: 26, mb: 1, color: "#98c9a3", }}>
+            เนื้อหาทั้งหมด
+          </Typography>
+        </Grid>
 
         <Grid item md={12}>
           <TableContainer component={Paper}>
-            <Table sx={{ minWidth: 650 , backgroundColor: "var(--comment-bg)", }} aria-label="simple table">
-              <TableHead>
+            <Table sx={{ minWidth: 650 , backgroundColor: "var(--comment-bg)" }} aria-label="simple table">
+              <TableHead sx={{
+                borderTop: "4px solid #dde7c7",
+              }}>
                 <TableRow
                   sx={{
-                    backgroundColor: "var(--post-bg)",
                     "& th": { color: "var(--post-text)", fontWeight: "bold" },
                   }}
                 >
@@ -154,8 +160,12 @@ export default function Page() {
                     วันที่
                   </TableCell>
                   <TableCell sx={{ fontWeight: "bold" }} align="right">
+                    การอ่าน
+                  </TableCell>
+                  <TableCell sx={{ fontWeight: "bold" }} align="right">
                     ความคิดเห็น
                   </TableCell>
+                  <TableCell sx={{ fontWeight: "bold" }} align="right">แท็ก</TableCell>
                   <TableCell sx={{ fontWeight: "bold" }} align="right">
                     <BorderColorIcon />
                   </TableCell>
@@ -185,7 +195,16 @@ export default function Page() {
                       <TableCell align="right">
                         {new Date(row.createdAt).toLocaleDateString() || "-"}
                       </TableCell>
+                      <TableCell align="right">
+                        {Array.isArray(row.views) ? row.views.length : row.viewCount ?? "-"}
+                      </TableCell>
                       <TableCell align="right">{row.comments?.length ?? "-"}</TableCell>
+                      <TableCell align="right">
+                        {Array.isArray(row.tags) && row.tags.length > 0
+                          ? row.tags.join(", ") // ✅ แสดงค่าแท็กให้ถูกต้อง
+                          : "ไม่มีแท็ก"}
+                      </TableCell>
+
                       <TableCell align="right">
                         <Button
                           sx={{ color: "#FFD500" }}

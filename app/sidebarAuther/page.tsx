@@ -11,13 +11,13 @@ import EditNoteOutlinedIcon from "@mui/icons-material/EditNoteOutlined";
 import PersonIcon from '@mui/icons-material/Person';
 import { useAuth } from "@/app/context/AuthProvider";
 import SwitchTheme from "@/app/darkMode/components/SwitchTheme";
-
+import { useRouter } from "next/navigation";
 
 function Sb({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: () => void }) {
-
+  const router = useRouter();
   const { user, logout } = useAuth();
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
-  const settings = ["Profile", "Dashboard", "Logout"];
+  const settings = ["โปรไฟล์", "แดชบอร์ด", "ออกจากระบบ"];
 
   const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElUser(event.currentTarget);
@@ -28,9 +28,13 @@ function Sb({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: () => v
   };
 
   const handleMenuClick = async (setting: string) => {
-    if (setting === "Logout") {
+    if (setting === "ออกจากระบบ") {
       await logout(); // เรียกใช้ฟังก์ชัน logout
-    }
+    } else if (setting === "แดชบอร์ด") {
+      router.push("/dashboard"); // เปลี่ยนเส้นทางไปยัง /dashboard
+     }else if (setting === "โปรไฟล์") {
+       router.push("/profile"); 
+     }
     handleCloseUserMenu(); // ปิดเมนู
   };
   return (

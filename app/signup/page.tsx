@@ -95,16 +95,26 @@ export default function SignUp() {
           confirmButtonText: "ตกลง",
           confirmButtonColor: "#77bfa3",
         });
-        reset(); 
+        reset();
       }
-    } catch (error) {
-      Swal.fire({
-        title: "เกิดข้อผิดพลาด!",
-        text: "ไม่สามารถสมัครสมาชิกได้ กรุณาลองใหม่อีกครั้ง",
-        icon: "error",
-        confirmButtonText: "ตกลง",
-        confirmButtonColor: "#d33",
-      });
+    } catch (error: any) {
+      if (error.response && error.response.status === 400) {
+        Swal.fire({
+          title: "ไม่สามารถสมัครสมาชิกได้!",
+          text: "ที่อยู่อีเมลนี้ถูกลงทะเบียนแล้ว กรุณาใช้ที่อยู่อีเมลอื่น",
+          icon: "error",
+          confirmButtonText: "ตกลง",
+          confirmButtonColor: "#d33",
+        });
+      } else {
+        Swal.fire({
+          title: "เกิดข้อผิดพลาด!",
+          text: "ไม่สามารถสมัครสมาชิกได้ กรุณาลองใหม่อีกครั้ง",
+          icon: "error",
+          confirmButtonText: "ตกลง",
+          confirmButtonColor: "#d33",
+        });
+      }
     }
   };
 
@@ -129,7 +139,6 @@ export default function SignUp() {
               สมัครสมาชิก
             </div>
 
-     
             {/* <Box
               sx={{
                 backgroundColor: "#bfd8bd", // 
@@ -152,10 +161,9 @@ export default function SignUp() {
               </Typography>
             </Box> */}
 
-  
             <div className="w-full">
               <TextField
-                id="userName"
+                id="firstname"
                 label={
                   <span>
                     ชื่อผู้ใช้ <span style={{ color: "red" }}>*</span>
@@ -165,6 +173,10 @@ export default function SignUp() {
                 fullWidth
                 {...register("userName", {
                   required: "กรุณาระบุชื่อผู้ใช้",
+                  minLength: {
+                    value: 3,
+                    message: "ชื่อผู้ใช้ต้องมีอย่างน้อย 3 ตัว",
+                  },
                 })}
               />
               {errors.userName && (
@@ -172,7 +184,6 @@ export default function SignUp() {
               )}
             </div>
 
-    
             <div className="w-full">
               <TextField
                 id="email"
@@ -196,7 +207,6 @@ export default function SignUp() {
               )}
             </div>
 
-        
             <div className="w-full">
               <TextField
                 type="password"
@@ -214,6 +224,11 @@ export default function SignUp() {
                     value: 6,
                     message: "รหัสผ่านต้องมีอย่างน้อย 6 ตัว",
                   },
+                  pattern: {
+                    value: /^[A-Za-z0-9]+$/,
+                    message:
+                      "รหัสผ่านต้องเป็นตัวอักษรภาษาอังกฤษและตัวเลขเท่านั้น",
+                  },
                 })}
               />
               {errors.password && (
@@ -221,37 +236,37 @@ export default function SignUp() {
               )}
             </div>
 
-         
-            <TextField
-              type="password"
-              id="confirmpassword"
-              label={
-                <span>
-                  ยืนยันรหัสผ่าน <span style={{ color: "red" }}>*</span>
-                </span>
-              }
-              variant="outlined"
-              fullWidth
-              {...register("confirmpassword", {
-                required: "กรุณายืนยันรหัสผ่าน",
-                minLength: {
-                  value: 6,
-                  message: "รหัสผ่านต้องมีอย่างน้อย 6 ตัว",
-                },
-                validate: (value) => {
-                  const password = getValues("password");
-                  if (value !== password) {
-                    return "รหัสผ่านไม่ตรงกัน";
-                  }
-                  return true;
-                },
-              })}
-            />
-            {errors.confirmpassword && (
-              <p className="text-red-500 text-sm">{`${errors.confirmpassword.message}`}</p>
-            )}
+            <div className="w-full">
+              <TextField
+                type="password"
+                id="confirmpassword"
+                label={
+                  <span>
+                    ยืนยันรหัสผ่าน <span style={{ color: "red" }}>*</span>
+                  </span>
+                }
+                variant="outlined"
+                fullWidth
+                {...register("confirmpassword", {
+                  required: "กรุณายืนยันรหัสผ่าน",
+                  minLength: {
+                    value: 6,
+                    message: "รหัสผ่านต้องมีอย่างน้อย 6 ตัว",
+                  },
+                  validate: (value) => {
+                    const password = getValues("password");
+                    if (value !== password) {
+                      return "รหัสผ่านไม่ตรงกัน";
+                    }
+                    return true;
+                  },
+                })}
+              />
+              {errors.confirmpassword && (
+                <p className="text-red-500 text-sm">{`${errors.confirmpassword.message}`}</p>
+              )}
+            </div>
 
-       
             <div className="flex gap-4">
               <div className="flex-1">
                 <Controller
@@ -288,7 +303,6 @@ export default function SignUp() {
                 )}
               </div>
 
-              
               <div className="flex-1">
                 <Controller
                   name="dateOfBirth"
