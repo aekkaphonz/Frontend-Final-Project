@@ -71,6 +71,37 @@ export default function Page() {
     setIsSidebarOpen(!isSidebarOpen);
   };
 
+  const handleSearch = async (query: string) => {
+    setSearchQuery(query);
+
+    if (!query.trim()) {
+      setFilteredData(data);
+      return;
+    }
+
+    try {
+      console.log(`🔍 Searching for: '${query}'`);
+      const encodedQuery = encodeURIComponent(query);
+      const res = await fetch(`http://localhost:3001/contents/${encodedQuery}`);
+      console.log(" API Response:", res.status, res.statusText);
+
+      if (!res.ok) {
+        const errorText = await res.text();
+        console.error("Search API Error:", res.status, errorText);
+        throw new Error(`Failed to fetch search results`);
+      }
+
+      const searchResults: Post = await res.json();
+      console.log("Search Results:", searchResults);
+
+      // ถ้า API คืนเป็น Object เดียว ต้องใส่ลงใน Array เพื่อให้ .map() ใช้งานได้
+      setFilteredData([searchResults]);
+    } catch (error) {
+      console.error("Error during search:", error);
+      setFilteredData([]);
+    }
+  };
+
   useEffect(() => {
     async function fetchData() {
       try {
@@ -150,8 +181,16 @@ export default function Page() {
   return (
     <Box sx={{ display: "flex", minHeight: "100vh" }}>
       {/* Sidebar and Navbar */}
-      {isLoggedIn ? <AfterLogin /> : <Navbar />}
-
+      {isLoggedIn ? <AfterLogin
+        isOpen={isSidebarOpen}
+        toggleSidebar={toggleSidebar}
+        handleSearch={handleSearch}
+      /> :
+        <Navbar
+          isOpen={isSidebarOpen}
+          toggleSidebar={toggleSidebar}
+          handleSearch={handleSearch}
+        />}
       {/* Main Content */}
       <Box
         component="main"
@@ -467,9 +506,28 @@ function RegionCard({ post }: { post: Post }) {
     comments.reduce((acc, comment) => acc + (comment.replies?.length || 0), 0);
 
   return (
-    <>
-      <Grid item xs={12} sm={6} md={4} lg={3}>
-        <Card
+    
+
+
+    <Grid item xs={12} sm={6} md={4} lg={3}>
+      <Card
+        sx={{
+          borderRadius: "15px",
+          overflow: "hidden",
+          boxShadow: "0 4px 10px rgba(0, 0, 0, 0.1)",
+          position: "relative",
+          transition: "transform 0.2s",
+          "&:hover": {
+            transform: "scale(1.05)",
+            boxShadow: "0 6px 15px rgba(0, 0, 0, 0.2)",
+          },
+          backgroundColor: "var(--post-bg)",
+          color: "var(--post-text)",
+        }}
+      >
+        <Box
+
+
           sx={{
             borderRadius: "15px",
             overflow: "hidden",
@@ -499,9 +557,11 @@ function RegionCard({ post }: { post: Post }) {
 
             <CardContent>
               <Typography variant="h6">{post.title}</Typography>
+
             </CardContent>
           </CardActionArea>
           <Box
+
             sx={{
               borderRadius: "15px",
               overflow: "hidden",
@@ -512,39 +572,54 @@ function RegionCard({ post }: { post: Post }) {
                 transform: "scale(1.05)",
                 boxShadow: "0 6px 15px rgba(0, 0, 0, 0.2)",
               },
-              backgroundColor: "#f6f6e7",
+              backgroundColor: "var(--post-bg)",
+              color: "var(--post-text)",
             }}
           >
-
             <Box
               sx={{
-                display: "flex",
-                padding: "10px",
-                justifyContent: "space-between",
+                borderRadius: "15px",
+                overflow: "hidden",
+                boxShadow: "0 4px 10px rgba(0, 0, 0, 0.1)",
+                position: "relative",
+                transition: "transform 0.2s",
+                "&:hover": {
+                  transform: "scale(1.05)",
+                  boxShadow: "0 6px 15px rgba(0, 0, 0, 0.2)",
+                },
+                backgroundColor: "#f6f6e7",
               }}
             >
-              <Box sx={{ display: "flex", alignItems: "center", fontSize: 12 }}>
-                <Typography sx={{ mr: 1, fontSize: 12, fontWeight: "bold" }}>
-                  {post.userId}
-                </Typography>
-              </Box>
+              <Box
+                sx={{
+                  display: "flex",
+                  padding: "10px",
+                  justifyContent: "space-between",
+                }}
+              >
+                <Box sx={{ display: "flex", alignItems: "center", fontSize: 12 }}>
+                  <Typography sx={{ mr: 1, fontSize: 12, fontWeight: "bold", color: "var(--nav-text)" }}>
+                    {post.userName}
+                  </Typography>
+                </Box>
 
-              <Box sx={{ display: "flex", alignItems: "center" }}>
-                <Typography sx={{ ml: 1, mr: 1, fontSize: 12 }} variant="body2">
-                  การอ่าน {Array.isArray(post.views) ? post.views.length : 0}{" "}
-                  ครั้ง
-                </Typography>
-                <CommentIcon color="action" fontSize="small" />
-                <Typography sx={{ ml: 1, fontSize: 12 }} variant="body2">
-                  {totalComments}
-                </Typography>
+                <Box sx={{ display: "flex", alignItems: "center" }}>
+                  <Typography sx={{ ml: 1, mr: 1, fontSize: 12, color: "var(--nav-text)" }} variant="body2">
+                    การอ่าน {Array.isArray(post.views) ? post.views.length : 0}{" "}
+                    ครั้ง
+                  </Typography>
+                  <CommentIcon color="action" fontSize="small" />
+                  <Typography sx={{ ml: 1, fontSize: 12, color: "var(--nav-text)" }} variant="body2">
+                    {totalComments}
+                  </Typography>
+                </Box>
               </Box>
             </Box>
-
+          </Box>
           </Box>
         </Card>
       </Grid>
-    </>
-
+  
+    
   );
 }

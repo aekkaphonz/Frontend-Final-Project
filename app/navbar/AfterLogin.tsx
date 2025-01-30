@@ -91,7 +91,7 @@ function NavLogIn({ isOpen, toggleSidebar, handleSearch }: { isOpen: boolean; to
 
           {/* Search Bar */}
           <Box sx={{ flexGrow: 1, mx: 2, display: "flex", justifyContent: "center" }}>
-            <TextField
+           <TextField
               placeholder="ค้นหา"
               variant="outlined"
               size="small"
