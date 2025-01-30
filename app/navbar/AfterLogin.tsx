@@ -16,6 +16,7 @@ import MenuItem from '@mui/material/MenuItem';
 import { useAuth } from "@/app/context/AuthProvider";
 import EditNoteOutlinedIcon from "@mui/icons-material/EditNoteOutlined";
 import { useRouter } from "next/navigation";
+import SwitchTheme from "@/app/darkMode/components/SwitchTheme";
 
 function NavLogIn({ isOpen, toggleSidebar, handleSearch }: { isOpen: boolean; toggleSidebar: () => void; handleSearch: (query: string) => void }) {
   const router = useRouter();
@@ -54,10 +55,11 @@ function NavLogIn({ isOpen, toggleSidebar, handleSearch }: { isOpen: boolean; to
       <AppBar
         position="fixed"
         sx={{
-          backgroundColor: "#fff", // พื้นหลังสีขาว
-          boxShadow: "0px 3px 3px rgba(0,0,0,0.1)",
-          borderBottom: "1px solid #ddd",
-          zIndex: 1300, // ให้อยู่เหนือ Sidebar
+          backgroundColor: "var(--nav-bg)", // ดึงค่าพื้นหลังจาก CSS Variables
+          color: "var(--nav-text)",
+          borderBottom: "2px solid var(--nav-border)",
+          zIndex: 1300, // ระดับชั้นของ Navbar
+          transition: "all 0.3s ease-in-out", // ให้การเปลี่ยนแปลงราบรื่น
         }}
       >
         <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
@@ -72,14 +74,14 @@ function NavLogIn({ isOpen, toggleSidebar, handleSearch }: { isOpen: boolean; to
               size="large"
               edge="start"
               onClick={toggleSidebar}
-              sx={{ color: "#000" }}
+              sx={{ backgroundColor: "inherit", color: "inherit" }}
             >
               <MenuIcon />
             </IconButton>
 
             <Link href="/" >
               <img
-                src="/images/logo-blogs.png"
+                src="/images/logo-blogs-removebg.png"
                 alt="Cleaning Illustration"
                 style={{ maxWidth: "142px", height: "auto" }} // ขนาดโลโก้
               />
@@ -88,7 +90,7 @@ function NavLogIn({ isOpen, toggleSidebar, handleSearch }: { isOpen: boolean; to
 
           {/* Search Bar */}
           <Box sx={{ flexGrow: 1, mx: 2, display: "flex", justifyContent: "center" }}>
-            <TextField
+           <TextField
               placeholder="ค้นหา"
               variant="outlined"
               size="small"
@@ -182,6 +184,9 @@ function NavLogIn({ isOpen, toggleSidebar, handleSearch }: { isOpen: boolean; to
                 ))}
               </Menu>
             </Box>
+
+            <SwitchTheme />
+
           </Box>
         </Toolbar>
       </AppBar>
@@ -190,16 +195,19 @@ function NavLogIn({ isOpen, toggleSidebar, handleSearch }: { isOpen: boolean; to
       {/* Sidebar */}
       <Box
         sx={{
-          width: isOpen ? 240 : 72, // ความกว้างเมื่อเปิด/ปิด
+          width: isOpen ? 240 : 72,
           height: "100vh",
-          backgroundColor: "#fff",
+          backgroundColor: "var(--nav-bg)", // ดึงค่าพื้นหลังจาก CSS Variables
+          color: "var(--nav-text)",
+          borderBottom: "2px solid var(--nav-border)",
           transition: "width 0.3s",
           position: "fixed",
-          top: 64, // เลื่อน Sidebar ให้เริ่มหลัง Navbar
+          top: 64,
           left: 0,
           zIndex: 1200,
           overflow: "hidden",
           boxShadow: "2px 0px 5px rgba(0,0,0,0.1)",
+          borderRight: "2px solid rgba(255, 255, 255, 0.2)", // เส้นขอบข้างในโหมดมืด
         }}
       >
         <List>
@@ -219,7 +227,7 @@ function NavLogIn({ isOpen, toggleSidebar, handleSearch }: { isOpen: boolean; to
                 },
               }}
             >
-              <ListItemIcon sx={{ justifyContent: "center", color: "#000", minWidth: "40px" }}>
+              <ListItemIcon sx={{ justifyContent: "center", backgroundColor: "var(--nav-bg)", color: "var(--nav-text)", minWidth: "40px" }}>
                 <HomeIcon />
               </ListItemIcon>
               {isOpen && <ListItemText primary="หน้าหลัก" sx={{ color: "#000" }} />}
@@ -239,7 +247,7 @@ function NavLogIn({ isOpen, toggleSidebar, handleSearch }: { isOpen: boolean; to
                 },
               }}
             >
-              <ListItemIcon sx={{ justifyContent: "center", color: "#000", minWidth: "40px" }}>
+              <ListItemIcon sx={{ justifyContent: "center", backgroundColor: "var(--nav-bg)", color: "var(--nav-text)", minWidth: "40px" }}>
                 <ArticleIcon />
               </ListItemIcon>
               {isOpen && <ListItemText primary="น่าสนใจ" sx={{ color: "#000" }} />}
@@ -259,7 +267,7 @@ function NavLogIn({ isOpen, toggleSidebar, handleSearch }: { isOpen: boolean; to
                 },
               }}
             >
-              <ListItemIcon sx={{ justifyContent: "center", color: "#000", minWidth: "40px" }}>
+              <ListItemIcon sx={{ justifyContent: "center", backgroundColor: "var(--nav-bg)", color: "var(--nav-text)", minWidth: "40px" }}>
                 <WhatshotIcon />
               </ListItemIcon>
               {isOpen && <ListItemText primary="มาเเรง" sx={{ color: "#000" }} />}

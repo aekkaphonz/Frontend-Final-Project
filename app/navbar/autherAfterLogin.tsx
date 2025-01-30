@@ -1,29 +1,49 @@
 "use client";
 
 import React from "react";
-import { Box, List, ListItem, ListItemIcon, ListItemText, AppBar, Toolbar, IconButton, Typography, Button, TextField, Tooltip, } from "@mui/material";
+import {
+  Box,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  AppBar,
+  Toolbar,
+  IconButton,
+  Typography,
+  Button,
+  TextField,
+  Tooltip,
+} from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import Link from "next/link";
-import SearchIcon from '@mui/icons-material/Search';
-import Avatar from '@mui/material/Avatar';
-import Menu from '@mui/material/Menu';
-import MenuItem from '@mui/material/MenuItem';
+import SearchIcon from "@mui/icons-material/Search";
+import Avatar from "@mui/material/Avatar";
+import Menu from "@mui/material/Menu";
+import MenuItem from "@mui/material/MenuItem";
 import { useAuth } from "@/app/context/AuthProvider";
 import EditNoteOutlinedIcon from "@mui/icons-material/EditNoteOutlined";
 import { useRouter } from "next/navigation";
 
-import DashboardIcon from '@mui/icons-material/Dashboard';
-import CollectionsBookmarkIcon from '@mui/icons-material/CollectionsBookmark';
-import InsertChartIcon from '@mui/icons-material/InsertChart';
-import PersonIcon from '@mui/icons-material/Person';
+import DashboardIcon from "@mui/icons-material/Dashboard";
+import CollectionsBookmarkIcon from "@mui/icons-material/CollectionsBookmark";
+import InsertChartIcon from "@mui/icons-material/InsertChart";
+import PersonIcon from "@mui/icons-material/Person";
 import SwitchTheme from "@/app/darkMode/components/SwitchTheme";
 
-function NavLogIn({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: () => void }) {
+function NavLogIn({
+  isOpen,
+  toggleSidebar,
+}: {
+  isOpen: boolean;
+  toggleSidebar: () => void;
+}) {
   const router = useRouter();
   const { user, logout } = useAuth();
   const settings = ["โปรไฟล์", "แดชบอร์ด", "ออกจากระบบ"];
-  const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
-
+  const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
+    null
+  );
 
   const themeColors = {
     primary: "#ffffff",
@@ -41,13 +61,14 @@ function NavLogIn({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: (
   };
   const handleMenuClick = async (setting: string) => {
     if (setting === "ออกจากระบบ") {
-      await logout(); // เรียกใช้ฟังก์ชัน logout
+      await logout();
+      router.push("/signin");
     } else if (setting === "แดชบอร์ด") {
-      router.push("/dashboard"); // เปลี่ยนเส้นทางไปยัง /dashboard
-     }else if (setting === "โปรไฟล์") {
-       router.push("/profile"); 
-     }
-    handleCloseUserMenu(); // ปิดเมนู
+      router.push("/dashboard");
+    } else if (setting === "โปรไฟล์") {
+      router.push("/profile");
+    }
+    handleCloseUserMenu();
   };
 
   return (
@@ -56,33 +77,34 @@ function NavLogIn({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: (
       <AppBar
         position="fixed"
         sx={{
-          backgroundColor: "inherit", // ใช้ค่า background สีจากคลาส Tailwind
-          color: "inherit",
-          boxShadow: "0px 3px 3px rgba(0,0,0,0.1)",
-          borderBottom: "1px solid #ddd",
-          zIndex: 1300, // ให้อยู่เหนือ Sidebar
+          backgroundColor: "var(--nav-bg)", // ดึงค่าพื้นหลังจาก CSS Variables
+          color: "var(--nav-text)",
+          borderBottom: "2px solid var(--nav-border)",
+          zIndex: 1300, // ระดับชั้นของ Navbar
+          transition: "all 0.3s ease-in-out", // ให้การเปลี่ยนแปลงราบรื่น
         }}
       >
         <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
           {/* Sidebar Menu */}
-          <Box sx={{
-            display: "flex",
-            alignItems: "center",
-            gap: "10px",
-          }}
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              gap: "10px",
+            }}
           >
             <IconButton
               size="large"
               edge="start"
               onClick={toggleSidebar}
-              sx={{ color: "#000" }}
+              sx={{ backgroundColor: "inherit", color: "inherit" }}
             >
               <MenuIcon />
             </IconButton>
 
-            <Link href="http://localhost:3000/home/highlights" >
+            <Link href="http://localhost:3000/home/highlights">
               <img
-                src="/images/logo-blogs.png"
+                src="/images/logo-blogs-removebg.png"
                 alt="Cleaning Illustration"
                 style={{ maxWidth: "142px", height: "auto" }}
               />
@@ -90,7 +112,14 @@ function NavLogIn({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: (
           </Box>
 
           {/* Search Bar */}
-          <Box sx={{ flexGrow: 1, mx: 2, display: "flex", justifyContent: "center" }}>
+          <Box
+            sx={{
+              flexGrow: 1,
+              mx: 2,
+              display: "flex",
+              justifyContent: "center",
+            }}
+          >
             <TextField
               placeholder="ค้นหา"
               variant="outlined"
@@ -125,18 +154,18 @@ function NavLogIn({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: (
                 sx={{
                   display: "flex",
                   alignItems: "center",
-                  gap: "5px", // ระยะห่างระหว่างไอคอนและข้อความ
+                  gap: "15px", // ระยะห่างระหว่างไอคอนและข้อความ
                 }}
               >
-
                 {/* ปุ่มเขียน */}
-                <Button href="/createBlog"
+                <Button
+                  href="/signin"
                   sx={{
                     color: "#ffffff",
                     backgroundColor: "#77bfa3",
                     "&:hover": {
                       backgroundColor: "#F7F7F7",
-                      color: "#77bfa3"
+                      color: "#77bfa3",
                     },
                     borderRadius: "20px",
                     padding: "6px 16px",
@@ -148,7 +177,6 @@ function NavLogIn({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: (
                   <EditNoteOutlinedIcon sx={{ marginRight: 1 }} />
                   เขียน
                 </Button>
-
               </Box>
             </Typography>
             <Box sx={{ flexGrow: 0 }}>
@@ -178,7 +206,10 @@ function NavLogIn({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: (
                 onClose={handleCloseUserMenu}
               >
                 {settings.map((setting) => (
-                  <MenuItem key={setting} onClick={() => handleMenuClick(setting)}>
+                  <MenuItem
+                    key={setting}
+                    onClick={() => handleMenuClick(setting)}
+                  >
                     <Typography textAlign="center">{setting}</Typography>
                   </MenuItem>
                 ))}
@@ -186,26 +217,26 @@ function NavLogIn({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: (
             </Box>
 
             <SwitchTheme />
-
           </Box>
         </Toolbar>
       </AppBar>
 
-
       {/* Sidebar */}
       <Box
         sx={{
-          width: isOpen ? 240 : 72, // ความกว้างเมื่อเปิด/ปิด
+          width: isOpen ? 240 : 72,
           height: "100vh",
-          backgroundColor: "inherit", // ใช้ค่า background สีจากคลาส Tailwind
-          color: "inherit",
+          backgroundColor: "var(--nav-bg)", // ดึงค่าพื้นหลังจาก CSS Variables
+          color: "var(--nav-text)",
+          borderBottom: "2px solid var(--nav-border)",
           transition: "width 0.3s",
           position: "fixed",
-          top: 64, // เลื่อน Sidebar ให้เริ่มหลัง Navbar
+          top: 64,
           left: 0,
           zIndex: 1200,
           overflow: "hidden",
           boxShadow: "2px 0px 5px rgba(0,0,0,0.1)",
+          borderRight: "2px solid rgba(255, 255, 255, 0.2)", // เส้นขอบข้างในโหมดมืด
         }}
       >
         <List>
@@ -224,10 +255,22 @@ function NavLogIn({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: (
                   },
                 }}
               >
-                <ListItemIcon sx={{ justifyContent: "center", color: "#000", minWidth: "40px" }}>
+                <ListItemIcon
+                  sx={{
+                    justifyContent: "center",
+                    backgroundColor: "var(--nav-bg)",
+                    color: "var(--nav-text)",
+                    minWidth: "40px",
+                  }}
+                >
                   <DashboardIcon />
                 </ListItemIcon>
-                {isOpen && <ListItemText primary="แดชบอร์ด" sx={{ color: "#000" }} />}
+                {isOpen && (
+                  <ListItemText
+                    primary="แดชบอร์ด"
+                    sx={{ color: "var(--nav-text)" }}
+                  />
+                )}
               </ListItem>
             </Tooltip>
           </Link>
@@ -236,7 +279,6 @@ function NavLogIn({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: (
             <Link href="/blog" passHref>
               <ListItem
                 component="button"
-
                 sx={{
                   display: "flex",
                   flexDirection: isOpen ? "row" : "column",
@@ -248,10 +290,22 @@ function NavLogIn({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: (
                   },
                 }}
               >
-                <ListItemIcon sx={{ justifyContent: "center", color: "#000", minWidth: "40px" }}>
+                <ListItemIcon
+                  sx={{
+                    justifyContent: "center",
+                    backgroundColor: "var(--nav-bg)",
+                    color: "var(--nav-text)",
+                    minWidth: "40px",
+                  }}
+                >
                   <CollectionsBookmarkIcon />
                 </ListItemIcon>
-                {isOpen && <ListItemText primary="เนื้อหา" sx={{ color: "#000" }} />}
+                {isOpen && (
+                  <ListItemText
+                    primary="เนื้อหา"
+                    sx={{ color: "var(--nav-text)" }}
+                  />
+                )}
               </ListItem>
             </Link>
           </Tooltip>
@@ -271,10 +325,22 @@ function NavLogIn({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: (
                   },
                 }}
               >
-                <ListItemIcon sx={{ justifyContent: "center", color: "#000", minWidth: "40px" }}>
+                <ListItemIcon
+                  sx={{
+                    justifyContent: "center",
+                    backgroundColor: "var(--nav-bg)",
+                    color: "var(--nav-text)",
+                    minWidth: "40px",
+                  }}
+                >
                   <InsertChartIcon />
                 </ListItemIcon>
-                {isOpen && <ListItemText primary="สถิติ" sx={{ color: "#000" }} />}
+                {isOpen && (
+                  <ListItemText
+                    primary="สถิติ"
+                    sx={{ color: "var(--nav-text)" }}
+                  />
+                )}
               </ListItem>
             </Link>
           </Tooltip>
@@ -294,16 +360,27 @@ function NavLogIn({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: (
                   },
                 }}
               >
-                <ListItemIcon sx={{ justifyContent: "center", color: "#000", minWidth: "40px" }}>
+                <ListItemIcon
+                  sx={{
+                    justifyContent: "center",
+                    backgroundColor: "var(--nav-bg)",
+                    color: "var(--nav-text)",
+                    minWidth: "40px",
+                  }}
+                >
                   <PersonIcon />
                 </ListItemIcon>
-                {isOpen && <ListItemText primary="โปรไฟล์" sx={{ color: "#000" }} />}
+                {isOpen && (
+                  <ListItemText
+                    primary="โปรไฟล์"
+                    sx={{ color: "var(--nav-text)" }}
+                  />
+                )}
               </ListItem>
             </Link>
           </Tooltip>
         </List>
       </Box>
-
     </>
   );
 }

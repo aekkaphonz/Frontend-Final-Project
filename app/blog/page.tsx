@@ -17,6 +17,8 @@ import {
   TableContainer,
   TableHead,
   TableRow,
+  TextField,
+  MenuItem, Select, FormControl, InputLabel, SelectChangeEvent
 } from "@mui/material";
 import BorderColorIcon from '@mui/icons-material/BorderColor';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -46,6 +48,20 @@ export default function Page() {
   const [rows, setRows] = useState<any[]>([]);
   const [openModal, setOpenModal] = useState(false);
   const [selectedPost, setSelectedPost] = useState<string | null>(null);
+  const [searchTag, setSearchTag] = useState("");
+
+  const fetchComments = async (postId: string) => {
+    try {
+      const res = await fetch(`http://localhost:3001/comments/content/${postId}`);
+      if (!res.ok) throw new Error("Failed to fetch comments");
+
+      const result = await res.json();
+      return result.length; // ส่งกลับจำนวนคอมเมนต์ทั้งหมด
+    } catch (error) {
+      console.error("Error fetching comments:", error);
+      return 0;
+    }
+  };
 
   const fetchPosts = async () => {
     try {
@@ -54,8 +70,6 @@ export default function Page() {
         return;
       }
 
-      console.log("👉 userId:", user.userId); // Debug userId
-
       const response = await fetch(`http://localhost:3001/contents?userId=${user.userId}`, {
         method: "GET",
         credentials: "include",
@@ -63,8 +77,13 @@ export default function Page() {
 
       if (response.ok) {
         const data = await response.json();
-        console.log("✅ Fetched data:", data); // Debug data ที่ดึงมา
-        setRows(data);
+        const postsWithCommentCount = await Promise.all(
+          data.map(async (post: any) => {
+            const commentCount = await fetchComments(post._id || post.id);
+            return { ...post, commentCount };
+          })
+        );
+        setRows(postsWithCommentCount);
       } else {
         console.error("❌ ไม่สามารถโหลดข้อมูลบทความ");
       }
@@ -74,8 +93,6 @@ export default function Page() {
   };
 
   useEffect(() => {
-    console.log("👉 user from AuthProvider:", user); // Debug user object
-    console.log("👉 isLoggedIn:", isLoggedIn);
     if (isLoggedIn) {
       fetchPosts(); // เรียก fetchPosts เมื่อผู้ใช้ล็อกอิน
     }
@@ -124,7 +141,7 @@ export default function Page() {
       )}
 
       <Grid
-        container 
+        container
         spacing={3}
         sx={{
           marginLeft: isSidebarOpen ? "240px" : "72px",
@@ -146,13 +163,13 @@ export default function Page() {
 
         <Grid item md={12}>
           <TableContainer component={Paper}>
-            <Table sx={{ minWidth: 650 }} aria-label="simple table">
+            <Table sx={{ minWidth: 650 , backgroundColor: "var(--comment-bg)" }} aria-label="simple table">
               <TableHead sx={{
                 borderTop: "4px solid #dde7c7",
               }}>
                 <TableRow
                   sx={{
-                    "& th": { color: "#000000", fontWeight: "bold" },
+                    "& th": { color: "var(--post-text)", fontWeight: "bold" },
                   }}
                 >
                   <TableCell sx={{ fontWeight: "bold" }}>บทความ</TableCell>
@@ -165,6 +182,7 @@ export default function Page() {
                   <TableCell sx={{ fontWeight: "bold" }} align="right">
                     ความคิดเห็น
                   </TableCell>
+                  <TableCell sx={{ fontWeight: "bold" }} align="right">แท็ก</TableCell>
                   <TableCell sx={{ fontWeight: "bold" }} align="right">
                     <BorderColorIcon />
                   </TableCell>
@@ -194,8 +212,16 @@ export default function Page() {
                       <TableCell align="right">
                         {new Date(row.createdAt).toLocaleDateString() || "-"}
                       </TableCell>
-                      <TableCell align="right">{Array.isArray(row.views) ? row.views.length : row.viewCount ?? "-"}</TableCell>
-                      <TableCell align="right">{row.comments?.length ?? "-"}</TableCell>
+                      <TableCell align="right">
+                        {Array.isArray(row.views) ? row.views.length : row.viewCount ?? "-"}
+                      </TableCell>
+                      <TableCell align="right">
+                        {row.comments?.length ?? "-"}
+                      </TableCell>
+                      <TableCell align="right">
+                        {row.tags?.join(", ") || "ไม่มีแท็ก"} {/* แสดงแท็ก */}
+                      </TableCell>
+
                       <TableCell align="right">
                         <Button
                           sx={{ color: "#FFD500" }}
@@ -221,7 +247,7 @@ export default function Page() {
                   ))
                 ) : (
                   <TableRow>
-                    <TableCell colSpan={5} align="center">
+                    <TableCell colSpan={5} align="center" sx={{ color: "var(--comment-text)"}}>
                       ไม่มีข้อมูล
                     </TableCell>
                   </TableRow>

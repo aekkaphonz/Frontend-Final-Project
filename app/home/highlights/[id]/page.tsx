@@ -99,39 +99,39 @@
     }
   };
   
-  const deleteComment = async (commentId: string) => {
-    const userId = user?.userId; // ตรวจสอบ `userId` จาก context หรือ session ของผู้ใช้
-  
-    if (!userId) {
-      alert("กรุณาเข้าสู่ระบบก่อนลบความคิดเห็น");
-      return;
+ const deleteComment = async (commentId: string) => {
+  const userId = user?.userId; // ตรวจสอบ `userId` จาก context หรือ session ของผู้ใช้
+
+  if (!userId) {
+    alert("กรุณาเข้าสู่ระบบก่อนลบความคิดเห็น");
+    return;
+  }
+
+  try {
+    const res = await fetch(`http://localhost:3001/comments/${commentId}`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        userId,  // ส่ง `userId` ใน body
+      }),
+    });
+
+    if (!res.ok) {
+      const errorText = await res.text();
+      console.error("API Error Response:", errorText);
+      throw new Error(`Failed to delete comment: ${errorText}`);
     }
-  
-    try {
-      const res = await fetch(`http://localhost:3001/comments/${commentId}`, {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          userId,  // ส่ง `userId` ใน body
-        }),
-      });
-  
-      if (!res.ok) {
-        const errorText = await res.text();
-        console.error("API Error Response:", errorText);
-        throw new Error(`Failed to delete comment: ${errorText}`);
-      }
-  
-      const deletedComment = await res.json();
-      // ดำเนินการเมื่อการลบสำเร็จ
-    } catch (error) {
-      console.error("Error deleting comment:", error);
-      alert(`เกิดข้อผิดพลาด: ${error}`);
-    }
-  };
-  
+
+    const deletedComment = await res.json();
+    // ดำเนินการเมื่อการลบสำเร็จ
+  } catch (error) {
+    console.error("Error deleting comment:", error);
+    alert(`เกิดข้อผิดพลาด: ${error}`);
+  }
+};
+
   
     // ดึงความคิดเห็น
     useEffect(() => {
