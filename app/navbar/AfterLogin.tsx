@@ -117,7 +117,6 @@ function NavLogIn({ isOpen, toggleSidebar, handleSearch }: { isOpen: boolean; to
               noWrap
               component="div"
               sx={{
-                backgroundColor: "#fff", // สีขาว
                 color: "#000000",
               }}
             >

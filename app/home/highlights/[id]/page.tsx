@@ -2,9 +2,7 @@
 
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { Container, Card, CardContent, CardMedia, Typography, Box, IconButton, Tooltip, TextField, InputAdornment, Menu, MenuItem, } from "@mui/material";
-import FavoriteIcon from "@mui/icons-material/Favorite";
 import ShareIcon from "@mui/icons-material/Share";
-import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import SendIcon from "@mui/icons-material/Send";
 import ReplyIcon from "@mui/icons-material/Reply";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
@@ -16,7 +14,10 @@ import { useAuth } from "@/app/context/AuthProvider";
 import SellOutlinedIcon from '@mui/icons-material/SellOutlined';
 import Divider from '@mui/material/Divider';
 import ForumOutlinedIcon from '@mui/icons-material/ForumOutlined';
-
+import GradeIcon from '@mui/icons-material/Grade';
+import GradeOutlinedIcon from '@mui/icons-material/GradeOutlined';
+import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
+import FavoriteOutlinedIcon from '@mui/icons-material/FavoriteOutlined';
 interface User {
   id: string;
   name: string;
@@ -31,6 +32,8 @@ interface Attraction {
   tags: string[];
   postImage: string;
   likeCount: number;
+  likedUsers: string[];
+
 }
 interface Comment {
   id: number;
@@ -59,6 +62,11 @@ export default function Page() {
   const [anchorReplyEl, setAnchorReplyEl] = useState<null | HTMLElement>(null);
   const params: any = useParams();
   const router = useRouter();
+  const [liked, setLiked] = useState(false);
+  const [updatedLikes, setUpdatedLikes] = useState(0);
+  const userId = user?.userId;
+
+
 
   const editComment = async (commentId: string, newMessage: string) => {
     if (!newMessage.trim()) return;
@@ -182,16 +190,16 @@ export default function Page() {
       fetchComments(data._id);
     }
   }, [data]);
-
-
   // ดึงข้อมูลโพสต์
   useEffect(() => {
     async function fetchData(postId: string) {
       try {
         const res = await fetch(`http://localhost:3001/contents/${postId}`);
         if (!res.ok) throw new Error("Failed to fetch post data");
+
         const result = await res.json();
 
+        // กำหนดค่า state สำหรับข้อมูลโพสต์
         setData({
           _id: result._id,
           title: result.title,
@@ -200,7 +208,14 @@ export default function Page() {
           userName: result.userName,
           postImage: result.postImage || [],
           likeCount: result.likeCount || 0,
+          likedUsers: result.likedUsers,
         });
+
+        // ตรวจสอบสถานะการไลค์ว่าเป็น True หรือ False
+        setLiked(result.likedUsers.includes(user?.userId));
+        // ตั้งค่าจำนวนไลค์
+        setUpdatedLikes(result.likeCount);
+
         setLoading(false);
       } catch (error: any) {
         setError(error.message || "Failed to load post data");
@@ -209,12 +224,12 @@ export default function Page() {
     }
 
     if (params && params.id) {
-      fetchData(params.id);
+      fetchData(params.id); // เรียกใช้ fetchData เมื่อมีการระบุ ID
     } else {
       setError("ไม่พบพารามิเตอร์ ID");
       setLoading(false);
     }
-  }, [params]);
+  }, [params, user?.userId]); // ติดตามการเปลี่ยนแปลงของ params และ userId
 
   // เพิ่มความคิดเห็นใหม่
   const handleAddComment = async () => {
@@ -261,15 +276,6 @@ export default function Page() {
       }
     }
   };
-
-  async function toggleLike(postId: string) {
-    const res = await fetch(`http://localhost:3001/posts/${postId}/like`, {
-      method: "PATCH",
-    });
-    if (!res.ok) throw new Error("Failed to toggle like");
-    return res.json();
-  }
-
   const handleAddReply = (commentId: number) => {
     if (replyMessage.trim()) {
       const updatedComments = comments.map((comment) =>
@@ -358,12 +364,6 @@ export default function Page() {
     setComments(updatedComments);
   };
 
-  const handleLike = () => {
-    if (data) {
-      const updatedLikes = data.likeCount + 1;
-      setData({ ...data, likeCount: updatedLikes });
-    }
-  };
 
   const handleMenuOpen = (event: React.MouseEvent<HTMLElement>, commentId: number) => {
     setAnchorEl(event.currentTarget);
@@ -375,13 +375,37 @@ export default function Page() {
     setMenuCommentId(null);
   };
 
-  
+
   const renderTags = (tags: string[]) => {
     return tags.map((tag, index) => (
       <Box key={index} sx={{ border: "1px solid #b3b6b7 ", marginBottom: 1, padding: "5px 10px", boxShadow: "0 1px 2px rgba(0, 0, 0, 0.1)", fontSize: "14px", color: "#333" }}>
         <Typography variant="body2"><SellOutlinedIcon sx={{ color: "#77bfa3", mr: "0.5px" }} fontSize="small" />{tag}</Typography>
       </Box>
     ));
+  };
+
+  // ฟังก์ชันการไลค์
+  const handleLike = async () => {
+    if (!user?.userId) {
+      alert("กรุณาเข้าสู่ระบบเพื่อทำการไลค์");
+      return;
+    }
+
+    try {
+      const res = await fetch(`http://localhost:3001/contents/${data?._id}/like`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId: user.userId }),
+      });
+
+      if (!res.ok) throw new Error("Failed to update like status");
+
+      const updatedPost = await res.json();
+      setLiked(updatedPost.likedUsers.includes(user.userId)); // อัปเดตสถานะไลค์
+      setUpdatedLikes(updatedPost.likeCount); // อัปเดตจำนวนไลค์
+    } catch (error) {
+      console.error("Error updating like status:", error);
+    }
   };
 
   return (
@@ -456,22 +480,27 @@ export default function Page() {
                   </IconButton>
                 </Tooltip>
                 <Tooltip title="เพิ่มในรายการโปรด">
-                  <IconButton sx={{ color: "#f50057" }}>
-                    <FavoriteIcon />
+                  <IconButton sx={{ color: "#6a6a6" }}>
+                    {/* <GradeIcon/> */}
+                    <GradeOutlinedIcon sx={{ fontSize: 30 }} />
                   </IconButton>
                 </Tooltip>
                 <Divider orientation="vertical" flexItem sx={{ borderColor: '#3b4c77', height: 40, ml: 1 }} />
-                <Typography sx={{ ml: 1 }}>
+                <Typography sx={{ ml: 1, fontWeight: "bold", color: "var(--nav-text)" }}>
                   {data.userName}
                 </Typography>
               </Box>
 
               <Box sx={{ display: "flex", alignItems: "center" }}>
-                <IconButton onClick={handleLike} sx={{ color: "var(--comment-text)" }}>
-                  <FavoriteBorderIcon />
+                <IconButton onClick={handleLike} sx={{ color: liked ? "#ff3030" : "var(--comment-text)" }}>
+                  {liked ? (
+                    <FavoriteOutlinedIcon sx={{ color: "#ff3030" }} />
+                  ) : (
+                    <FavoriteBorderIcon sx={{ color: "var(--comment-text)" }} />
+                  )}
                 </IconButton>
                 <Typography variant="body2" sx={{ ml: 1 }}>
-                  {data.likeCount} ถูกใจ
+                  {updatedLikes} ถูกใจ
                 </Typography>
               </Box>
             </Box>
@@ -552,8 +581,8 @@ export default function Page() {
                 color: "var(--comment-text)",
                 borderRadius: 1,
                 textAlign: "left",
-                borderBottom: 1 ,
-                width:"100%"
+                borderBottom: 1,
+                width: "100%"
               }}
             >
               <Box
