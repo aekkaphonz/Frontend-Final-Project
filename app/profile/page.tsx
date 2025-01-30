@@ -18,14 +18,7 @@ const UsersPage = () => {
 
   return (
     <div>
-      {isLoggedIn ? (
-        <AutherAfterLogin
-          isOpen={isSidebarOpen}
-          toggleSidebar={toggleSidebar}
-        />
-      ) : (
         <Sb isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
-      )}
       <ReadOnlyProfilePage />
     </div>
   );

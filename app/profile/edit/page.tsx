@@ -16,7 +16,6 @@ const EditUsersPage = () => {
 
   const { isLoggedIn } = useAuth();
 
-
   return (
     <div>
       {isLoggedIn ? (
@@ -25,13 +24,9 @@ const EditUsersPage = () => {
           toggleSidebar={toggleSidebar}
         />
       ) : (
-        <Sb
-          isOpen={isSidebarOpen}
-          toggleSidebar={toggleSidebar}
-    
-        />
+        <Sb isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
       )}
-
+      {/* <Sb isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} /> */}
       <EditPage />
     </div>
   );

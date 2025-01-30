@@ -117,10 +117,25 @@ function Sb({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: () => v
               onChange={(e) => handleSearch(e.target.value)}
               variant="outlined"
               size="small"
+            
               sx={{
                 width: "60%",
                 backgroundColor: "var(--comment-bg)",
-                color:"var(--comment-text)"
+                color: "var(--comment-text)",
+                "& .MuiInputBase-input": {
+                    color: "var(--comment-text)", // สีข้อความของ Input
+                },
+                "& .MuiOutlinedInput-root": {
+                    "& fieldset": {
+                    borderColor: "var(--comment-text)", // สีเส้นขอบของช่องป้อนข้อความ
+                    },
+                    "&:hover fieldset": {
+                    borderColor: "var(--comment-text)",
+                    },
+                    "&.Mui-focused fieldset": {
+                    borderColor: "var(--comment-text)",
+                    },
+                },
               }}
               InputProps={{
                 endAdornment: (
