@@ -146,13 +146,13 @@ export default function Page() {
 
         <Grid item md={12}>
           <TableContainer component={Paper}>
-            <Table sx={{ minWidth: 650 }} aria-label="simple table">
+            <Table sx={{ minWidth: 650 , backgroundColor: "var(--comment-bg)" }} aria-label="simple table">
               <TableHead sx={{
                 borderTop: "4px solid #dde7c7",
               }}>
                 <TableRow
                   sx={{
-                    "& th": { color: "#000000", fontWeight: "bold" },
+                    "& th": { color: "var(--post-text)", fontWeight: "bold" },
                   }}
                 >
                   <TableCell sx={{ fontWeight: "bold" }}>บทความ</TableCell>
@@ -230,7 +230,7 @@ export default function Page() {
                   ))
                 ) : (
                   <TableRow>
-                    <TableCell colSpan={5} align="center">
+                    <TableCell colSpan={5} align="center" sx={{ color: "var(--comment-text)"}}>
                       ไม่มีข้อมูล
                     </TableCell>
                   </TableRow>

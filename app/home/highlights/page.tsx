@@ -402,7 +402,8 @@ function RegionCard({ post }: { post: Post }) {
             transform: "scale(1.05)",
             boxShadow: "0 6px 15px rgba(0, 0, 0, 0.2)",
           },
-          backgroundColor: "#f6f6e7",
+          backgroundColor: "var(--post-bg)",
+          color: "var(--post-text)",
         }}
       >
         <CardActionArea onClick={() => handleCardClick(post._id)}>
@@ -420,7 +421,15 @@ function RegionCard({ post }: { post: Post }) {
 
           <CardContent>
             <Typography variant="h6">{post.title}</Typography>
-            {/* <Typography variant="body2"></Typography> */}
+            <Typography 
+              variant="body2"
+              sx={{ 
+                backgroundColor: "var(--post-bg)", 
+                color: "var(--post-text)",
+              }}
+            >
+              {post.detail?.substring(0, 100) || "ไม่มีเนื้อหา"}...
+            </Typography>
           </CardContent>
         </CardActionArea>
         <Box
