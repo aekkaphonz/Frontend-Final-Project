@@ -18,9 +18,11 @@ export default function HomeNavbar() {
         <AppBar
             position="static"
             sx={{
-                backgroundColor: themeColors.primary,
-                boxShadow: "none",
-                borderBottom: "1px solid #e0e0e0",
+                backgroundColor: "var(--nav-bg)", // ดึงค่าพื้นหลังจาก CSS Variables
+                color: "var(--nav-text)",
+                borderBottom: "2px solid var(--nav-border)",
+                zIndex: 1300, // ระดับชั้นของ Navbar
+                transition: "all 0.3s ease-in-out", // ให้การเปลี่ยนแปลงราบรื่น
             }}
         >
             <Toolbar sx={{ justifyContent: "space-between" }}>
@@ -33,15 +35,16 @@ export default function HomeNavbar() {
                     }}
                 >
                     <img
-                        src="/images/logo-blogs.png"
+                        src="/images/logo-blogs-removebg.png"
                         alt="Cleaning Illustration"
-                        style={{ maxWidth: "180px", height: "auto" }} // ขนาดโลโก้
+                        style={{ maxWidth: "142px", height: "auto" }} // ขนาดโลโก้
                     />
                     <Typography
                         variant="h6"
                         sx={{
                             fontWeight: "bold",
-                            color: themeColors.text,
+                            backgroundColor: "inherit", // ใช้ค่า background สีจากคลาส Tailwind
+                            color: "inherit",
                         }}
                     >
                         Blogger DeeDee
@@ -122,6 +125,9 @@ export default function HomeNavbar() {
                     >
                         ลงทะเบียน
                     </Button>
+
+                    <SwitchTheme />
+
                 </Box>
             </Toolbar>
         </AppBar>

@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import dayjs from "dayjs";
+import SwitchTheme from "@/app/darkMode/components/SwitchTheme";
 
 type User = {
   _id: string;
@@ -82,7 +83,7 @@ const ReadOnlyProfilePage = () => {
           sx={{
             background:
               "url('https://via.placeholder.com/700x200') center/cover",
-            height: "200px",
+            height: "125px",
             position: "relative",
           }}
         >
@@ -169,7 +170,7 @@ const ReadOnlyProfilePage = () => {
             </Typography>
           </Box>
           <Button
-            className="mt-8"
+            className="mt-6"
             variant="contained"
             color="primary"
             sx={{

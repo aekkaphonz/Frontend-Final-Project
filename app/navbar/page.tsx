@@ -1,5 +1,4 @@
 
-
   "use client";
 
 import React,{useState,useEffect} from "react";
@@ -26,9 +25,6 @@ function Sb({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: () => v
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [filteredData, setFilteredData] = useState<any[]>([]);
   const [data, setData] = useState<any[]>([]);
-
-  const theme = useTheme(); // ใช้ useTheme เพื่อดึงธีมปัจจุบัน
-  const isDarkMode = theme.palette.mode === "dark"; // ตรวจสอบว่าเป็นโหมดมืดหรือไม่
   
   // Fetch all data on load
   useEffect(() => {
@@ -80,13 +76,14 @@ function Sb({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: () => v
          position="fixed"
          className="navbar"
          sx={{
-           backgroundColor: "inherit", // ใช้ค่า background สีจากคลาส Tailwind
-           color: "inherit",
-           boxShadow: "0px 3px 3px rgba(0,0,0,0.1)",
-           zIndex: 1300,
+          backgroundColor: "var(--nav-bg)", // ดึงค่าพื้นหลังจาก CSS Variables
+          color: "var(--nav-text)",
+          borderBottom: "2px solid var(--nav-border)",
+          zIndex: 1300,
+          transition: "all 0.3s ease-in-out",
          }}
       >
-        <Toolbar sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", px: 2  }}>
+        <Toolbar sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", px: 2 }}>
           {/* Sidebar Menu */}
           <Box sx={{
             display: "flex",
@@ -98,14 +95,14 @@ function Sb({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: () => v
               size="large"
               edge="start"
               onClick={toggleSidebar}
-              sx={{ color: "#000" }}
+              sx={{ backgroundColor: "inherit", color: "inherit" }}
             >
               <MenuIcon />
             </IconButton>
 
             <Link href="/">
               <img
-                src="/images/logo-blogs.png"
+                src="/images/logo-blogs-removebg.png"
                 alt="Cleaning Illustration"
                 style={{ maxWidth: "142px", height: "auto" }}
               />
@@ -122,11 +119,17 @@ function Sb({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: () => v
               size="small"
               sx={{
                 width: "60%",
-                backgroundColor: "#f6f6f6",
+                backgroundColor: "var(--comment-bg)",
+                color:"var(--comment-text)"
               }}
               InputProps={{
                 endAdornment: (
-                  <IconButton>
+                  <IconButton 
+                    sx={{
+                      backgroundColor: "var(--comment-bg)",
+                      color:"var(--comment-text)"
+                    }}
+                  >
                     <SearchIcon />
                   </IconButton>
                 ),
@@ -140,88 +143,85 @@ function Sb({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: () => v
           </Box>
 
           {/* Buttons */}
-          <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-            <Typography
-              variant="h6"
-              noWrap
-              component="div"
-              sx={{
-                backgroundColor: "#fff", // สีขาว
-                color: "#000000",
-              }}
-            >
-              {/* ไอคอนและข้อความ*/}
-              <Box
-                sx={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "5px", // ระยะห่างระหว่างไอคอนและข้อความ
-                }}
-              >
-                {/* ปุ่มเขียน */}
-                <Button href="/signin"
-                  sx={{
-                    color: "#ffffff",
-                    backgroundColor: "#77bfa3",
-                    "&:hover": {
-                      backgroundColor: "#F7F7F7",
-                      color: "#77bfa3"
-                    },
-                    borderRadius: "20px",
-                    padding: "6px 16px",
-                    textTransform: "none",
-                    fontWeight: "bold",
-                  }}
-                  variant="contained"
-                >
-                  <EditNoteOutlinedIcon sx={{ marginRight: 1 }} />
-                  เขียน
-                </Button>
-              </Box>
-            </Typography>
+          <Box
+            sx={{
+              display: "flex", // จัดปุ่มให้อยู่ในแนวนอน
+              gap: "20px", // ระยะห่างระหว่างปุ่ม
+            }}
+          >
 
-            {/* Signin Button */}
-            <Button
-              href="/signin"
-              variant="outlined"
-              sx={{
-                color: themeColors.buttonGreen,
-                borderColor: themeColors.buttonGreen,
-                fontWeight: "bold",
-                textTransform: "none",
-                "&:hover": {
-                  backgroundColor: themeColors.buttonGreen,
-                  borderColor: themeColors.buttonGreen,
-                  color: "#ffffff",
-                },
-              }}
-            >
-              เข้าสู่ระบบ
-            </Button>
+          {/* ไอคอนและข้อความ "สร้าง" */}
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              gap: "15px", // ระยะห่างระหว่างไอคอนและข้อความ
+            }}
+          >
 
-            {/* Signup Button */}
-            <Button
-              href="/signup"
-              variant="contained"
+            {/* ปุ่มเขียน */}
+            <Button href="/signin"
               sx={{
-                backgroundColor: themeColors.buttonGreen,
                 color: "#ffffff",
-                fontWeight: "bold",
-                textTransform: "none",
+                backgroundColor: "#77bfa3",
                 "&:hover": {
-                  backgroundColor: "#ffffff",
-                  borderColor: themeColors.buttonGreen,
-                  color: themeColors.buttonGreen,
+                  backgroundColor: "#F7F7F7",
+                  color: "#77bfa3"
                 },
+                borderRadius: "20px",
+                padding: "6px 16px",
+                textTransform: "none",
+                fontWeight: "bold",
               }}
+              variant="contained"
             >
-              ลงทะเบียน
+              <EditNoteOutlinedIcon sx={{ marginRight: 1 }} />
+                เขียน
             </Button>
-
-            <SwitchTheme />
-
           </Box>
-          
+
+          {/* Signin Button */}
+          <Button
+            href="/signin"
+            variant="outlined"
+            sx={{
+              backgroundColor: "#ffffff",
+              color: themeColors.buttonGreen,
+              borderColor: themeColors.buttonGreen,
+              fontWeight: "bold",
+              textTransform: "none",
+              "&:hover": {
+                 backgroundColor: themeColors.buttonGreen,
+                 borderColor: themeColors.buttonGreen,
+                 color: "#ffffff",
+              },
+            }}
+          >
+            เข้าสู่ระบบ
+          </Button>
+
+          {/* Signup Button */}
+          <Button
+            href="/signup"
+            variant="contained"
+            sx={{
+              backgroundColor: themeColors.buttonGreen,
+              color: "#ffffff",
+              fontWeight: "bold",
+              textTransform: "none",
+              "&:hover": {
+                backgroundColor: "#ffffff",
+                borderColor: themeColors.buttonGreen,
+                color: themeColors.buttonGreen,
+              },
+            }}
+          >
+            ลงทะเบียน
+          </Button>
+
+          <SwitchTheme />
+
+        </Box>
         </Toolbar>
       </AppBar>
 
@@ -230,8 +230,9 @@ function Sb({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: () => v
         sx={{
           width: isOpen ? 240 : 72,
           height: "100vh",
-          backgroundColor: "inherit", // ใช้ค่า background สีจากคลาส Tailwind
-          color: "inherit",
+          backgroundColor: "var(--nav-bg)", // ดึงค่าพื้นหลังจาก CSS Variables
+          color: "var(--nav-text)",
+          borderBottom: "2px solid var(--nav-border)",
           transition: "width 0.3s",
           position: "fixed",
           top: 64,
@@ -239,6 +240,7 @@ function Sb({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: () => v
           zIndex: 1200,
           overflow: "hidden",
           boxShadow: "2px 0px 5px rgba(0,0,0,0.1)",
+          borderRight: "2px solid rgba(255, 255, 255, 0.2)", // เส้นขอบข้างในโหมดมืด
         }}
       >
         <List>
@@ -259,10 +261,10 @@ function Sb({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: () => v
                   },
                 }}
               >
-                <ListItemIcon sx={{ justifyContent: "center", color: "#000", minWidth: "40px" }}>
+                <ListItemIcon sx={{ justifyContent: "center", backgroundColor: "var(--nav-bg)", color: "var(--nav-text)" , minWidth: "40px" }}>
                   <HomeIcon />
                 </ListItemIcon>
-                {isOpen && <ListItemText primary="หน้าหลัก" sx={{ color: "#000" }} />}
+                {isOpen && <ListItemText primary="หน้าหลัก" sx={{ color: "var(--nav-text)" }} />}
               </ListItem>
             </Link>
           </Tooltip>
@@ -281,10 +283,10 @@ function Sb({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: () => v
                   },
                 }}
               >
-                <ListItemIcon sx={{ justifyContent: "center", color: "#000", minWidth: "40px" }}>
+                <ListItemIcon sx={{ justifyContent: "center", backgroundColor: "var(--nav-bg)", color: "var(--nav-text)", minWidth: "40px" }}>
                   <ArticleIcon />
                 </ListItemIcon>
-                {isOpen && <ListItemText primary="น่าสนใจ" sx={{ color: "#000" }} />}
+                {isOpen && <ListItemText primary="น่าสนใจ" sx={{ color: "var(--nav-text)" }} />}
               </ListItem>
             </Link>
           </Tooltip>
@@ -303,10 +305,10 @@ function Sb({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: () => v
                   },
                 }}
               >
-                <ListItemIcon sx={{ justifyContent: "center", color: "#000", minWidth: "40px" }}>
+                <ListItemIcon sx={{ justifyContent: "center", backgroundColor: "var(--nav-bg)", color: "var(--nav-text)" , minWidth: "40px" }}>
                   <WhatshotIcon />
                 </ListItemIcon>
-                {isOpen && <ListItemText primary="มาเเรง" sx={{ color: "#000" }} />}
+                {isOpen && <ListItemText primary="มาเเรง" sx={{ color: "var(--nav-text)" }} />}
               </ListItem>
             </Link>
           </Tooltip>

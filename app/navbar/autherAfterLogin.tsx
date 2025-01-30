@@ -24,7 +24,6 @@ function NavLogIn({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: (
   const settings = ['โปรไฟล์', 'แดชบอร์ด', 'ออกจากระบบ'];
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
 
-
   const themeColors = {
     primary: "#ffffff",
     text: "#000000",
@@ -57,11 +56,11 @@ function NavLogIn({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: (
       <AppBar
         position="fixed"
         sx={{
-          backgroundColor: "inherit", // ใช้ค่า background สีจากคลาส Tailwind
-          color: "inherit",
-          boxShadow: "0px 3px 3px rgba(0,0,0,0.1)",
-          borderBottom: "1px solid #ddd",
-          zIndex: 1300, // ให้อยู่เหนือ Sidebar
+          backgroundColor: "var(--nav-bg)", // ดึงค่าพื้นหลังจาก CSS Variables
+          color: "var(--nav-text)",
+          borderBottom: "2px solid var(--nav-border)",
+          zIndex: 1300, // ระดับชั้นของ Navbar
+          transition: "all 0.3s ease-in-out", // ให้การเปลี่ยนแปลงราบรื่น
         }}
       >
         <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
@@ -76,14 +75,14 @@ function NavLogIn({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: (
               size="large"
               edge="start"
               onClick={toggleSidebar}
-              sx={{ color: "#000" }}
+              sx={{ backgroundColor: "inherit", color: "inherit"  }}
             >
               <MenuIcon />
             </IconButton>
 
             <Link href="http://localhost:3000/home/highlights" >
               <img
-                src="/images/logo-blogs.png"
+                src="/images/logo-blogs-removebg.png"
                 alt="Cleaning Illustration"
                 style={{ maxWidth: "142px", height: "auto" }}
               />
@@ -196,17 +195,19 @@ function NavLogIn({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: (
       {/* Sidebar */}
       <Box
         sx={{
-          width: isOpen ? 240 : 72, // ความกว้างเมื่อเปิด/ปิด
+          width: isOpen ? 240 : 72,
           height: "100vh",
-          backgroundColor: "inherit", // ใช้ค่า background สีจากคลาส Tailwind
-          color: "inherit",
+          backgroundColor: "var(--nav-bg)", // ดึงค่าพื้นหลังจาก CSS Variables
+          color: "var(--nav-text)",
+          borderBottom: "2px solid var(--nav-border)",
           transition: "width 0.3s",
           position: "fixed",
-          top: 64, // เลื่อน Sidebar ให้เริ่มหลัง Navbar
+          top: 64,
           left: 0,
           zIndex: 1200,
           overflow: "hidden",
           boxShadow: "2px 0px 5px rgba(0,0,0,0.1)",
+          borderRight: "2px solid rgba(255, 255, 255, 0.2)", // เส้นขอบข้างในโหมดมืด
         }}
       >
         <List>
@@ -225,10 +226,10 @@ function NavLogIn({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: (
                   },
                 }}
               >
-                <ListItemIcon sx={{ justifyContent: "center", color: "#000", minWidth: "40px" }}>
+                <ListItemIcon sx={{ justifyContent: "center", backgroundColor: "var(--nav-bg)", color: "var(--nav-text)", minWidth: "40px" }}>
                   <DashboardIcon />
                 </ListItemIcon>
-                {isOpen && <ListItemText primary="แดชบอร์ด" sx={{ color: "#000" }} />}
+                {isOpen && <ListItemText primary="แดชบอร์ด" sx={{ color: "var(--nav-text)" }} />}
               </ListItem>
             </Tooltip>
           </Link>
@@ -249,10 +250,10 @@ function NavLogIn({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: (
                   },
                 }}
               >
-                <ListItemIcon sx={{ justifyContent: "center", color: "#000", minWidth: "40px" }}>
+                <ListItemIcon sx={{ justifyContent: "center", backgroundColor: "var(--nav-bg)", color: "var(--nav-text)", minWidth: "40px" }}>
                   <CollectionsBookmarkIcon />
                 </ListItemIcon>
-                {isOpen && <ListItemText primary="เนื้อหา" sx={{ color: "#000" }} />}
+                {isOpen && <ListItemText primary="เนื้อหา" sx={{ color: "var(--nav-text)" }} />}
               </ListItem>
             </Link>
           </Tooltip>
@@ -272,10 +273,10 @@ function NavLogIn({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: (
                   },
                 }}
               >
-                <ListItemIcon sx={{ justifyContent: "center", color: "#000", minWidth: "40px" }}>
+                <ListItemIcon sx={{ justifyContent: "center", backgroundColor: "var(--nav-bg)", color: "var(--nav-text)", minWidth: "40px" }}>
                   <InsertChartIcon />
                 </ListItemIcon>
-                {isOpen && <ListItemText primary="สถิติ" sx={{ color: "#000" }} />}
+                {isOpen && <ListItemText primary="สถิติ" sx={{ color: "var(--nav-text)" }} />}
               </ListItem>
             </Link>
           </Tooltip>
@@ -295,10 +296,10 @@ function NavLogIn({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: (
                   },
                 }}
               >
-                <ListItemIcon sx={{ justifyContent: "center", color: "#000", minWidth: "40px" }}>
+                <ListItemIcon sx={{ justifyContent: "center", backgroundColor: "var(--nav-bg)", color: "var(--nav-text)", minWidth: "40px" }}>
                   <PersonIcon />
                 </ListItemIcon>
-                {isOpen && <ListItemText primary="โปรไฟล์" sx={{ color: "#000" }} />}
+                {isOpen && <ListItemText primary="โปรไฟล์" sx={{ color: "var(--nav-text)" }} />}
               </ListItem>
             </Link>
           </Tooltip>

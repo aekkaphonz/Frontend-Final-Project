@@ -23,6 +23,7 @@ import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import Swal from "sweetalert2";
 import dayjs from "dayjs";
 
+
 type User = {
   _id: string;
   email: string;
@@ -150,6 +151,8 @@ const EditPage = () => {
   };
 
   return (
+    
+   
     <div
       style={{
         background: "linear-gradient(135deg, #eceff1, #f5f5f5)",
