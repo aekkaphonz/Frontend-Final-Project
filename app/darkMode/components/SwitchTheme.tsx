@@ -16,13 +16,19 @@ const SwitchTheme = () => {
   }
 
   const handleSwitchTheme = () => {
-    setTheme(theme === "dark" ? "light" : "dark");
+    const newTheme = theme === "dark" ? "light" : "dark";
+    setTheme(newTheme);
+    
+    if (typeof window !== "undefined") {
+      document.documentElement.classList.remove("dark", "light");
+      document.documentElement.classList.add(newTheme);
+    }
   };
+  
 
   return (
     <button
-      className={`border relative mt-4 h-[3rem] w-[3rem] p-2 rounded-full 
-        ${
+      className={`border h-[3rem] w-[3rem] rounded-full flex items-center justify-center transition-colors duration-300 ${
             theme === "dark"
               ? "bg-gray-800 text-yellow-400 shadow-yellow-400/50"
               : "bg-gray-100 text-blue-600 shadow-blue-400/50"

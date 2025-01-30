@@ -2,16 +2,32 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  /* Navbar */
+  --nav-bg: #ffffff !important;
+  --nav-text: #000000 !important;
+  --nav-border: rgba(0, 0, 0, 0.1) !important;
 
-/* Dark Mode */
-body.dark {
-    --text-color: #ffffff;
-    --background-color: #000000;
-  }
+  /* Comment  */
+  --comment-bg: #f5f5f5 !important;
+  --comment-text: #000000 !important;
+
+  /* post  */
+  --post-bg: #f6f6e7 !important;
+  --post-text: #000000 !important;
   
-  /* Light Mode */
-  body {
-    --text-color: #000000;
-    --background-color: #ffffff;
-  }
-  
+}
+
+/* โหมดมืด */
+.dark {
+  --nav-bg: #000000 !important;
+  --nav-text: #ffffff !important;
+  --nav-border: rgba(255, 255, 255, 0.2) !important;
+
+  --comment-bg: #424242 !important;
+  --comment-text: #ffffff !important;
+
+  --post-bg: #212121 !important;
+  --post-text: #ffffff !important;
+
+}

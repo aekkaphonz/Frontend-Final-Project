@@ -10,6 +10,7 @@ import InsertChartIcon from "@mui/icons-material/InsertChart";
 import EditNoteOutlinedIcon from "@mui/icons-material/EditNoteOutlined";
 import PersonIcon from '@mui/icons-material/Person';
 import { useAuth } from "@/app/context/AuthProvider";
+import SwitchTheme from "@/app/darkMode/components/SwitchTheme";
 
 
 function Sb({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: () => void }) {
@@ -38,10 +39,10 @@ function Sb({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: () => v
       <AppBar
         position="fixed"
         sx={{
-          backgroundColor: "#ffffff",
-          boxShadow: "0px 3px 3px rgba(0,0,0,0.1)",
-          borderBottom: "1px solid #ddd",
-          zIndex: 1300, // ให้อยู่เหนือ Sidebar
+          backgroundColor: "var(--nav-bg)", // ดึงค่าพื้นหลังจาก CSS Variables
+          color: "var(--nav-text)",
+          borderBottom: "2px solid var(--nav-border)",
+          zIndex: 1300, // ให้อยู่เหนือ Sideba
         }}
       >
         <Toolbar sx={{ justifyContent: "space-between" }}> {/* ปรับให้จัดตำแหน่งแบบ space-between */}
@@ -50,13 +51,13 @@ function Sb({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: () => v
               size="large"
               edge="start"
               onClick={toggleSidebar}
-              sx={{ color: "#000" }}
+              sx={{ backgroundColor: "inherit", color: "inherit" }}
             >
               <MenuIcon />
             </IconButton>
             <Link href="http://localhost:3000/home/highlights" >
               <img
-                src="/images/logo-blogs.png"
+                src="/images/logo-blogs-removebg.png"
                 alt="Cleaning Illustration"
                 style={{ maxWidth: "142px", height: "auto" }} // ขนาดโลโก้
               />
@@ -113,6 +114,7 @@ function Sb({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: () => v
                 ))}
               </Menu>
             </Box>
+            <SwitchTheme /> 
           </Box>
         </Toolbar>
 
@@ -121,16 +123,19 @@ function Sb({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: () => v
       {/* Sidebar */}
       <Box
         sx={{
-          width: isOpen ? 240 : 72, // ความกว้างเมื่อเปิด/ปิด
+          width: isOpen ? 240 : 72,
           height: "100vh",
-          backgroundColor: "#fff",
+          backgroundColor: "var(--nav-bg)", // ดึงค่าพื้นหลังจาก CSS Variables
+          color: "var(--nav-text)",
+          borderBottom: "2px solid var(--nav-border)",
           transition: "width 0.3s",
           position: "fixed",
-          top: 64, // เลื่อน Sidebar ให้เริ่มหลัง Navbar
+          top: 64,
           left: 0,
           zIndex: 1200,
           overflow: "hidden",
           boxShadow: "2px 0px 5px rgba(0,0,0,0.1)",
+          borderRight: "2px solid rgba(255, 255, 255, 0.2)", // เส้นขอบข้างในโหมดมืด
         }}
       >
         <List>
@@ -149,10 +154,10 @@ function Sb({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: () => v
                   },
                 }}
               >
-                <ListItemIcon sx={{ justifyContent: "center", color: "#000", minWidth: "40px" }}>
+                <ListItemIcon sx={{ justifyContent: "center", backgroundColor: "var(--nav-bg)", color: "var(--nav-text)", minWidth: "40px" }}>
                   <DashboardIcon />
                 </ListItemIcon>
-                {isOpen && <ListItemText primary="แดชบอร์ด" sx={{ color: "#000" }} />}
+                {isOpen && <ListItemText primary="แดชบอร์ด" sx={{ color: "var(--nav-text)" }} />}
               </ListItem>
             </Tooltip>
           </Link>
@@ -173,10 +178,10 @@ function Sb({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: () => v
                   },
                 }}
               >
-                <ListItemIcon sx={{ justifyContent: "center", color: "#000", minWidth: "40px" }}>
+                <ListItemIcon sx={{ justifyContent: "center", backgroundColor: "var(--nav-bg)", color: "var(--nav-text)", minWidth: "40px" }}>
                   <CollectionsBookmarkIcon />
                 </ListItemIcon>
-                {isOpen && <ListItemText primary="เนื้อหา" sx={{ color: "#000" }} />}
+                {isOpen && <ListItemText primary="เนื้อหา" sx={{ color: "var(--nav-text)" }} />}
               </ListItem>
             </Link>
           </Tooltip>
@@ -196,10 +201,10 @@ function Sb({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: () => v
                   },
                 }}
               >
-                <ListItemIcon sx={{ justifyContent: "center", color: "#000", minWidth: "40px" }}>
+                <ListItemIcon sx={{ justifyContent: "center",backgroundColor: "var(--nav-bg)", color: "var(--nav-text)", minWidth: "40px" }}>
                   <InsertChartIcon />
                 </ListItemIcon>
-                {isOpen && <ListItemText primary="สถิติ" sx={{ color: "#000" }} />}
+                {isOpen && <ListItemText primary="สถิติ" sx={{ color: "var(--nav-text)" }} />}
               </ListItem>
             </Link>
           </Tooltip>
@@ -219,10 +224,10 @@ function Sb({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: () => v
                   },
                 }}
               >
-                <ListItemIcon sx={{ justifyContent: "center", color: "#000", minWidth: "40px" }}>
+                <ListItemIcon sx={{ justifyContent: "center", backgroundColor: "var(--nav-bg)", color: "var(--nav-text)", minWidth: "40px" }}>
                   <PersonIcon />
                 </ListItemIcon>
-                {isOpen && <ListItemText primary="โปรไฟล์" sx={{ color: "#000" }} />}
+                {isOpen && <ListItemText primary="โปรไฟล์" sx={{ color: "var(--nav-text)" }} />}
               </ListItem>
             </Link>
           </Tooltip>

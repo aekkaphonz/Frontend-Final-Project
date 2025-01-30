@@ -51,7 +51,8 @@ export default function Home() {
             sx={{
               display: "flex",
               fontWeight: "bold",
-              color: "#000000",
+              backgroundColor: "inherit", // ใช้ค่า background สีจากคลาส Tailwind
+              color: "inherit",
               marginBottom: "1rem",
             }}
           >
@@ -63,7 +64,8 @@ export default function Home() {
             sx={{
               display: "flex",
               fontWeight: "normal",
-              color: "#555555",
+              backgroundColor: "inherit", // ใช้ค่า background สีจากคลาส Tailwind
+              color: "inherit",
               marginBottom: "1rem",
             }}
           >
@@ -115,7 +117,7 @@ export default function Home() {
           }}
         >
           <img
-            src="/images/Home.jpg"
+            src="/images/Home-removebg.png"
             alt="Cleaning Illustration"
             style={{ maxWidth: "70%", height: "auto" }}
           />
@@ -128,7 +130,8 @@ export default function Home() {
           variant="h4"
           sx={{
             fontWeight: "bold",
-            color: "#000000",
+            backgroundColor: "inherit", 
+            color: "inherit",
             textAlign: "center",
             marginBottom: "2rem",
           }}

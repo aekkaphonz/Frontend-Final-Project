@@ -171,6 +171,24 @@ export default function Page() {
                         placeholder="ใส่หัวข้อบทความ..."
                         value={title}
                         onChange={(e) => setTitle(e.target.value)}
+                        sx={{
+                            backgroundColor: "var(--comment-bg)",
+                            color: "var(--comment-text)",
+                            "& .MuiInputBase-input": {
+                                color: "var(--comment-text)", // สีข้อความของ Input
+                            },
+                            "& .MuiOutlinedInput-root": {
+                                "& fieldset": {
+                                borderColor: "var(--comment-text)", // สีเส้นขอบของช่องป้อนข้อความ
+                                },
+                                "&:hover fieldset": {
+                                borderColor: "var(--comment-text)",
+                                },
+                                "&.Mui-focused fieldset": {
+                                borderColor: "var(--comment-text)",
+                                },
+                            },
+                        }}
                     />
                 </Grid>
 
@@ -212,6 +230,24 @@ export default function Page() {
                         rows={10}
                         value={content}
                         onChange={(e) => setContent(e.target.value)}
+                        sx={{
+                            backgroundColor: "var(--comment-bg)",
+                            color: "var(--comment-text)",
+                            "& .MuiInputBase-input": {
+                                color: "var(--comment-text)", // สีข้อความของ Input
+                            },
+                            "& .MuiOutlinedInput-root": {
+                                "& fieldset": {
+                                borderColor: "var(--comment-text)", // สีเส้นขอบของช่องป้อนข้อความ
+                                },
+                                "&:hover fieldset": {
+                                borderColor: "var(--comment-text)",
+                                },
+                                "&.Mui-focused fieldset": {
+                                borderColor: "var(--comment-text)",
+                                },
+                            },
+                        }}
                     />
                 </Grid>
 
@@ -224,6 +260,24 @@ export default function Page() {
                         placeholder="เพิ่มแท็ก (คั่นด้วยเครื่องหมายจุลภาค)"
                         value={description}
                         onChange={(e) => setDescription(e.target.value)}
+                        sx={{
+                            backgroundColor: "var(--comment-bg)",
+                            color: "var(--comment-text)",
+                            "& .MuiInputBase-input": {
+                                color: "var(--comment-text)", // สีข้อความของ Input
+                            },
+                            "& .MuiOutlinedInput-root": {
+                                "& fieldset": {
+                                borderColor: "var(--comment-text)", // สีเส้นขอบของช่องป้อนข้อความ
+                                },
+                                "&:hover fieldset": {
+                                borderColor: "var(--comment-text)",
+                                },
+                                "&.Mui-focused fieldset": {
+                                borderColor: "var(--comment-text)",
+                                },
+                            },
+                        }}
                     />
                 </Grid>
 

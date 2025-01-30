@@ -354,7 +354,13 @@ export default function Page() {
         sx={{ mt: 4, textAlign: "center", flexGrow: 1, paddingTop: "80px" }}
       >
         {loading ? (
-          <Typography variant="h5" sx={{ mt: 4, color: "#616161" }}>
+          <Typography 
+            variant="h5" 
+            sx={{
+              mt: 4, 
+              color: "var(--comment-text)",
+            }}
+            >
             กำลังโหลด...
           </Typography>
         ) : error ? (
@@ -367,7 +373,8 @@ export default function Page() {
               borderRadius: 3,
               boxShadow: 4,
               overflow: "hidden",
-              backgroundColor: "#f9fbe7",
+              backgroundColor: "var(--post-bg)",
+              color: "var(--post-text)",
             }}
           >
             <CardMedia
@@ -394,12 +401,13 @@ export default function Page() {
                 display: "flex",
                 justifyContent: "space-between",
                 padding: 2,
-                backgroundColor: "#f5f5f5",
+                backgroundColor: "var(--comment-bg)",
+                color: "var(--comment-text)",
               }}
             >
               <Box>
                 <Tooltip title="แชร์">
-                  <IconButton sx={{ color: "#000000" }}>
+                  <IconButton sx={{ color: "var(--comment-text)" }}>
                     <ShareIcon />
                   </IconButton>
                 </Tooltip>
@@ -417,7 +425,7 @@ export default function Page() {
               </Box>
 
               <Box sx={{ display: "flex", alignItems: "center" }}>
-                <IconButton onClick={handleLike}>
+                <IconButton onClick={handleLike} sx={{ color: "var(--comment-text)"}}>
                   <FavoriteBorderIcon />
                 </IconButton>
                 <Typography variant="body2" sx={{ ml: 1 }}>
@@ -436,7 +444,8 @@ export default function Page() {
           sx={{
             mt: 4,
             p: 2,
-            backgroundColor: "#f5f5f5",
+            backgroundColor: "var(--comment-bg)",
+            color: "var(--comment-text)",
             borderRadius: 2,
             boxShadow: 2,
           }}
@@ -451,7 +460,25 @@ export default function Page() {
             rows={3}
             value={newComment}
             onChange={(e) => setNewComment(e.target.value)}
-            sx={{ mb: 2 }}
+            sx={{ 
+              mb: 2,
+              backgroundColor: "var(--comment-bg)",
+              color: "var(--comment-text)",
+              "& .MuiInputBase-input": {
+                color: "var(--comment-text)", // สีข้อความของ Input
+              },
+              "& .MuiOutlinedInput-root": {
+                "& fieldset": {
+                  borderColor: "var(--comment-text)", // สีเส้นขอบของช่องป้อนข้อความ
+                },
+                "&:hover fieldset": {
+                  borderColor: "var(--comment-text)",
+                },
+                "&.Mui-focused fieldset": {
+                  borderColor: "var(--comment-text)",
+                },
+              },
+            }}
             InputProps={{
               endAdornment: (
                 <InputAdornment position="end">
@@ -473,7 +500,8 @@ export default function Page() {
               sx={{
                 mt: 3,
                 p: 2,
-                backgroundColor: "#fff",
+                backgroundColor: "var(--comment-bg)",
+                color: "var(--comment-text)",
                 borderRadius: 1,
                 textAlign: "left",
               }}
@@ -482,20 +510,22 @@ export default function Page() {
                 sx={{
                   display: "flex",
                   justifyContent: "space-between",
-                  alignItems: "center",
+                  alignItems: "center"
                 }}
               >
                 <Box>
-                  <Typography variant="body1">
+                  <Typography 
+                    variant="body1">
                     <strong>{comment.name}:</strong> {comment.message}
                   </Typography>
-                  <Typography variant="caption" sx={{ color: "#888" }}>
+                  <Typography variant="caption" sx={{ color: "var(--comment-text)" }}>
                     {comment.timestamp}
                   </Typography>
                 </Box>
                 <IconButton
                   onClick={(e) => handleMenuOpen(e, comment.id)}
                   size="small"
+                  sx={{ color: "var(--comment-text)" }}
                 >
                   <MoreVertIcon />
                 </IconButton>
@@ -505,6 +535,12 @@ export default function Page() {
                 anchorEl={anchorEl}
                 open={menuCommentId === comment.id}
                 onClose={handleMenuClose}
+                sx={{
+                  "& .MuiPaper-root": {
+                    backgroundColor: "var(--comment-bg)", // เปลี่ยนพื้นหลังของเมนู
+                    color: "var(--comment-text)", // เปลี่ยนสีข้อความของเมนู
+                  },
+                }}
               >
                 <MenuItem onClick={() => setEditingCommentId(comment.id)}>
                   แก้ไข
@@ -514,6 +550,7 @@ export default function Page() {
                     deleteComment(comment.id.toString()); // แปลง id เป็น string ก่อนส่งไปยังฟังก์ชัน
                     handleMenuClose(); // ปิดเมนู
                   }}
+                  
                 >
                   ลบ
                 </MenuItem>
@@ -556,6 +593,7 @@ export default function Page() {
                       pl: 2,
                       borderLeft: "2px solid #ccc",
                       textAlign: "left",
+                      
                     }}
                   >
                     <Box
@@ -569,7 +607,7 @@ export default function Page() {
                         <Typography>
                           <strong>{reply.name}:</strong> {reply.message}
                         </Typography>
-                        <Typography variant="caption" sx={{ color: "#888" }}>
+                        <Typography variant="caption" sx={{ color: "var(--comment-text)" }}>
                           {reply.timestamp}
                         </Typography>
                       </Box>
@@ -579,6 +617,7 @@ export default function Page() {
                           setMenuReplyId({ commentId: comment.id, replyId: reply.id });
                         }}
                         size="small"
+                        sx={{ color: "var(--comment-text)" }}
                       >
                         <MoreVertIcon />
                       </IconButton>
@@ -591,6 +630,7 @@ export default function Page() {
                         setAnchorReplyEl(null);
                         setMenuReplyId(null);
                       }}
+
                     >
                       <MenuItem
                         onClick={() => {
@@ -631,6 +671,7 @@ export default function Page() {
                 <IconButton
                   size="small"
                   onClick={() => setReplyingToCommentId(comment.id)}
+                  sx={{ color: "var(--comment-text)"}}
                 >
                   <ReplyIcon /> ตอบกลับ
                 </IconButton>
@@ -642,6 +683,24 @@ export default function Page() {
                   placeholder="ตอบกลับ..."
                   value={replyMessage}
                   onChange={(e) => setReplyMessage(e.target.value)}
+                  sx={{ 
+                    backgroundColor: "var(--comment-bg)",
+                    color: "var(--comment-text)",
+                    "& .MuiInputBase-input": {
+                      color: "var(--comment-text)", // สีข้อความของ Input
+                    },
+                    "& .MuiOutlinedInput-root": {
+                      "& fieldset": {
+                        borderColor: "var(--comment-text)", // สีเส้นขอบของช่องป้อนข้อความ
+                      },
+                      "&:hover fieldset": {
+                        borderColor: "var(--comment-text)",
+                      },
+                      "&.Mui-focused fieldset": {
+                        borderColor: "var(--comment-text)",
+                      },
+                    },
+                  }}
                   InputProps={{
                     endAdornment: (
                       <InputAdornment position="end">
