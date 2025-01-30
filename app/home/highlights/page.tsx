@@ -32,6 +32,8 @@ import AfterLogin from "@/app/navbar/AfterLogin";
 import { useAuth } from "@/app/context/AuthProvider";
 import CommentIcon from '@mui/icons-material/Comment';
 import VisibilityIcon from '@mui/icons-material/Visibility';
+import AppsIcon from '@mui/icons-material/Apps';
+import {Menu, MenuItem, Checkbox } from '@mui/material';
 
 
 interface Post {
@@ -62,7 +64,9 @@ export default function Page() {
   const { user } = useAuth();
   const userId = user?.userId; // ตรวจสอบว่า userId มีค่าหรือไม่
   const [comments, setComments] = useState<Comment[]>([]);
-  
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
@@ -99,6 +103,24 @@ export default function Page() {
     } catch (error) {
       console.error("Error updating views:", error);
     }
+  };
+  const blogCategories = [
+    "เทคโนโลยี", "สุขภาพ", "อาหาร", "ท่องเที่ยว", "การเงิน",
+    "ธุรกิจ", "ไลฟ์สไตล์", "การศึกษา", "ศิลปะ", "วิทยาศาสตร์",
+    "กีฬา", "ดนตรี", "การ์ตูน", "อนิเมะ"
+  ];
+  const handleClick = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+  const handleCategoryChange = (category: string) => {
+    setSelectedCategories((prevSelectedCategories) =>
+      prevSelectedCategories.includes(category)
+        ? prevSelectedCategories.filter((item) => item !== category)
+        : [...prevSelectedCategories, category]
+    );
   };
 
   return (
@@ -141,7 +163,36 @@ export default function Page() {
           >
             บทความทั้งหมด
           </Typography>
-
+          <Box sx={{ display: "flex", justifyContent: "flex-end", mb: 3 }}>
+      <Button
+        variant="contained"
+        sx={{ display: "flex", alignItems: "center", fontSize: 14 }}
+        onClick={handleClick}
+      >
+        <AppsIcon sx={{ fontSize: 20, mr: 1 }} />
+        หมวดหมู่
+      </Button>
+      
+      <Menu
+        anchorEl={anchorEl}
+        open={Boolean(anchorEl)}
+        onClose={handleClose}
+        MenuListProps={{
+          'aria-labelledby': 'basic-button',
+        }}
+      >
+        <Grid container spacing={2} sx={{ width: 350 }}>
+          {blogCategories.map((category, index) => (
+            <Grid item xs={6} key={category}>
+              <MenuItem onClick={() => handleCategoryChange(category)}>
+                <Checkbox checked={selectedCategories.includes(category)} />
+                <ListItemText primary={category} />
+              </MenuItem>
+            </Grid>
+          ))}
+        </Grid>
+      </Menu>
+    </Box>
           <Grid container spacing={3} justifyContent="center">
             {filteredData.length > 0 ? (
               filteredData.map((post) => (
@@ -390,63 +441,65 @@ function RegionCard({ post }: { post: Post }) {
 
 
   return (
-    <Grid item xs={12} sm={6} md={4} lg={3}>
-      <Card
-        sx={{
-          borderRadius: "15px",
-          overflow: "hidden",
-          boxShadow: "0 4px 10px rgba(0, 0, 0, 0.1)",
-          position: "relative",
-          transition: "transform 0.2s",
-          "&:hover": {
-            transform: "scale(1.05)",
-            boxShadow: "0 6px 15px rgba(0, 0, 0, 0.2)",
-          },
-          backgroundColor: "#f6f6e7",
-        }}
-      >
-        <CardActionArea onClick={() => handleCardClick(post._id)}>
-          <CardMedia
-            component="img"
-            height="150"
-            image={post.postImage || "https://via.placeholder.com/150"}
-            alt={post.title || "ยังไม่มีรูปภาพ"}
-            sx={{
-              objectFit: "cover",
-              borderRadius: "8px",
-              height: "150px",
-            }}
-          />
-
-          <CardContent>
-            <Typography variant="h6">{post.title}</Typography>
-            {/* <Typography variant="body2"></Typography> */}
-          </CardContent>
-        </CardActionArea>
-        <Box
+    <>
+      <Grid item xs={12} sm={6} md={4} lg={3}>
+        <Card
           sx={{
-            display: "flex",
-            padding: "10px",
-            justifyContent: "space-between",
+            borderRadius: "15px",
+            overflow: "hidden",
+            boxShadow: "0 4px 10px rgba(0, 0, 0, 0.1)",
+            position: "relative",
+            transition: "transform 0.2s",
+            "&:hover": {
+              transform: "scale(1.05)",
+              boxShadow: "0 6px 15px rgba(0, 0, 0, 0.2)",
+            },
+            backgroundColor: "#f6f6e7",
           }}
         >
-          <Box sx={{ display: "flex", alignItems: "center", fontSize: 12 }}>
-            <Typography sx={{ mr: 1, fontSize: 12, fontWeight: 'bold' }}>
-              {post.userId}
-            </Typography>
-          </Box>
+          <CardActionArea onClick={() => handleCardClick(post._id)}>
+            <CardMedia
+              component="img"
+              height="150"
+              image={post.postImage || "https://via.placeholder.com/150"}
+              alt={post.title || "ยังไม่มีรูปภาพ"}
+              sx={{
+                objectFit: "cover",
+                borderRadius: "8px",
+                height: "150px",
+              }}
+            />
 
-          <Box sx={{ display: "flex", alignItems: "center" }}>
-          <Typography sx={{ ml: 1,mr:1, fontSize: 12 }} variant="body2">
-          การอ่าน {Array.isArray(post.views) ? post.views.length : 0} ครั้ง
-          </Typography>
-            <CommentIcon color="action" fontSize="small" />
-            <Typography sx={{ ml: 1, fontSize: 12 }} variant="body2">
-              {totalComments}
-            </Typography>
+            <CardContent>
+              <Typography variant="h6">{post.title}</Typography>
+              {/* <Typography variant="body2"></Typography> */}
+            </CardContent>
+          </CardActionArea>
+          <Box
+            sx={{
+              display: "flex",
+              padding: "10px",
+              justifyContent: "space-between",
+            }}
+          >
+            <Box sx={{ display: "flex", alignItems: "center", fontSize: 12 }}>
+              <Typography sx={{ mr: 1, fontSize: 12, fontWeight: 'bold' }}>
+                {post.userId}
+              </Typography>
+            </Box>
+
+            <Box sx={{ display: "flex", alignItems: "center" }}>
+              <Typography sx={{ ml: 1, mr: 1, fontSize: 12 }} variant="body2">
+                การอ่าน {Array.isArray(post.views) ? post.views.length : 0} ครั้ง
+              </Typography>
+              <CommentIcon color="action" fontSize="small" />
+              <Typography sx={{ ml: 1, fontSize: 12 }} variant="body2">
+                {totalComments}
+              </Typography>
+            </Box>
           </Box>
-        </Box>
-      </Card>
-    </Grid>
+        </Card>
+      </Grid>
+    </>
   );
 }

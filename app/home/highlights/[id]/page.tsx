@@ -13,7 +13,9 @@ import { useParams } from "next/navigation";
 import Navbar from "@/app/navbar/page";
 import AfterLogin from "@/app/navbar/AfterLogin"
 import { useAuth } from "@/app/context/AuthProvider";
-import LocalOfferIcon from '@mui/icons-material/LocalOffer';
+import SellOutlinedIcon from '@mui/icons-material/SellOutlined';
+import Divider from '@mui/material/Divider';
+import ForumOutlinedIcon from '@mui/icons-material/ForumOutlined';
 
 interface User {
   id: string;
@@ -374,8 +376,8 @@ export default function Page() {
   // ฟังก์ชันแสดงแท็ก
   const renderTags = (tags: string[]) => {
     return tags.map((tag, index) => (
-      <Box key={index} sx={{border:"1px solid #b3b6b7 ", marginBottom:1, padding: "5px 10px", boxShadow: "0 1px 2px rgba(0, 0, 0, 0.1)", fontSize: "14px", color: "#333" }}>
-        <Typography variant="body2"><LocalOfferIcon sx={{color:"#77bfa3", mr:"0.5px"}} fontSize="small" />{tag}</Typography>
+      <Box key={index} sx={{ border: "1px solid #b3b6b7 ", marginBottom: 1, padding: "5px 10px", boxShadow: "0 1px 2px rgba(0, 0, 0, 0.1)", fontSize: "14px", color: "#333" }}>
+        <Typography variant="body2"><SellOutlinedIcon sx={{ color: "#77bfa3", mr: "0.5px" }} fontSize="small" />{tag}</Typography>
       </Box>
     ));
   };
@@ -405,7 +407,7 @@ export default function Page() {
               backgroundColor: "#f9fbe7",
             }}
           >
-            <CardContent sx={{ textAlign: "start",  ml:5 ,mr:5}}>
+            <CardContent sx={{ textAlign: "start", ml: 5, mr: 5 }}>
               <Typography
                 gutterBottom
                 variant="h4"
@@ -422,7 +424,7 @@ export default function Page() {
                 alt="ยังไม่ไม่มีรูภาพ"
               />
               <Typography variant="body1" sx={{ color: "#616161", mt: 2 }}>
-                {data.detail?.substring(0, 100) || "ไม่มีเนื้อหา"}
+                {data.detail|| "ไม่มีเนื้อหา"}
               </Typography>
             </CardContent>
             <Box
@@ -433,7 +435,11 @@ export default function Page() {
                 backgroundColor: "#f9fbe7",
               }}
             >
-              <Box>
+              <Box
+                sx={{
+                  display: "flex",
+                }}
+              >
                 <Tooltip title="แชร์">
                   <IconButton sx={{ color: "#000000" }}>
                     <ShareIcon />
@@ -444,11 +450,9 @@ export default function Page() {
                     <FavoriteIcon />
                   </IconButton>
                 </Tooltip>
-              </Box>
-
-              <Box sx={{ display: "flex", alignItems: "center" }}>
-                <Typography variant="body2" sx={{ ml: 2 }}>
-                  {comments.length + comments.reduce((acc, comment) => acc + (comment.replies?.length || 0), 0)} ความคิดเห็น
+                <Divider orientation="vertical" flexItem sx={{ borderColor: '#3b4c77', height: 40, ml: 1 }} />
+                <Typography sx={{ ml: 1 }}>
+                  {data._id}
                 </Typography>
               </Box>
 
@@ -467,10 +471,16 @@ export default function Page() {
             ไม่พบข้อมูล
           </Typography>
         )}
-
+        <Box sx={{ display: "flex", alignItems: "center", width: "100%" , mt:5}}>
+          <Box sx={{ borderBottom: '1px solid #c4c4c4', flexGrow: 1 }} />
+          <Typography variant="body2" sx={{ ml: 2 }}>
+            <ForumOutlinedIcon sx={{mr:1}}/>{comments.length + comments.reduce((acc, comment) => acc + (comment.replies?.length || 0), 0)} ความคิดเห็น
+          </Typography>
+          <Box sx={{ borderBottom: '1px solid #c4c4c4', flexGrow: 1 }} />
+        </Box>
         <Box
           sx={{
-            mt: 4,
+            mt: 1,
             p: 2,
             backgroundColor: "#f5f5f5",
             borderRadius: 2,
