@@ -452,6 +452,7 @@ function RegionCard({ post }: { post: Post }) {
     comments.reduce((acc, comment) => acc + (comment.replies?.length || 0), 0);
 
   return (
+    <>
     <Grid item xs={12} sm={6} md={4} lg={3}>
       <Card
         sx={{
@@ -490,7 +491,7 @@ function RegionCard({ post }: { post: Post }) {
                 color: "var(--post-text)",
               }}
             >
-              {post.detail?.substring(0, 100) || "ไม่มีเนื้อหา"}...
+              {post.detail?.substring(0, 50) || "ไม่มีเนื้อหา"}...
             </Typography>
           </CardContent>
         </CardActionArea>
@@ -508,24 +509,7 @@ function RegionCard({ post }: { post: Post }) {
             backgroundColor: "#f6f6e7",
           }}
         >
-          <CardActionArea onClick={() => handleCardClick(post._id)}>
-            <CardMedia
-              component="img"
-              height="150"
-              image={post.postImage || "https://via.placeholder.com/150"}
-              alt={post.title || "ยังไม่มีรูปภาพ"}
-              sx={{
-                objectFit: "cover",
-                borderRadius: "8px",
-                height: "150px",
-              }}
-            />
 
-            <CardContent>
-              <Typography variant="h6">{post.title}</Typography>
-              {/* <Typography variant="body2"></Typography> */}
-            </CardContent>
-          </CardActionArea>
           <Box
             sx={{
               display: "flex",
@@ -550,8 +534,11 @@ function RegionCard({ post }: { post: Post }) {
               </Typography>
             </Box>
           </Box>
-        </Box>
-      </Card>
-    </Grid>
+
+          </Box>
+        </Card>
+      </Grid>
+    </>
+
   );
 }
