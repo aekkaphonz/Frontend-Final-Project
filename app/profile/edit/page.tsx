@@ -5,9 +5,8 @@ import EditPage from "../component/settingPage";
 
 import AutherAfterLogin from "@/app/navbar/AutherAfterLogin";
 import { useAuth } from "@/app/context/AuthProvider";
-import Navbar from "@/app/navbar/page";
 
-
+import Sb from "@/app/sidebarAuther/page";
 
 const EditUsersPage = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -26,10 +25,10 @@ const EditUsersPage = () => {
           toggleSidebar={toggleSidebar}
         />
       ) : (
-        <Navbar
+        <Sb
           isOpen={isSidebarOpen}
           toggleSidebar={toggleSidebar}
-  
+    
         />
       )}
 

@@ -264,7 +264,7 @@ function Sb({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: () => v
                 <ListItemIcon sx={{ justifyContent: "center", backgroundColor: "var(--nav-bg)", color: "var(--nav-text)" , minWidth: "40px" }}>
                   <HomeIcon />
                 </ListItemIcon>
-                {isOpen && <ListItemText primary="หน้าหลัก" sx={{ color: "#000" }} />}
+                {isOpen && <ListItemText primary="หน้าหลัก" sx={{ color: "var(--nav-text)" }} />}
               </ListItem>
             </Link>
           </Tooltip>
@@ -286,7 +286,7 @@ function Sb({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: () => v
                 <ListItemIcon sx={{ justifyContent: "center", backgroundColor: "var(--nav-bg)", color: "var(--nav-text)", minWidth: "40px" }}>
                   <ArticleIcon />
                 </ListItemIcon>
-                {isOpen && <ListItemText primary="น่าสนใจ" sx={{ color: "#000" }} />}
+                {isOpen && <ListItemText primary="น่าสนใจ" sx={{ color: "var(--nav-text)" }} />}
               </ListItem>
             </Link>
           </Tooltip>
@@ -308,7 +308,7 @@ function Sb({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: () => v
                 <ListItemIcon sx={{ justifyContent: "center", backgroundColor: "var(--nav-bg)", color: "var(--nav-text)" , minWidth: "40px" }}>
                   <WhatshotIcon />
                 </ListItemIcon>
-                {isOpen && <ListItemText primary="มาเเรง" sx={{ color: "#000" }} />}
+                {isOpen && <ListItemText primary="มาเเรง" sx={{ color: "var(--nav-text)" }} />}
               </ListItem>
             </Link>
           </Tooltip>

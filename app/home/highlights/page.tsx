@@ -30,11 +30,10 @@ import { useRouter } from "next/navigation";
 import Navbar from "@/app/navbar/page";
 import AfterLogin from "@/app/navbar/AfterLogin";
 import { useAuth } from "@/app/context/AuthProvider";
-import CommentIcon from '@mui/icons-material/Comment';
-import VisibilityIcon from '@mui/icons-material/Visibility';
-import AppsIcon from '@mui/icons-material/Apps';
-import {Menu, MenuItem, Checkbox } from '@mui/material';
-
+import CommentIcon from "@mui/icons-material/Comment";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import AppsIcon from "@mui/icons-material/Apps";
+import { Menu, MenuItem, Checkbox } from "@mui/material";
 
 interface Post {
   _id: string;
@@ -66,7 +65,6 @@ export default function Page() {
   const [comments, setComments] = useState<Comment[]>([]);
   const [anchorEl, setAnchorEl] = useState(null);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
-
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
@@ -105,9 +103,20 @@ export default function Page() {
     }
   };
   const blogCategories = [
-    "เทคโนโลยี", "สุขภาพ", "อาหาร", "ท่องเที่ยว", "การเงิน",
-    "ธุรกิจ", "ไลฟ์สไตล์", "การศึกษา", "ศิลปะ", "วิทยาศาสตร์",
-    "กีฬา", "ดนตรี", "การ์ตูน", "อนิเมะ"
+    "เทคโนโลยี",
+    "สุขภาพ",
+    "อาหาร",
+    "ท่องเที่ยว",
+    "การเงิน",
+    "ธุรกิจ",
+    "ไลฟ์สไตล์",
+    "การศึกษา",
+    "ศิลปะ",
+    "วิทยาศาสตร์",
+    "กีฬา",
+    "ดนตรี",
+    "การ์ตูน",
+    "อนิเมะ",
   ];
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -164,35 +173,37 @@ export default function Page() {
             บทความทั้งหมด
           </Typography>
           <Box sx={{ display: "flex", justifyContent: "flex-end", mb: 3 }}>
-      <Button
-        variant="contained"
-        sx={{ display: "flex", alignItems: "center", fontSize: 14 }}
-        onClick={handleClick}
-      >
-        <AppsIcon sx={{ fontSize: 20, mr: 1 }} />
-        หมวดหมู่
-      </Button>
-      
-      <Menu
-        anchorEl={anchorEl}
-        open={Boolean(anchorEl)}
-        onClose={handleClose}
-        MenuListProps={{
-          'aria-labelledby': 'basic-button',
-        }}
-      >
-        <Grid container spacing={2} sx={{ width: 350 }}>
-          {blogCategories.map((category, index) => (
-            <Grid item xs={6} key={category}>
-              <MenuItem onClick={() => handleCategoryChange(category)}>
-                <Checkbox checked={selectedCategories.includes(category)} />
-                <ListItemText primary={category} />
-              </MenuItem>
-            </Grid>
-          ))}
-        </Grid>
-      </Menu>
-    </Box>
+            <Button
+              variant="contained"
+              sx={{ display: "flex", alignItems: "center", fontSize: 14 }}
+              onClick={handleClick}
+            >
+              <AppsIcon sx={{ fontSize: 20, mr: 1 }} />
+              หมวดหมู่
+            </Button>
+
+            <Menu
+              anchorEl={anchorEl}
+              open={Boolean(anchorEl)}
+              onClose={handleClose}
+              MenuListProps={{
+                "aria-labelledby": "basic-button",
+              }}
+            >
+              <Grid container spacing={2} sx={{ width: 350 }}>
+                {blogCategories.map((category, index) => (
+                  <Grid item xs={6} key={category}>
+                    <MenuItem onClick={() => handleCategoryChange(category)}>
+                      <Checkbox
+                        checked={selectedCategories.includes(category)}
+                      />
+                      <ListItemText primary={category} />
+                    </MenuItem>
+                  </Grid>
+                ))}
+              </Grid>
+            </Menu>
+          </Box>
           <Grid container spacing={3} justifyContent="center">
             {filteredData.length > 0 ? (
               filteredData.map((post) => (
@@ -389,7 +400,6 @@ function Sb({
   );
 }
 
-
 async function fetchComments(postId: string) {
   try {
     const res = await fetch(`http://localhost:3001/comments/content/${postId}`);
@@ -412,7 +422,7 @@ function RegionCard({ post }: { post: Post }) {
   const handleCardClick = async (postId: string) => {
     if (!userId) {
       console.error("User ID is not available");
-      alert('กรุณาเข้าสู่ระบบ')
+      alert("กรุณาเข้าสู่ระบบ");
       return;
     }
 
@@ -437,8 +447,9 @@ function RegionCard({ post }: { post: Post }) {
     }
     loadComments();
   }, [post._id]);
-  const totalComments = comments.length + comments.reduce((acc, comment) => acc + (comment.replies?.length || 0), 0);
-
+  const totalComments =
+    comments.length +
+    comments.reduce((acc, comment) => acc + (comment.replies?.length || 0), 0);
 
   return (
     <>
@@ -473,10 +484,10 @@ function RegionCard({ post }: { post: Post }) {
 
           <CardContent>
             <Typography variant="h6">{post.title}</Typography>
-            <Typography 
+            <Typography
               variant="body2"
-              sx={{ 
-                backgroundColor: "var(--post-bg)", 
+              sx={{
+                backgroundColor: "var(--post-bg)",
                 color: "var(--post-text)",
               }}
             >
@@ -507,14 +518,15 @@ function RegionCard({ post }: { post: Post }) {
             }}
           >
             <Box sx={{ display: "flex", alignItems: "center", fontSize: 12 }}>
-              <Typography sx={{ mr: 1, fontSize: 12, fontWeight: 'bold' }}>
+              <Typography sx={{ mr: 1, fontSize: 12, fontWeight: "bold" }}>
                 {post.userId}
               </Typography>
             </Box>
 
             <Box sx={{ display: "flex", alignItems: "center" }}>
               <Typography sx={{ ml: 1, mr: 1, fontSize: 12 }} variant="body2">
-                การอ่าน {Array.isArray(post.views) ? post.views.length : 0} ครั้ง
+                การอ่าน {Array.isArray(post.views) ? post.views.length : 0}{" "}
+                ครั้ง
               </Typography>
               <CommentIcon color="action" fontSize="small" />
               <Typography sx={{ ml: 1, fontSize: 12 }} variant="body2">
@@ -522,9 +534,11 @@ function RegionCard({ post }: { post: Post }) {
               </Typography>
             </Box>
           </Box>
+
           </Box>
         </Card>
       </Grid>
     </>
+
   );
 }
