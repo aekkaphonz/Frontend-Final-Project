@@ -25,6 +25,7 @@ interface User {
 
 interface Attraction {
   _id: string;
+  userName: string;
   title: string;
   detail: string;
   tags: string[];
@@ -196,6 +197,7 @@ export default function Page() {
           title: result.title,
           detail: result.detail,
           tags: result.tags,
+          userName: result.userName,
           postImage: result.postImage || [],
           likeCount: result.likeCount || 0,
         });
@@ -460,7 +462,7 @@ export default function Page() {
                 </Tooltip>
                 <Divider orientation="vertical" flexItem sx={{ borderColor: '#3b4c77', height: 40, ml: 1 }} />
                 <Typography sx={{ ml: 1 }}>
-                  {data._id}
+                  {data.userName}
                 </Typography>
               </Box>
 
