@@ -432,7 +432,7 @@ function RegionCard({ post }: { post: Post }) {
         >
           <Box sx={{ display: "flex", alignItems: "center", fontSize: 12 }}>
             <Typography sx={{ mr: 1, fontSize: 12, fontWeight: 'bold' }}>
-              {post.userId}
+              {post.userName}
             </Typography>
           </Box>
 

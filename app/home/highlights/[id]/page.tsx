@@ -371,7 +371,7 @@ export default function Page() {
     setMenuCommentId(null);
   };
 
-  // ฟังก์ชันแสดงแท็ก
+  
   const renderTags = (tags: string[]) => {
     return tags.map((tag, index) => (
       <Box key={index} sx={{border:"1px solid #b3b6b7 ", marginBottom:1, padding: "5px 10px", boxShadow: "0 1px 2px rgba(0, 0, 0, 0.1)", fontSize: "14px", color: "#333" }}>
