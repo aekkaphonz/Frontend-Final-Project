@@ -96,11 +96,11 @@ export default function Page() {
     const [userId, setUserId] = useState("");
 
     useEffect(() => {
-    
+        // ดึงข้อมูลผู้ใช้จาก Session หรือ API
         const fetchUser = async () => {
             try {
-                const response = await fetch("http://localhost:3001/auth/profile", {
-                    credentials: "include", 
+                const response = await fetch("http://localhost:3001/auth/user", {
+                    credentials: "include", // ใช้ cookie จาก session
                 });
 
                 if (response.ok) {

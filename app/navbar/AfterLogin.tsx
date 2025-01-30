@@ -19,8 +19,8 @@ import { useRouter } from "next/navigation";
 
 function NavLogIn({ isOpen, toggleSidebar, handleSearch }: { isOpen: boolean; toggleSidebar: () => void; handleSearch: (query: string) => void }) {
   const router = useRouter();
-  const { user, logout } = useAuth();
-  const settings = ['Profile', 'Dashboard', 'Logout'];
+  const { logout, user } = useAuth();
+  const settings = ["โปรไฟล์", "แดชบอร์ด", "ออกจากระบบ"];
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
 
   const themeColors = {
@@ -38,16 +38,13 @@ function NavLogIn({ isOpen, toggleSidebar, handleSearch }: { isOpen: boolean; to
     setAnchorElUser(null);
   };
   const handleMenuClick = async (setting: string) => {
-    if (setting === "Logout") {
-
-      await logout();
-      router.push("/signin"); 
-
-    } else if (setting === "Dashboard") {
-      router.push("/dashboard"); 
-     }else if (setting === "Profile") {
-      router.push("/profile"); 
-    }
+    if (setting === "ออกจากระบบ") {
+      await logout(); // เรียกใช้ฟังก์ชัน logout
+    } else if (setting === "แดชบอร์ด") {
+      router.push("/dashboard"); // เปลี่ยนเส้นทางไปยัง /dashboard
+     }else if (setting === "โปรไฟล์") {
+       router.push("/profile"); 
+     }
     handleCloseUserMenu(); // ปิดเมนู
   };
 

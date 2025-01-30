@@ -112,7 +112,7 @@ export default function Home() {
           }}
         >
           <img
-            src="/images/Home-removebg.png"
+            src="/images/Homeremovebg-.png"
             alt="Cleaning Illustration"
             style={{ maxWidth: "70%", height: "auto" }}
           />
