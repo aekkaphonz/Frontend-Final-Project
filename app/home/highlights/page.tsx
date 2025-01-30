@@ -45,6 +45,7 @@ interface Post {
   likes: number;
   userId: string;
   userName: string;
+  tags: string[];
 }
 interface Comment {
   _id: string;
@@ -117,6 +118,18 @@ export default function Page() {
     }
 };
 
+  useEffect(() => {
+    if (selectedCategories.length > 0) {
+      // กรองข้อมูลตามแท็กที่เลือก
+      const filtered = data.filter((post) =>
+        selectedCategories.every((category) => post.tags.includes(category))
+      );
+      setFilteredData(filtered);
+    } else {
+      setFilteredData(data); // ถ้าไม่มีการเลือกแท็ก ให้แสดงบทความทั้งหมด
+    }
+  }, [selectedCategories, data]);
+
   const handleCardClick = async (postId: string) => {
     if (!userId) {
       console.error("User ID is not available");
@@ -148,6 +161,7 @@ export default function Page() {
     "ดนตรี",
     "การ์ตูน",
     "อนิเมะ",
+    "ภาพยนต์"
   ];
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -155,6 +169,7 @@ export default function Page() {
   const handleClose = () => {
     setAnchorEl(null);
   };
+
   const handleCategoryChange = (category: string) => {
     setSelectedCategories((prevSelectedCategories) =>
       prevSelectedCategories.includes(category)

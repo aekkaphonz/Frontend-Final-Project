@@ -3,7 +3,13 @@
 import React, { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { styled } from "@mui/material/styles";
-import { Typography, Container, TextField, Button, Box, Grid, IconButton } from "@mui/material";
+import {
+  Typography, Container, TextField, Button, Box, Grid, IconButton, Menu,
+  MenuItem,
+  Checkbox,
+  ListItemText,
+  FormControlLabel
+} from "@mui/material";
 import Paper from "@mui/material/Paper";
 import ImageIcon from "@mui/icons-material/Image";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -34,7 +40,22 @@ export default function EditBlog() {
   const [tags, setTags] = useState("");
   const [images, setImages] = useState<File[]>([]);
   const [imagePreviews, setImagePreviews] = useState<string[]>([]);
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [createdAt, setCreatedAt] = useState("");
+
+  const blogCategories = [
+    "เทคโนโลยี", "สุขภาพ", "อาหาร", "ท่องเที่ยว", "การเงิน",
+    "ธุรกิจ", "ไลฟ์สไตล์", "การศึกษา", "ศิลปะ", "วิทยาศาสตร์",
+    "กีฬา", "ดนตรี", "การ์ตูน", "อนิเมะ", "ภาพยนต์"
+  ];
+
+  const handleTagChange = (tag: string) => {
+    setSelectedTags((prevTags) =>
+      prevTags.includes(tag)
+        ? prevTags.filter((t) => t !== tag) // ลบแท็กออกถ้ามี
+        : [...prevTags, tag] // เพิ่มแท็กถ้ายังไม่มี
+    );
+  };
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
@@ -50,7 +71,7 @@ export default function EditBlog() {
           const postData = await response.json();
           setTitle(postData.title || "");
           setContent(postData.detail || ""); // Backend ใช้ `detail` แทน `content`
-          setTags(postData.description || ""); // Backend ใช้ `description` แทน `tags`
+          setSelectedTags(postData.tags || []); // แก้ไขแท็กที่มีอยู่
           setImagePreviews(postData.postImage ? [postData.postImage] : []);
           setCreatedAt(postData.createdAt || new Date().toISOString());
         } else {
@@ -70,10 +91,16 @@ export default function EditBlog() {
     const formData = new FormData();
     formData.append("title", title);
     formData.append("detail", content);
-    formData.append("description", tags);
+
+    // ✅ ตรวจสอบให้แน่ใจว่า `selectedTags` เป็น `array`
+    if (Array.isArray(selectedTags) && selectedTags.length > 0) {
+      formData.append("tags", JSON.stringify(selectedTags)); // ✅ แปลงเป็น JSON string
+    } else {
+      formData.append("tags", JSON.stringify([])); // ✅ ถ้าไม่มีแท็ก ให้ส่งเป็น `[]`
+    }
 
     if (images.length > 0) {
-      formData.append("postImage", images[0]); // อัปโหลดรูปใหม่
+      formData.append("postImage", images[0]);
     }
 
     try {
@@ -134,28 +161,28 @@ export default function EditBlog() {
 
         <Grid item md={12}>
           <Typography sx={{ fontWeight: "bold", fontSize: 18, mb: 1 }}>หัวข้อ</Typography>
-          <TextField 
-          fullWidth variant="outlined" 
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          sx={{
-            backgroundColor: "var(--comment-bg)",
-            color: "var(--comment-text)",
-            "& .MuiInputBase-input": {
+          <TextField
+            fullWidth variant="outlined"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            sx={{
+              backgroundColor: "var(--comment-bg)",
+              color: "var(--comment-text)",
+              "& .MuiInputBase-input": {
                 color: "var(--comment-text)", // สีข้อความของ Input
-            },
-            "& .MuiOutlinedInput-root": {
+              },
+              "& .MuiOutlinedInput-root": {
                 "& fieldset": {
-                borderColor: "var(--comment-text)", // สีเส้นขอบของช่องป้อนข้อความ
+                  borderColor: "var(--comment-text)", // สีเส้นขอบของช่องป้อนข้อความ
                 },
                 "&:hover fieldset": {
-                borderColor: "var(--comment-text)",
+                  borderColor: "var(--comment-text)",
                 },
                 "&.Mui-focused fieldset": {
-                borderColor: "var(--comment-text)",
+                  borderColor: "var(--comment-text)",
                 },
-            },
-          }}
+              },
+            }}
           />
         </Grid>
 
@@ -186,60 +213,52 @@ export default function EditBlog() {
               </Grid>
             )}
           </Box>
-          <TextField 
-            fullWidth 
-            variant="outlined" 
-            multiline 
-            rows={10} 
-            value={content} 
-            onChange={(e) => setContent(e.target.value)} 
+          <TextField
+            fullWidth
+            variant="outlined"
+            multiline
+            rows={10}
+            value={content}
+            onChange={(e) => setContent(e.target.value)}
             sx={{
               backgroundColor: "var(--comment-bg)",
               color: "var(--comment-text)",
               "& .MuiInputBase-input": {
-                  color: "var(--comment-text)", // สีข้อความของ Input
+                color: "var(--comment-text)", // สีข้อความของ Input
               },
               "& .MuiOutlinedInput-root": {
-                  "& fieldset": {
+                "& fieldset": {
                   borderColor: "var(--comment-text)", // สีเส้นขอบของช่องป้อนข้อความ
-                  },
-                  "&:hover fieldset": {
+                },
+                "&:hover fieldset": {
                   borderColor: "var(--comment-text)",
-                  },
-                  "&.Mui-focused fieldset": {
+                },
+                "&.Mui-focused fieldset": {
                   borderColor: "var(--comment-text)",
-                  },
-              },
-            }}
-            />
-        </Grid>
-
-        <Grid item md={12}>
-          <Typography sx={{ fontWeight: "bold", fontSize: 18, mb: 1 }}>แท็ก</Typography>
-          <TextField 
-            fullWidth 
-            variant="outlined" 
-            value={tags} 
-            onChange={(e) => setTags(e.target.value)} 
-            sx={{
-              backgroundColor: "var(--comment-bg)",
-              color: "var(--comment-text)",
-              "& .MuiInputBase-input": {
-                  color: "var(--comment-text)", // สีข้อความของ Input
-              },
-              "& .MuiOutlinedInput-root": {
-                  "& fieldset": {
-                  borderColor: "var(--comment-text)", // สีเส้นขอบของช่องป้อนข้อความ
-                  },
-                  "&:hover fieldset": {
-                  borderColor: "var(--comment-text)",
-                  },
-                  "&.Mui-focused fieldset": {
-                  borderColor: "var(--comment-text)",
-                  },
+                },
               },
             }}
           />
+        </Grid>
+
+        <Grid item md={12}>
+          <Typography sx={{ fontWeight: "bold", fontSize: 18, mb: 1 }}>เลือกแท็ก</Typography>
+          <Grid container spacing={2}>
+            {blogCategories.map((tag) => (
+              <Grid item key={tag} xs={6} sm={4} md={3}>
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={selectedTags.includes(tag)}
+                      onChange={() => handleTagChange(tag)}
+                      sx={{ color: "#77bfa3" }}
+                    />
+                  }
+                  label={tag}
+                />
+              </Grid>
+            ))}
+          </Grid>
         </Grid>
 
         <Grid item md={12} sx={{ textAlign: "center", mt: 2, display: "flex", justifyContent: "flex-end", gap: 2 }}>
