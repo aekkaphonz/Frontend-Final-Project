@@ -45,6 +45,7 @@ interface Post {
   likes: number;
   userId: string;
   userName: string;
+  tags: string[];
 }
 interface Comment {
   _id: string;
@@ -86,6 +87,18 @@ export default function Page() {
     fetchData();
   }, []);
 
+  useEffect(() => {
+    if (selectedCategories.length > 0) {
+      // กรองข้อมูลตามแท็กที่เลือก
+      const filtered = data.filter((post) =>
+        selectedCategories.every((category) => post.tags.includes(category))
+      );
+      setFilteredData(filtered);
+    } else {
+      setFilteredData(data); // ถ้าไม่มีการเลือกแท็ก ให้แสดงบทความทั้งหมด
+    }
+  }, [selectedCategories, data]);
+
   const handleCardClick = async (postId: string) => {
     if (!userId) {
       console.error("User ID is not available");
@@ -117,6 +130,7 @@ export default function Page() {
     "ดนตรี",
     "การ์ตูน",
     "อนิเมะ",
+    "ภาพยนต์"
   ];
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -124,6 +138,7 @@ export default function Page() {
   const handleClose = () => {
     setAnchorEl(null);
   };
+
   const handleCategoryChange = (category: string) => {
     setSelectedCategories((prevSelectedCategories) =>
       prevSelectedCategories.includes(category)
@@ -453,49 +468,8 @@ function RegionCard({ post }: { post: Post }) {
 
   return (
     <>
-    <Grid item xs={12} sm={6} md={4} lg={3}>
-      <Card
-        sx={{
-          borderRadius: "15px",
-          overflow: "hidden",
-          boxShadow: "0 4px 10px rgba(0, 0, 0, 0.1)",
-          position: "relative",
-          transition: "transform 0.2s",
-          "&:hover": {
-            transform: "scale(1.05)",
-            boxShadow: "0 6px 15px rgba(0, 0, 0, 0.2)",
-          },
-          backgroundColor: "var(--post-bg)",
-          color: "var(--post-text)",
-        }}
-      >
-        <CardActionArea onClick={() => handleCardClick(post._id)}>
-          <CardMedia
-            component="img"
-            height="150"
-            image={post.postImage || "https://via.placeholder.com/150"}
-            alt={post.title || "ยังไม่มีรูปภาพ"}
-            sx={{
-              objectFit: "cover",
-              borderRadius: "8px",
-              height: "150px",
-            }}
-          />
-
-          <CardContent>
-            <Typography variant="h6">{post.title}</Typography>
-            <Typography
-              variant="body2"
-              sx={{
-                backgroundColor: "var(--post-bg)",
-                color: "var(--post-text)",
-              }}
-            >
-              {post.detail?.substring(0, 50) || "ไม่มีเนื้อหา"}...
-            </Typography>
-          </CardContent>
-        </CardActionArea>
-        <Box
+      <Grid item xs={12} sm={6} md={4} lg={3}>
+        <Card
           sx={{
             borderRadius: "15px",
             overflow: "hidden",
@@ -506,34 +480,66 @@ function RegionCard({ post }: { post: Post }) {
               transform: "scale(1.05)",
               boxShadow: "0 6px 15px rgba(0, 0, 0, 0.2)",
             },
-            backgroundColor: "#f6f6e7",
+            backgroundColor: "var(--post-bg)",
+            color: "var(--post-text)",
           }}
         >
+          <CardActionArea onClick={() => handleCardClick(post._id)}>
+            <CardMedia
+              component="img"
+              height="150"
+              image={post.postImage || "https://via.placeholder.com/150"}
+              alt={post.title || "ยังไม่มีรูปภาพ"}
+              sx={{
+                objectFit: "cover",
+                borderRadius: "8px",
+                height: "150px",
+              }}
+            />
 
+            <CardContent>
+              <Typography variant="h6">{post.title}</Typography>
+            </CardContent>
+          </CardActionArea>
           <Box
             sx={{
-              display: "flex",
-              padding: "10px",
-              justifyContent: "space-between",
+              borderRadius: "15px",
+              overflow: "hidden",
+              boxShadow: "0 4px 10px rgba(0, 0, 0, 0.1)",
+              position: "relative",
+              transition: "transform 0.2s",
+              "&:hover": {
+                transform: "scale(1.05)",
+                boxShadow: "0 6px 15px rgba(0, 0, 0, 0.2)",
+              },
+              backgroundColor: "#f6f6e7",
             }}
           >
-            <Box sx={{ display: "flex", alignItems: "center", fontSize: 12 }}>
-              <Typography sx={{ mr: 1, fontSize: 12, fontWeight: "bold" }}>
-                {post.userId}
-              </Typography>
-            </Box>
 
-            <Box sx={{ display: "flex", alignItems: "center" }}>
-              <Typography sx={{ ml: 1, mr: 1, fontSize: 12 }} variant="body2">
-                การอ่าน {Array.isArray(post.views) ? post.views.length : 0}{" "}
-                ครั้ง
-              </Typography>
-              <CommentIcon color="action" fontSize="small" />
-              <Typography sx={{ ml: 1, fontSize: 12 }} variant="body2">
-                {totalComments}
-              </Typography>
+            <Box
+              sx={{
+                display: "flex",
+                padding: "10px",
+                justifyContent: "space-between",
+              }}
+            >
+              <Box sx={{ display: "flex", alignItems: "center", fontSize: 12 }}>
+                <Typography sx={{ mr: 1, fontSize: 12, fontWeight: "bold" }}>
+                  {post.userId}
+                </Typography>
+              </Box>
+
+              <Box sx={{ display: "flex", alignItems: "center" }}>
+                <Typography sx={{ ml: 1, mr: 1, fontSize: 12 }} variant="body2">
+                  การอ่าน {Array.isArray(post.views) ? post.views.length : 0}{" "}
+                  ครั้ง
+                </Typography>
+                <CommentIcon color="action" fontSize="small" />
+                <Typography sx={{ ml: 1, fontSize: 12 }} variant="body2">
+                  {totalComments}
+                </Typography>
+              </Box>
             </Box>
-          </Box>
 
           </Box>
         </Card>
