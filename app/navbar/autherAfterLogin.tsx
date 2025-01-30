@@ -229,7 +229,7 @@ function NavLogIn({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: (
                 <ListItemIcon sx={{ justifyContent: "center", backgroundColor: "var(--nav-bg)", color: "var(--nav-text)", minWidth: "40px" }}>
                   <DashboardIcon />
                 </ListItemIcon>
-                {isOpen && <ListItemText primary="แดชบอร์ด" sx={{ color: "#000" }} />}
+                {isOpen && <ListItemText primary="แดชบอร์ด" sx={{ color: "var(--nav-text)" }} />}
               </ListItem>
             </Tooltip>
           </Link>
@@ -253,7 +253,7 @@ function NavLogIn({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: (
                 <ListItemIcon sx={{ justifyContent: "center", backgroundColor: "var(--nav-bg)", color: "var(--nav-text)", minWidth: "40px" }}>
                   <CollectionsBookmarkIcon />
                 </ListItemIcon>
-                {isOpen && <ListItemText primary="เนื้อหา" sx={{ color: "#000" }} />}
+                {isOpen && <ListItemText primary="เนื้อหา" sx={{ color: "var(--nav-text)" }} />}
               </ListItem>
             </Link>
           </Tooltip>
@@ -276,7 +276,7 @@ function NavLogIn({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: (
                 <ListItemIcon sx={{ justifyContent: "center", backgroundColor: "var(--nav-bg)", color: "var(--nav-text)", minWidth: "40px" }}>
                   <InsertChartIcon />
                 </ListItemIcon>
-                {isOpen && <ListItemText primary="สถิติ" sx={{ color: "#000" }} />}
+                {isOpen && <ListItemText primary="สถิติ" sx={{ color: "var(--nav-text)" }} />}
               </ListItem>
             </Link>
           </Tooltip>
@@ -299,7 +299,7 @@ function NavLogIn({ isOpen, toggleSidebar }: { isOpen: boolean; toggleSidebar: (
                 <ListItemIcon sx={{ justifyContent: "center", backgroundColor: "var(--nav-bg)", color: "var(--nav-text)", minWidth: "40px" }}>
                   <PersonIcon />
                 </ListItemIcon>
-                {isOpen && <ListItemText primary="โปรไฟล์" sx={{ color: "#000" }} />}
+                {isOpen && <ListItemText primary="โปรไฟล์" sx={{ color: "var(--nav-text)" }} />}
               </ListItem>
             </Link>
           </Tooltip>

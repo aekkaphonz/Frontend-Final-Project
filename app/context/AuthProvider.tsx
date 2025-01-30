@@ -12,6 +12,7 @@ interface UserType {
 interface AuthContextType {
   user: UserType | null;
   isLoggedIn: boolean;
+  isLoading: boolean;
   logout: () => Promise<void>;
 }
 
@@ -20,17 +21,16 @@ const AuthContext = createContext<AuthContextType | null>(null);
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<UserType | null>(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-
     const fetchProfile = async () => {
       try {
-        const response = await axios.get("http://localhost:3001/user/profile", {
+        const response:any = await axios.get("http://localhost:3001/user/profile", {
           withCredentials: true,
         });
   
-        if (response.data && response.data.length > 0) {
+        if (response.status === 200 && response.data.length > 0) {
           const userData = response.data[0];
           setUser({
             userName: userData.userName,
@@ -39,16 +39,22 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           });
           setIsLoggedIn(true);
         }
-      } catch (error) {
-        console.error("Error fetching profile:", error);
+      } catch (error: any) {
+        if (error.response && error.response.status === 403) {
+          console.warn("User is not authorized, setting as logged out.");
+        } else {
+          console.error("Error fetching profile:", error);
+        }
         setUser(null);
         setIsLoggedIn(false);
+      } finally {
+        setIsLoading(false);
       }
     };
   
     fetchProfile();
-  }, []);  
-
+  }, []);
+  
   const logout = async () => {
     try {
       await axios.post("http://localhost:3001/auth/logout", {}, { withCredentials: true });
@@ -60,7 +66,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, isLoggedIn, logout }}>
+    <AuthContext.Provider value={{ user, isLoggedIn,isLoading, logout }}>
       {children}
     </AuthContext.Provider>
   );
