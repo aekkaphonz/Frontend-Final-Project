@@ -24,8 +24,16 @@ import axios from "axios";
 import Swal from "sweetalert2";
 
 function signin() {
-  const [isFormSubmitted, setIsFormSubmitted] = useState(false);
+  interface LoginResponse {
+    message: string;
+    sessionId: string;
+    user: {
+      email: string;
+      userId: string;
+    };
+  }
 
+  const [isFormSubmitted, setIsFormSubmitted] = useState(false);
   const router = useRouter();
 
   const {
@@ -45,21 +53,22 @@ function signin() {
 
   const handleFormSubmit = async (formData: any) => {
     try {
-      const response = await axios.post(
-        "http://localhost:3001/auth/login",
+      const response = await axios.post<LoginResponse>(
+        "http://localhost:3001/auth/login", 
         formData,
         {
           headers: {
             "Content-Type": "application/json",
           },
-          withCredentials: true,
+          withCredentials: true,  
         }
       );
-
-      console.log("Response data:", response.data);
-      console.log("Response status:", response.status);
-
+      console.log(response.data);
+  
       if (response.data) {
+        sessionStorage.setItem("sessionId", response.data.sessionId);
+        sessionStorage.setItem("user", JSON.stringify(response.data.user));
+  
         Swal.fire({
           title: "เข้าสู่ระบบสำเร็จ!",
           text: "ยินดีต้อนรับกลับเข้าสู่ระบบ!",
@@ -67,8 +76,8 @@ function signin() {
           confirmButtonText: "ตกลง",
           confirmButtonColor: "#77bfa3",
         });
-
-        router.push("/");
+  
+        router.push("/"); 
       } else {
         Swal.fire({
           title: "การเข้าสู่ระบบล้มเหลว",
@@ -79,27 +88,17 @@ function signin() {
         });
       }
     } catch (error: any) {
-      if (error.response && error.response.data) {
-        console.error("error:", error.response.data);
-        Swal.fire({
-          title: "เกิดข้อผิดพลาด!",
-          text: error.response.data.message || "การเข้าสู่ระบบล้มเหลว",
-          icon: "error",
-          confirmButtonText: "ตกลง",
-          confirmButtonColor: "#d33",
-        });
-      } else {
-        console.error("Error login:", error);
-        Swal.fire({
-          title: "เกิดข้อผิดพลาด!",
-          text: "ไม่สามารถเข้าสู่ระบบได้ กรุณาลองใหม่อีกครั้ง",
-          icon: "error",
-          confirmButtonText: "ตกลง",
-          confirmButtonColor: "#d33",
-        });
-      }
+      console.error("Login error:", error);
+      Swal.fire({
+        title: "เกิดข้อผิดพลาด!",
+        text: error.response?.data?.message || "ไม่สามารถเข้าสู่ระบบได้ กรุณาลองใหม่อีกครั้ง",
+        icon: "error",
+        confirmButtonText: "ตกลง",
+        confirmButtonColor: "#d33",
+      });
     }
   };
+  
 
   const [showPassword, setShowPassword] = useState(false);
 

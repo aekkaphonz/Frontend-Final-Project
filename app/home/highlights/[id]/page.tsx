@@ -89,14 +89,52 @@ export default function Page() {
             : comment
         )
       );
-  
-      setEditingCommentId(null);
+  const editComment = async (commentId: string, newMessage: string) => {
+  if (!newMessage.trim()) return;  
+
+  try {
+    const token = localStorage.getItem("token");
+
+    const res = await fetch(`http://localhost:3001/comments/${commentId}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`,
+      },
+      body: JSON.stringify({ comment: newMessage }),
+    });
+
+    if (!res.ok) {
+      const errorMessage = await res.text();
+      console.error("API Error:", errorMessage);
+      throw new Error("Failed to edit comment");
+    }
+
+    const updatedComment = await res.json();
+    console.log("Updated Comment:", updatedComment); // Debugging
+
+    setComments((prevComments) =>
+      prevComments.map((comment) =>
+        comment.id === commentId  // เปลี่ยนจาก `_id` เป็น `id`
+          ? { ...comment, message: updatedComment.comment }
+          : comment
+      )
+    );
+
+    setEditingCommentId(null);
+  } catch (error) {
+    console.error("Error updating comment:", error);
+    alert("เกิดข้อผิดพลาดในการแก้ไขคอมเมนต์");
+  }
+};
+
     } catch (error) {
       console.error("Error updating comment:", error);
       alert("เกิดข้อผิดพลาดในการแก้ไขคอมเมนต์");
     }
   };  
 
+// ลบคอมเมนต์
 const deleteComment = async (commentId: string) => {
   try {
     const token = localStorage.getItem("token");
@@ -114,15 +152,17 @@ const deleteComment = async (commentId: string) => {
       throw new Error("Failed to delete comment");
     }
 
+    console.log("Deleted Comment ID:", commentId); // Debugging
+
     setComments((prevComments) =>
-      prevComments.filter((comment) => comment._id !== commentId)
+      prevComments.filter((comment) => comment.id !== commentId)
     );
   } catch (error) {
     console.error("Error deleting comment:", error);
     alert("เกิดข้อผิดพลาดในการลบคอมเมนต์");
   }
 };
-  
+
   // ดึงความคิดเห็น
   useEffect(() => {
     async function fetchComments(postId: string) {
@@ -565,7 +605,7 @@ const deleteComment = async (commentId: string) => {
               >
                 <MenuItem
                   onClick={() => {
-                    setEditingCommentId(comment.id); // ✅ ตั้งค่าให้เริ่มแก้ไขคอมเมนต์นี้
+                    setEditingCommentId(comment.id); //  ตั้งค่าให้เริ่มแก้ไขคอมเมนต์นี้
                     handleMenuClose();
                   }}
                 >

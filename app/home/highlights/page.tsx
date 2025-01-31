@@ -87,7 +87,7 @@ export default function Page() {
     fetchData();
   }, []);
 
-  const handleSearch = async (query: string) => {
+  const handleSearch = (query: string) => {
     setSearchQuery(query);
   
     if (!query.trim()) {
@@ -95,28 +95,12 @@ export default function Page() {
       return;
     }
   
-    try {
-      console.log(`🔍 Searching for: '${query}'`);
-      const encodedQuery = encodeURIComponent(query);
-      const res = await fetch(`http://localhost:3001/contents/${encodedQuery}`);
-      console.log(" API Response:", res.status, res.statusText);
-
-      if (!res.ok) {
-        const errorText = await res.text();
-        console.error("Search API Error:", res.status, errorText);
-        throw new Error(`Failed to fetch search results`);
-      }
-
-      const searchResults: Post = await res.json();
-      console.log("Search Results:", searchResults);
-
-      // ถ้า API คืนเป็น Object เดียว ต้องใส่ลงใน Array เพื่อให้ .map() ใช้งานได้
-      setFilteredData([searchResults]);
-    } catch (error) {
-      console.error("Error during search:", error);
-      setFilteredData([]);
-    }
-};
+    const regex = new RegExp(query.split("").join(".*"), "i"); // ใช้ regex ค้นหาที่มีตัวอักษรไม่เรียงกันก็ได้
+  
+    const filtered = data.filter((post) => regex.test(post.title) || regex.test(post.detail));
+    setFilteredData(filtered);
+  };
+  
 
   useEffect(() => {
     if (selectedCategories.length > 0) {
