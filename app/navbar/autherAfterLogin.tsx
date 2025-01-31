@@ -159,7 +159,7 @@ function NavLogIn({
               >
                 {/* ปุ่มเขียน */}
                 <Button
-                  href="/signin"
+                  href="/createBlog"
                   sx={{
                     color: "#ffffff",
                     backgroundColor: "#77bfa3",

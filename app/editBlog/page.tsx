@@ -92,16 +92,25 @@ export default function EditBlog() {
     formData.append("title", title);
     formData.append("detail", content);
 
-    // ✅ ตรวจสอบให้แน่ใจว่า `selectedTags` เป็น `array`
     if (Array.isArray(selectedTags) && selectedTags.length > 0) {
-      formData.append("tags", JSON.stringify(selectedTags)); // ✅ แปลงเป็น JSON string
+      formData.append("tags", JSON.stringify(selectedTags));
     } else {
-      formData.append("tags", JSON.stringify([])); // ✅ ถ้าไม่มีแท็ก ให้ส่งเป็น `[]`
+      formData.append("tags", JSON.stringify([]));
     }
 
     if (images.length > 0) {
       formData.append("postImage", images[0]);
+    } else if (imagePreviews.length > 0) {
+      formData.append("postImage", imagePreviews[0]);
     }
+
+    // ✅ ตรวจสอบว่ามีไฟล์ภาพถูกเพิ่มลงใน formData หรือไม่
+    if (!formData.has("postImage")) {
+      alert("⚠️ ไม่พบรูปภาพที่อัปโหลด กรุณาเลือกไฟล์ใหม่!");
+      return;
+    }
+
+    console.log("📤 กำลังส่งข้อมูลไป Backend:", Array.from(formData.entries()));
 
     try {
       const response = await fetch(`http://localhost:3001/contents/updateContent/${postId}`, {
@@ -111,7 +120,7 @@ export default function EditBlog() {
 
       if (response.ok) {
         alert("📌 แก้ไขบทความสำเร็จ!");
-        router.push("/dashboard"); // กลับไปหน้า dashboard
+        router.push("/dashboard");
       } else {
         const errorText = await response.text();
         console.error("❌ เกิดข้อผิดพลาด:", errorText);
@@ -127,7 +136,6 @@ export default function EditBlog() {
     if (event.target.files) {
       const filesArray = Array.from(event.target.files);
       setImages([...images, ...filesArray]);
-
       const previews = filesArray.map((file) => URL.createObjectURL(file));
       setImagePreviews([...imagePreviews, ...previews]);
     }
