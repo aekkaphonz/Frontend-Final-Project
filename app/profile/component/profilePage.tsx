@@ -60,7 +60,7 @@ const ReadOnlyProfilePage = () => {
   return (
     <Box
       sx={{
-        background: "linear-gradient(135deg, #eceff1, #f5f5f5)",
+        backgroundColor: "var(--nav-bg)",
         minHeight: "100vh",
         display: "flex",
         justifyContent: "center",
@@ -73,10 +73,11 @@ const ReadOnlyProfilePage = () => {
         sx={{
           width: "100%",
           maxWidth: "700px",
-          background: "#ffffff",
+          backgroundColor: "var(--comment-bg)",
           borderRadius: "16px",
           overflow: "hidden",
           boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.1)",
+          color: "var(--comment-text)",
         }}
       >
         <Box
@@ -85,6 +86,7 @@ const ReadOnlyProfilePage = () => {
               "url('https://via.placeholder.com/700x200') center/cover",
             height: "125px",
             position: "relative",
+            
           }}
         >
           <Box
@@ -138,15 +140,15 @@ const ReadOnlyProfilePage = () => {
             variant="h5"
             sx={{
               fontWeight: "bold",
-              color: "#333",
+              color: "var(--comment-text)",
             }}
           >
             {user.userName}
           </Typography>
           <Typography
             variant="body2"
-            color="text.secondary"
-            sx={{ marginBottom: "1rem" }}
+            
+            sx={{ marginBottom: "1rem",     color: "var(--comment-text)",  }}
           >
             {user.email}
           </Typography>

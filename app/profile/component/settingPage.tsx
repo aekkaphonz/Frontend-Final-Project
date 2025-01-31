@@ -151,11 +151,10 @@ const EditPage = () => {
   };
 
   return (
-    
    
     <div
       style={{
-        background: "linear-gradient(135deg, #eceff1, #f5f5f5)",
+        backgroundColor: "var(--nav-bg)",
         minHeight: "100vh",
         justifyContent: "center",
         alignItems: "center",
@@ -170,6 +169,8 @@ const EditPage = () => {
             mt: "6rem",
             boxShadow: "0px 8px 20px rgba(0, 0, 0, 0.1)",
             borderRadius: "16px",
+            backgroundColor: "var(--comment-bg)",
+            color: "var(--comment-text)",
           }}
         >
           <CardContent
@@ -182,7 +183,7 @@ const EditPage = () => {
               sx={{
                 textAlign: "center",
                 fontWeight: "bold",
-                color: "#66a692",
+                color: "var(--comment-text)",
                 marginBottom: "1rem",
               }}
             >
@@ -216,7 +217,7 @@ const EditPage = () => {
                   component="span"
                   sx={{
                     marginTop: "1rem",
-                    background: "#f0f0f0",
+                    color: "var(--comment-text)",
                     border: "1px solid #ccc",
                     "&:hover": {
                       background: "#e0e0e0",
@@ -238,12 +239,30 @@ const EditPage = () => {
             <Box
               sx={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}
             >
-              <TextField
+              <TextField  
                 label="อีเมล"
                 value={user.email}
                 variant="outlined"
                 fullWidth
                 disabled
+                sx={{
+                            backgroundColor: "var(--comment-bg)",
+                            color: "var(--comment-text)",
+                            "& .MuiInputBase-input": {
+                                color: "var(--comment-text)", // สีข้อความของ Input
+                            },
+                            "& .MuiOutlinedInput-root": {
+                                "& fieldset": {
+                                borderColor: "var(--comment-text)", // สีเส้นขอบของช่องป้อนข้อความ
+                                },
+                                "&:hover fieldset": {
+                                borderColor: "var(--comment-text)",
+                                },
+                                "&.Mui-focused fieldset": {
+                                borderColor: "var(--comment-text)",
+                                },
+                            },
+                        }}
               />
               <TextField
                 label="ชื่อผู้ใช้"
@@ -251,6 +270,24 @@ const EditPage = () => {
                 variant="outlined"
                 fullWidth
                 onChange={(e) => setUser({ ...user, userName: e.target.value })}
+                sx={{
+                  backgroundColor: "var(--comment-bg)",
+                  color: "var(--comment-text)",
+                  "& .MuiInputBase-input": {
+                      color: "var(--comment-text)", // สีข้อความของ Input
+                  },
+                  "& .MuiOutlinedInput-root": {
+                      "& fieldset": {
+                      borderColor: "var(--comment-text)", // สีเส้นขอบของช่องป้อนข้อความ
+                      },
+                      "&:hover fieldset": {
+                      borderColor: "var(--comment-text)",
+                      },
+                      "&.Mui-focused fieldset": {
+                      borderColor: "var(--comment-text)",
+                      },
+                  },
+              }}
               />
               <Box
                 sx={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}
