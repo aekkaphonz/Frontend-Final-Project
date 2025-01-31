@@ -71,6 +71,7 @@ export default function Page() {
     setIsSidebarOpen(!isSidebarOpen);
   };
 
+
   const handleSearch = (query: string) => {
     setSearchQuery(query);
 
@@ -86,6 +87,7 @@ export default function Page() {
     setFilteredData(filtered);
   };
 
+
   useEffect(() => {
     async function fetchData() {
       try {
@@ -100,6 +102,21 @@ export default function Page() {
     }
     fetchData();
   }, []);
+
+  const handleSearch = (query: string) => {
+    setSearchQuery(query);
+  
+    if (!query.trim()) {
+      setFilteredData(data);
+      return;
+    }
+  
+    const regex = new RegExp(query.split("").join(".*"), "i"); // ใช้ regex ค้นหาที่มีตัวอักษรไม่เรียงกันก็ได้
+  
+    const filtered = data.filter((post) => regex.test(post.title) || regex.test(post.detail));
+    setFilteredData(filtered);
+  };
+  
 
   useEffect(() => {
     if (selectedCategories.length > 0) {

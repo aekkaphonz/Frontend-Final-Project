@@ -21,10 +21,9 @@ import SearchComponent from "@/app/search/SearchComponent";
 
 function NavLogIn({ isOpen, toggleSidebar, handleSearch }: { isOpen: boolean; toggleSidebar: () => void; handleSearch: (query: string) => void }) {
   const router = useRouter();
-  const { user, logout } = useAuth();
+  const { logout, user } = useAuth();
   const settings = ["โปรไฟล์", "แดชบอร์ด", "ออกจากระบบ"];
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
-
 
   const themeColors = {
     primary: "#ffffff",
@@ -32,7 +31,7 @@ function NavLogIn({ isOpen, toggleSidebar, handleSearch }: { isOpen: boolean; to
     buttonBorder: "#000000",
     buttonGreen: "#77bfa3",
   };
-
+  
   const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElUser(event.currentTarget);
   };

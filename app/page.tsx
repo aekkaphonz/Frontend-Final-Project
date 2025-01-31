@@ -11,9 +11,6 @@ import { useAuth } from "@/app/context/AuthProvider";
 import HomeNavbarAfterLogin from "@/app/navbar/homeNavbarAfterLogin";
 import HomeNavbar from "@/app/navbar/homeNavbar";
 
-
-
-
 export default function Home() {
   const { isLoggedIn } = useAuth();
   return (
