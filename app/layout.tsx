@@ -6,6 +6,7 @@ import { ThemeProvider } from "@/app/darkMode/components/ThemeProvider";
 import { ThemeWrapper } from "@/app/darkMode/components/ThemeWrapper";
 import SwitchTheme from "@/app/darkMode/components/SwitchTheme";
 
+
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],

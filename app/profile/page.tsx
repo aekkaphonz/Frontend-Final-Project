@@ -17,7 +17,7 @@ const UsersPage = () => {
   const { isLoggedIn } = useAuth();
 
   return (
-    <div>
+    <div >
         <Sb isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
       <ReadOnlyProfilePage />
     </div>
