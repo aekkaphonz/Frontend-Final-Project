@@ -17,6 +17,7 @@ import { useAuth } from "@/app/context/AuthProvider";
 import EditNoteOutlinedIcon from "@mui/icons-material/EditNoteOutlined";
 import { useRouter } from "next/navigation";
 import SwitchTheme from "@/app/darkMode/components/SwitchTheme";
+import SearchComponent from "@/app/search/SearchComponent";
 
 function NavLogIn({ isOpen, toggleSidebar, handleSearch }: { isOpen: boolean; toggleSidebar: () => void; handleSearch: (query: string) => void }) {
   const router = useRouter();
@@ -43,11 +44,12 @@ function NavLogIn({ isOpen, toggleSidebar, handleSearch }: { isOpen: boolean; to
       await logout(); // เรียกใช้ฟังก์ชัน logout
     } else if (setting === "แดชบอร์ด") {
       router.push("/dashboard"); // เปลี่ยนเส้นทางไปยัง /dashboard
-     }else if (setting === "โปรไฟล์") {
-       router.push("/profile"); 
-     }
+    } else if (setting === "โปรไฟล์") {
+      router.push("/profile");
+    }
     handleCloseUserMenu(); // ปิดเมนู
   };
+  
 
   return (
     <>
@@ -88,25 +90,9 @@ function NavLogIn({ isOpen, toggleSidebar, handleSearch }: { isOpen: boolean; to
             </Link>
           </Box>
 
-          {/* Search Bar */}
+          {/* ใช้ SearchComponent แทนการใช้ SearchBar */}
           <Box sx={{ flexGrow: 1, mx: 2, display: "flex", justifyContent: "center" }}>
-           <TextField
-              placeholder="ค้นหา"
-              variant="outlined"
-              size="small"
-              sx={{
-                width: "60%",
-                backgroundColor: "#f6f6f6",
-              }}
-              onChange={(e) => handleSearch(e.target.value)}
-              InputProps={{
-                endAdornment: (
-                  <IconButton>
-                    <SearchIcon />
-                  </IconButton>
-                ),
-              }}
-            />
+            <SearchComponent onSearch={handleSearch} />
           </Box>
 
           {/* Buttons */}
