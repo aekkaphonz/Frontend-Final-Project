@@ -71,35 +71,19 @@ export default function Page() {
     setIsSidebarOpen(!isSidebarOpen);
   };
 
-  const handleSearch = async (query: string) => {
+  const handleSearch = (query: string) => {
     setSearchQuery(query);
 
     if (!query.trim()) {
-      setFilteredData(data);
+      setFilteredData(data); 
       return;
     }
 
-    try {
-      console.log(`🔍 Searching for: '${query}'`);
-      const encodedQuery = encodeURIComponent(query);
-      const res = await fetch(`http://localhost:3001/contents/${encodedQuery}`);
-      console.log(" API Response:", res.status, res.statusText);
+    const filtered = data.filter(post =>
+      post.title.toLowerCase().includes(query.toLowerCase())
+    );
 
-      if (!res.ok) {
-        const errorText = await res.text();
-        console.error("Search API Error:", res.status, errorText);
-        throw new Error(`Failed to fetch search results`);
-      }
-
-      const searchResults: Post = await res.json();
-      console.log("Search Results:", searchResults);
-
-      // ถ้า API คืนเป็น Object เดียว ต้องใส่ลงใน Array เพื่อให้ .map() ใช้งานได้
-      setFilteredData([searchResults]);
-    } catch (error) {
-      console.error("Error during search:", error);
-      setFilteredData([]);
-    }
+    setFilteredData(filtered);
   };
 
   useEffect(() => {
@@ -108,11 +92,10 @@ export default function Page() {
         const res = await fetch("http://localhost:3001/contents/all");
         if (!res.ok) throw new Error("Failed to fetch data");
         const result: Post[] = await res.json();
-        console.log(result); // ตรวจสอบ postImage ใน console
         setData(result);
-        setFilteredData(result);
+        setFilteredData(result);  
       } catch (error) {
-        console.error("Error fetching posts:", error);
+        console.error("❌ Error fetching posts:", error);
       }
     }
     fetchData();
@@ -227,6 +210,7 @@ export default function Page() {
             บทความทั้งหมด
           </Typography>
           <Box sx={{ display: "flex", justifyContent: "flex-end", mb: 3 }}>
+
             <Button
               variant="contained"
               sx={{ display: "flex", alignItems: "center", fontSize: 14 }}
@@ -506,7 +490,7 @@ function RegionCard({ post }: { post: Post }) {
     comments.reduce((acc, comment) => acc + (comment.replies?.length || 0), 0);
 
   return (
-    
+
 
 
     <Grid item xs={12} sm={6} md={4} lg={3}>
@@ -616,10 +600,10 @@ function RegionCard({ post }: { post: Post }) {
               </Box>
             </Box>
           </Box>
-          </Box>
-        </Card>
-      </Grid>
-  
-    
+        </Box>
+      </Card>
+    </Grid>
+
+
   );
 }
