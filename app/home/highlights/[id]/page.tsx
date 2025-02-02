@@ -60,37 +60,8 @@ export default function Page() {
   const params: any = useParams();
   const router = useRouter();
 
-  const editComment = async (commentId: string, newMessage: string) => {
-    if (!newMessage.trim()) return;  // ตรวจสอบว่าไม่ใช่ช่องว่าง
-    try {
-      const token = localStorage.getItem("token");
-  
-      const res = await fetch(`http://localhost:3001/comments/${commentId}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`,
-        },
-        body: JSON.stringify({ comment: newMessage }),
-      });
-  
-      if (!res.ok) {
-        const errorMessage = await res.text();
-        console.error("API Error:", errorMessage);
-        throw new Error("Failed to edit comment");
-      }
-  
-      const updatedComment = await res.json();
-  
-      setComments((prevComments) =>
-        prevComments.map((comment) =>
-          comment._id === updatedComment._id
-            ? { ...comment, message: updatedComment.comment }
-            : comment
-        )
-      );
-  const editComment = async (commentId: string, newMessage: string) => {
-  if (!newMessage.trim()) return;  
+const editComment = async (commentId: string, newMessage: string) => {
+  if (!newMessage.trim()) return;
 
   try {
     const token = localStorage.getItem("token");
@@ -105,17 +76,14 @@ export default function Page() {
     });
 
     if (!res.ok) {
-      const errorMessage = await res.text();
-      console.error("API Error:", errorMessage);
       throw new Error("Failed to edit comment");
     }
 
     const updatedComment = await res.json();
-    console.log("Updated Comment:", updatedComment); // Debugging
 
     setComments((prevComments) =>
       prevComments.map((comment) =>
-        comment.id === commentId  // เปลี่ยนจาก `_id` เป็น `id`
+        comment.id === updatedComment._id // ตรวจสอบโดยใช้ `_id`
           ? { ...comment, message: updatedComment.comment }
           : comment
       )
@@ -128,11 +96,6 @@ export default function Page() {
   }
 };
 
-    } catch (error) {
-      console.error("Error updating comment:", error);
-      alert("เกิดข้อผิดพลาดในการแก้ไขคอมเมนต์");
-    }
-  };  
 
 // ลบคอมเมนต์
 const deleteComment = async (commentId: string) => {
@@ -669,7 +632,7 @@ const deleteComment = async (commentId: string) => {
                     >
                       <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                         <Typography>
-                          <strong>{reply.name}:</strong> {reply.message}
+                          <strong>{reply.name}:</strong>  {formatCommentText(reply.message)}
                         </Typography>
                         <Typography variant="caption" sx={{ color: "var(--comment-text)" }}>
                           {reply.timestamp}

@@ -34,6 +34,7 @@ import CommentIcon from "@mui/icons-material/Comment";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import AppsIcon from "@mui/icons-material/Apps";
 import { Menu, MenuItem, Checkbox } from "@mui/material";
+import { Chip } from "@mui/material";
 
 interface Post {
   _id: string;
@@ -75,7 +76,7 @@ export default function Page() {
     setSearchQuery(query);
 
     if (!query.trim()) {
-      setFilteredData(data); 
+      setFilteredData(data);
       return;
     }
 
@@ -93,7 +94,7 @@ export default function Page() {
         if (!res.ok) throw new Error("Failed to fetch data");
         const result: Post[] = await res.json();
         setData(result);
-        setFilteredData(result);  
+        setFilteredData(result);
       } catch (error) {
         console.error("❌ Error fetching posts:", error);
       }
@@ -209,8 +210,8 @@ export default function Page() {
           >
             บทความทั้งหมด
           </Typography>
-          <Box sx={{ display: "flex", justifyContent: "flex-end", mb: 3 }}>
-
+          <Box sx={{ display: "flex", flexDirection: "column", alignItems: "flex-end", mb: 3 }}>
+            {/* ปุ่มเลือกหมวดหมู่ */}
             <Button
               variant="contained"
               sx={{ display: "flex", alignItems: "center", fontSize: 14 }}
@@ -220,6 +221,7 @@ export default function Page() {
               หมวดหมู่
             </Button>
 
+            {/* เมนูเลือกหมวดหมู่ */}
             <Menu
               anchorEl={anchorEl}
               open={Boolean(anchorEl)}
@@ -229,19 +231,32 @@ export default function Page() {
               }}
             >
               <Grid container spacing={2} sx={{ width: 350 }}>
-                {blogCategories.map((category, index) => (
+                {blogCategories.map((category) => (
                   <Grid item xs={6} key={category}>
                     <MenuItem onClick={() => handleCategoryChange(category)}>
-                      <Checkbox
-                        checked={selectedCategories.includes(category)}
-                      />
+                      <Checkbox checked={selectedCategories.includes(category)} />
                       <ListItemText primary={category} />
                     </MenuItem>
                   </Grid>
                 ))}
               </Grid>
             </Menu>
+
+            {/* แสดงแท็กที่เลือก */}
+            {selectedCategories.length > 0 && (
+              <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1, mt: 2 }}>
+                {selectedCategories.map((category) => (
+                  <Chip
+                    key={category}
+                    label={category}
+                    onDelete={() => handleCategoryChange(category)} // กดลบได้
+                    sx={{ backgroundColor: "#98c9a3", color: "#fff" }}
+                  />
+                ))}
+              </Box>
+            )}
           </Box>
+          
           <Grid container spacing={3} justifyContent="center">
             {filteredData.length > 0 ? (
               filteredData.map((post) => (

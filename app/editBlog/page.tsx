@@ -98,16 +98,21 @@ export default function EditBlog() {
       formData.append("tags", JSON.stringify([]));
     }
 
-    if (images.length > 0) {
-      formData.append("postImage", images[0]);
-    } else if (imagePreviews.length > 0) {
-      formData.append("postImage", imagePreviews[0]);
-    }
+    // แปลงรูปเป็น Base64 และเพิ่มลงใน FormData
+    const convertToBase64 = (file: File) => {
+      return new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => resolve(reader.result as string);
+        reader.onerror = (error) => reject(error);
+      });
+    };
 
-    // ✅ ตรวจสอบว่ามีไฟล์ภาพถูกเพิ่มลงใน formData หรือไม่
-    if (!formData.has("postImage")) {
-      alert("⚠️ ไม่พบรูปภาพที่อัปโหลด กรุณาเลือกไฟล์ใหม่!");
-      return;
+    if (images.length > 0) {
+      const base64Image = await convertToBase64(images[0]);
+      formData.append("postImage", base64Image);
+    } else if (imagePreviews.length > 0) {
+      formData.append("postImage", imagePreviews[0]); // ในกรณีที่ใช้ URL
     }
 
     console.log("📤 กำลังส่งข้อมูลไป Backend:", Array.from(formData.entries()));
