@@ -14,6 +14,7 @@ import Paper from "@mui/material/Paper";
 import ImageIcon from "@mui/icons-material/Image";
 import DeleteIcon from "@mui/icons-material/Delete";
 import Sb from "@/app/sidebarAuther/page";
+import Swal from "sweetalert2";
 
 const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: "#fff",
@@ -86,7 +87,16 @@ export default function EditBlog() {
   }, [postId]);
 
   const handleUpdate = async () => {
-    if (!postId) return alert("❌ ไม่พบบทความที่ต้องการแก้ไข");
+    if (!postId) {
+      Swal.fire({
+        title: "เกิดข้อผิดพลาด!",
+        text: "ไม่พบบทความที่ต้องการแก้ไข",
+        icon: "error",
+        confirmButtonText: "ตกลง",
+        confirmButtonColor: "#d33",
+      });
+      return;
+    }
 
     const formData = new FormData();
     formData.append("title", title);
@@ -98,7 +108,6 @@ export default function EditBlog() {
       formData.append("tags", JSON.stringify([]));
     }
 
-    // แปลงรูปเป็น Base64 และเพิ่มลงใน FormData
     const convertToBase64 = (file: File) => {
       return new Promise<string>((resolve, reject) => {
         const reader = new FileReader();
@@ -112,7 +121,7 @@ export default function EditBlog() {
       const base64Image = await convertToBase64(images[0]);
       formData.append("postImage", base64Image);
     } else if (imagePreviews.length > 0) {
-      formData.append("postImage", imagePreviews[0]); // ในกรณีที่ใช้ URL
+      formData.append("postImage", imagePreviews[0]);
     }
 
     console.log("📤 กำลังส่งข้อมูลไป Backend:", Array.from(formData.entries()));
@@ -124,16 +133,35 @@ export default function EditBlog() {
       });
 
       if (response.ok) {
-        alert("📌 แก้ไขบทความสำเร็จ!");
-        router.push("/dashboard");
+        Swal.fire({
+          title: "แก้ไขบทความสำเร็จ!",
+          text: "บทความของคุณได้รับการอัปเดตเรียบร้อยแล้ว",
+          icon: "success",
+          confirmButtonText: "ตกลง",
+          confirmButtonColor: "#77bfa3",
+        }).then(() => {
+          router.push("/dashboard"); // ✅ เปลี่ยนเส้นทางหลังจากกดตกลง
+        });
       } else {
         const errorText = await response.text();
         console.error("❌ เกิดข้อผิดพลาด:", errorText);
-        alert("เกิดข้อผิดพลาด: " + errorText);
+        Swal.fire({
+          title: "เกิดข้อผิดพลาด!",
+          text: "ไม่สามารถแก้ไขบทความได้ กรุณาลองใหม่อีกครั้ง",
+          icon: "error",
+          confirmButtonText: "ตกลง",
+          confirmButtonColor: "#d33",
+        });
       }
     } catch (error) {
       console.error("❌ ไม่สามารถเชื่อมต่อกับ Backend ได้:", error);
-      alert("ไม่สามารถเชื่อมต่อกับ Backend ได้");
+      Swal.fire({
+        title: "เกิดข้อผิดพลาด!",
+        text: "ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ กรุณาลองใหม่อีกครั้ง",
+        icon: "error",
+        confirmButtonText: "ตกลง",
+        confirmButtonColor: "#d33",
+      });
     }
   };
 

@@ -7,6 +7,7 @@ import Paper from "@mui/material/Paper";
 import Navbar from "@/app/navbar/page";
 import AutherAfterLogin from "@/app/navbar/AutherAfterLogin";
 import { useAuth } from "@/app/context/AuthProvider";
+import Swal from "sweetalert2";
 
 import ImageIcon from "@mui/icons-material/Image";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -73,56 +74,79 @@ export default function Page() {
 
     const handleSave = async () => {
         if (!user?.userId) {
-            alert("User not logged in or missing userId.");
+            Swal.fire({
+                title: "ข้อผิดพลาด!",
+                text: "กรุณาเข้าสู่ระบบก่อนทำการสร้างบทความ",
+                icon: "error",
+                confirmButtonText: "ตกลง",
+                confirmButtonColor: "#d33",
+            });
             return;
         }
-
+    
         if (!title.trim()) {
             setTitleError("กรุณากรอกชื่อบทความ");
             return;
         } else {
             setTitleError(null);
         }
-
+    
         if (!content.trim()) {
             setContentError("กรุณากรอกเนื้อหาของบทความ");
             return;
         } else {
             setContentError(null);
         }
-
+    
         const formData = new FormData();
         formData.append("userId", user.userId);
         formData.append("title", title);
         formData.append("detail", content);
-
+    
         selectedTags.forEach(tag => {
             formData.append("tags[]", tag);
         });
-
+    
         if (images.length > 0) {
             formData.append("postImage", images[0]);
         }
-
-        console.log(" กำลังส่งข้อมูลไป Backend:", Object.fromEntries(formData.entries()));
-
+    
         try {
             const response = await fetch("http://localhost:3001/contents/createContent", {
                 method: "POST",
                 body: formData,
             });
-
+    
             if (response.ok) {
-                alert("📌 บันทึกบทความและรูปภาพเรียบร้อยแล้ว!");
-                handleCancel();
+                Swal.fire({
+                    title: "สร้างบทความสำเร็จ!",
+                    text: "บทความของคุณถูกบันทึกเรียบร้อยแล้ว",
+                    icon: "success",
+                    confirmButtonText: "ตกลง",
+                    confirmButtonColor: "#77bfa3",
+                }).then(() => {
+                    handleCancel(); // เคลียร์ฟอร์มหลังจากกดตกลง
+                });
             } else {
                 const errorText = await response.text();
                 console.error("❌ เกิดข้อผิดพลาด:", errorText);
-                alert("เกิดข้อผิดพลาดในการบันทึกบทความ: " + errorText);
+                Swal.fire({
+                    title: "เกิดข้อผิดพลาด!",
+                    text: "ไม่สามารถบันทึกบทความได้ กรุณาลองใหม่อีกครั้ง",
+                    icon: "error",
+                    confirmButtonText: "ตกลง",
+                    confirmButtonColor: "#d33",
+                });
             }
         } catch (error) {
             console.error("❌ ไม่สามารถเชื่อมต่อกับ Backend ได้:", error);
-            alert("ไม่สามารถเชื่อมต่อกับ Backend ได้");
+            Swal.fire({
+                title: "เกิดข้อผิดพลาด!",
+                text: "ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ กรุณาลองใหม่อีกครั้ง",
+                icon: "error",
+                confirmButtonText: "ตกลง",
+                confirmButtonColor: "#d33",
+            });
         }
     };
 
