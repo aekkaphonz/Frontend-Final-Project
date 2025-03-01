@@ -32,6 +32,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   
         if (response.status === 200 && response.data.length > 0) {
           const userData = response.data[0];
+
           setUser({
             userName: userData.userName,
             profileImage: userData.profileImage || "https://via.placeholder.com/50",
@@ -53,6 +54,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     };
   
     fetchProfile();
+
   }, []);
   
   const logout = async () => {

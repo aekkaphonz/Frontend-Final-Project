@@ -65,8 +65,10 @@ export default function Page() {
   const { user } = useAuth();
   const userId = user?.userId; // ตรวจสอบว่า userId มีค่าหรือไม่
   const [comments, setComments] = useState<Comment[]>([]);
-  const [anchorEl, setAnchorEl] = useState(null);
+  // const [anchorEl, setAnchorEl] = useState(null);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
+
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);

@@ -55,7 +55,7 @@ export default function Page() {
     }
   };
 
-  const fetchTotalPosts = async () => {
+  const fetchTotalPosts = async () => { 
     if (!user?.userId) return; // ถ้าไม่มี userId ไม่ต้องโหลดข้อมูล
 
     try {
