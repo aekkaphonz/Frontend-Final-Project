@@ -24,13 +24,20 @@ interface Article {
 }
 
 export default function Page() {
-    const { isLoggedIn } = useAuth();
+  const { isLoggedIn } = useAuth();
   const [articles, setArticles] = useState<Article[]>([]);
   const [showMore, setShowMore] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false); // State สำหรับควบคุม Sidebar
+  const [searchQuery, setSearchQuery] = useState("");
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
+  };
+
+  const handleSearch = (query: string) => {
+    setSearchQuery(query);
+    // ตอนนี้เราเก็บค่า search query ไว้ในstate
+    // สามารถนำไปใช้ค้นหาข้อมูลได้ในอนาคต
   };
 
   // ดึงข้อมูลบทความจาก API
@@ -57,10 +64,20 @@ export default function Page() {
   return (
     <Container maxWidth="xl">
       <Box sx={{ display: "flex", minHeight: "100vh", backgroundColor: "#f9f9f9" }}>
-        {/* Sidebar */}
-        {isLoggedIn !== undefined ? (
-        isLoggedIn ? <AfterLogin /> : <Navbar />
-      ) : null}
+      {/* Sidebar and Navbar */}
+      {isLoggedIn ? (
+        <AfterLogin
+          isOpen={isSidebarOpen}
+          toggleSidebar={toggleSidebar}
+          handleSearch={handleSearch}
+        />
+      ) : (
+        <Navbar
+          isOpen={isSidebarOpen}
+          toggleSidebar={toggleSidebar}
+          handleSearch={handleSearch}
+        />
+      )}
         {/* Main Content */}
         <Box
           component="main"
