@@ -59,7 +59,7 @@ interface Comment {
   timestamp: string;
 }
 
-export default function Page() {
+export default function Page({ params }: { params: { id: string } }) {
   const { user } = useAuth();
   const { isLoggedIn } = useAuth();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -84,7 +84,7 @@ export default function Page() {
     replyId: number;
   } | null>(null);
   const [anchorReplyEl, setAnchorReplyEl] = useState<null | HTMLElement>(null);
-  const params: any = useParams();
+  const [searchQuery, setSearchQuery] = useState("");
   const router = useRouter();
   const [liked, setLiked] = useState(false);
   const [updatedLikes, setUpdatedLikes] = useState(0);
@@ -485,9 +485,25 @@ export default function Page() {
     );
   };
 
+  const handleSearch = (query: string) => {
+    setSearchQuery(query);
+  };
+
   return (
     <Box sx={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
-      {isLoggedIn ? <AfterLogin /> : <Navbar />}
+      {isLoggedIn ? (
+        <AfterLogin 
+          isOpen={isSidebarOpen}
+          toggleSidebar={toggleSidebar}
+          handleSearch={handleSearch}
+        />
+      ) : (
+        <Navbar 
+          isOpen={isSidebarOpen}
+          toggleSidebar={toggleSidebar}
+          handleSearch={handleSearch}
+        />
+      )}
 
       <Container
         maxWidth="md"
