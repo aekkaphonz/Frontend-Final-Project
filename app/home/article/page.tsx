@@ -37,15 +37,19 @@ interface Post {
   userName: string;
   tags: string[];
   createdAt: string;
+  likeCount: number;
+  likedUsers: string[];
 }
 
 export default function Page() {
-  const { isLoggedIn } = useAuth();
+  const { isLoggedIn, user } = useAuth();
   const [posts, setPosts] = useState<Post[]>([]);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false); 
   const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [liked, setLiked] = useState<{ [key: string]: boolean }>({});
+  const [updatedLikes, setUpdatedLikes] = useState<{ [key: string]: number }>({});
   const router = useRouter();
 
   const toggleSidebar = () => {
@@ -56,6 +60,53 @@ export default function Page() {
     setSearchQuery(query);
   };
 
+  const handleLike = async (postId: string) => {
+    if (!user?.userId) {
+      alert("กรุณาเข้าสู่ระบบเพื่อทำการไลค์");
+      return;
+    }
+
+    try {
+      const res = await fetch(`http://localhost:3001/contents/${postId}/like`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId: user.userId }),
+      });
+
+      if (!res.ok) throw new Error("Failed to update like status");
+
+      const updatedPost = await res.json();
+      
+      // อัปเดตสถานะไลค์
+      setLiked(prev => ({
+        ...prev,
+        [postId]: updatedPost.likedUsers.includes(user.userId)
+      }));
+      
+      // อัปเดตจำนวนไลค์
+      setUpdatedLikes(prev => ({
+        ...prev,
+        [postId]: updatedPost.likeCount
+      }));
+
+      // อัพเดท state ของโพสต์
+      setPosts(prevPosts => 
+        prevPosts.map(post => {
+          if (post._id === postId) {
+            return {
+              ...post,
+              likes: updatedPost.likedUsers,
+              likeCount: updatedPost.likeCount
+            };
+          }
+          return post;
+        })
+      );
+    } catch (error) {
+      console.error("Error updating like status:", error);
+    }
+  };
+
   const handlePostClick = (postId: string) => {
     try {
       router.push(`/home/highlights/${postId}`);
@@ -64,44 +115,40 @@ export default function Page() {
     }
   };
 
-  // ดึงข้อมูลบทความจาก API
   useEffect(() => {
-    let isSubscribed = true;
-
-    async function fetchPosts() {
-      if (!isSubscribed) return;
-      
-      setLoading(true);
-      setError(null);
-      
+    const fetchPosts = async () => {
       try {
         const response = await fetch("http://localhost:3001/contents/all");
         if (!response.ok) {
-          throw new Error('Failed to fetch posts');
+          throw new Error(`Failed to fetch posts: ${response.status}`);
         }
         const data = await response.json();
-        
-        if (isSubscribed) {
-          setPosts(Array.isArray(data) ? data : []);
+        setPosts(data);
+
+        // ตั้งค่าสถานะไลค์เริ่มต้นสำหรับแต่ละโพสต์
+        if (user?.userId) {
+          const initialLikedState: { [key: string]: boolean } = {};
+          const initialLikesCount: { [key: string]: number } = {};
+          
+          data.forEach((post: Post) => {
+            initialLikedState[post._id] = post.likes?.includes(user.userId) || false;
+            initialLikesCount[post._id] = post.likes?.length || 0;
+          });
+          
+          setLiked(initialLikedState);
+          setUpdatedLikes(initialLikesCount);
         }
+
+        setLoading(false);
       } catch (error) {
         console.error("Error fetching posts:", error);
-        if (isSubscribed) {
-          setError(error instanceof Error ? error.message : 'An error occurred');
-        }
-      } finally {
-        if (isSubscribed) {
-          setLoading(false);
-        }
+        setError(error instanceof Error ? error.message : "Failed to load posts");
+        setLoading(false);
       }
-    }
+    };
 
     fetchPosts();
-
-    return () => {
-      isSubscribed = false;
-    };
-  }, []);
+  }, [user]);
 
   // แปลงเวลาให้เป็นรูปแบบที่ต้องการ
   const formatTimeAgo = (createdAt: string) => {
@@ -277,10 +324,22 @@ export default function Page() {
                             {Array.isArray(post.comments) ? post.comments.length : 0}
                           </Typography>
                         </Box>
-                        <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                          <FavoriteIcon fontSize="small" sx={{ mr: 0.5, color: 'text.secondary' }} />
+                        <Box sx={{ display: "flex", alignItems: "center", mt: 1 }}>
+                          <IconButton
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleLike(post._id);
+                            }}
+                            color={liked[post._id] ? "error" : "default"}
+                          >
+                            {liked[post._id] ? (
+                              <FavoriteIcon />
+                            ) : (
+                              <FavoriteIcon />
+                            )}
+                          </IconButton>
                           <Typography variant="body2" color="text.secondary">
-                            {Array.isArray(post.likes) ? post.likes.length : 0}
+                            {updatedLikes[post._id] || post.likes?.length || 0} likes
                           </Typography>
                         </Box>
                         <Typography

@@ -32,7 +32,7 @@ import GradeIcon from '@mui/icons-material/Grade';
 import GradeOutlinedIcon from '@mui/icons-material/GradeOutlined';
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import FavoriteOutlinedIcon from '@mui/icons-material/FavoriteOutlined';
-
+import Swal from "sweetalert2";
 
 interface User {
   id: string;
@@ -445,7 +445,17 @@ export default function Page({ params }: { params: { id: string } }) {
   // ฟังก์ชันการไลค์
   const handleLike = async () => {
     if (!user?.userId) {
-      alert("กรุณาเข้าสู่ระบบเพื่อทำการไลค์");
+      Swal.fire({
+        title: "แจ้งเตือน!",
+        text: "กรุณาเข้าสู่ระบบเพื่อทำการไลค์",
+        icon: "warning",
+        confirmButtonText: "ตกลง",
+        confirmButtonColor: "#3085d6",
+      }).then((result) => {
+        if (result.isConfirmed) {
+          router.push("/signin");
+        }
+      });
       return;
     }
 
