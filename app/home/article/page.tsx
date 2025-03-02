@@ -44,7 +44,7 @@ interface Post {
 export default function Page() {
   const { isLoggedIn, user } = useAuth();
   const [posts, setPosts] = useState<Post[]>([]);
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false); 
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -76,13 +76,13 @@ export default function Page() {
       if (!res.ok) throw new Error("Failed to update like status");
 
       const updatedPost = await res.json();
-      
+
       // อัปเดตสถานะไลค์
       setLiked(prev => ({
         ...prev,
         [postId]: updatedPost.likedUsers.includes(user.userId)
       }));
-      
+
       // อัปเดตจำนวนไลค์
       setUpdatedLikes(prev => ({
         ...prev,
@@ -90,7 +90,7 @@ export default function Page() {
       }));
 
       // อัพเดท state ของโพสต์
-      setPosts(prevPosts => 
+      setPosts(prevPosts =>
         prevPosts.map(post => {
           if (post._id === postId) {
             return {
@@ -129,12 +129,12 @@ export default function Page() {
         if (user?.userId) {
           const initialLikedState: { [key: string]: boolean } = {};
           const initialLikesCount: { [key: string]: number } = {};
-          
+
           data.forEach((post: Post) => {
             initialLikedState[post._id] = post.likes?.includes(user.userId) || false;
             initialLikesCount[post._id] = post.likes?.length || 0;
           });
-          
+
           setLiked(initialLikedState);
           setUpdatedLikes(initialLikesCount);
         }
@@ -153,12 +153,12 @@ export default function Page() {
   // แปลงเวลาให้เป็นรูปแบบที่ต้องการ
   const formatTimeAgo = (createdAt: string) => {
     if (!createdAt) return '';
-    
+
     try {
       const now = new Date();
       const postDate = new Date(createdAt);
       const diffInMinutes = Math.floor((now.getTime() - postDate.getTime()) / (1000 * 60));
-      
+
       if (diffInMinutes < 60) {
         return `${diffInMinutes} นาที`;
       } else if (diffInMinutes < 1440) {
@@ -190,6 +190,7 @@ export default function Page() {
           />
         )}
 
+
         {/* Main Content */}
         <Box
           component="main"
@@ -202,6 +203,21 @@ export default function Page() {
             paddingBottom: 2,
           }}
         >
+          <Typography
+            variant="h5"
+            gutterBottom
+            sx={{
+              fontWeight: "bold",
+              textAlign: "center",
+              color: "#98c9a3",
+              marginBottom: "30px",
+              borderBottom: "2px solid #c9dbc4",
+              display: "inline-block",
+              paddingBottom: "5px",
+            }}
+          >
+            บทความน่าสนใจ
+          </Typography>
           {loading ? (
             <Box sx={{ display: 'flex', justifyContent: 'center', my: 4 }}>
               <Typography>กำลังโหลด...</Typography>
@@ -215,7 +231,7 @@ export default function Page() {
               <Typography>ไม่พบบทความ</Typography>
             </Box>
           ) : (
-            <List sx={{ 
+            <List sx={{
               bgcolor: 'background.paper',
               borderRadius: 1,
               boxShadow: 1,
@@ -235,10 +251,10 @@ export default function Page() {
                     padding: 2
                   }}
                 >
-                  <Box sx={{ 
-                    width: '100%', 
-                    display: 'flex', 
-                    gap: 2 
+                  <Box sx={{
+                    width: '100%',
+                    display: 'flex',
+                    gap: 2
                   }}>
                     {/* รูปภาพประจำโพสต์ */}
                     <Box
@@ -282,7 +298,7 @@ export default function Page() {
                       <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
                         <Typography
                           variant="subtitle1"
-                          sx={{ 
+                          sx={{
                             fontWeight: 'bold',
                             flex: 1,
                             overflow: 'hidden',
@@ -300,7 +316,7 @@ export default function Page() {
                           {formatTimeAgo(post.createdAt)}
                         </Typography>
                       </Box>
-                      
+
                       {/* แสดงส่วนของเนื้อหาโพสต์ */}
                       <Typography
                         variant="body2"
@@ -316,7 +332,7 @@ export default function Page() {
                       >
                         {post.detail || 'ไม่มีรายละเอียด'}
                       </Typography>
-                      
+
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mt: 'auto' }}>
                         <Box sx={{ display: 'flex', alignItems: 'center' }}>
                           <CommentIcon fontSize="small" sx={{ mr: 0.5, color: 'text.secondary' }} />

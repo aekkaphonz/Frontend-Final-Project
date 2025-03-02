@@ -31,11 +31,12 @@ const Item = styled(Paper)(({ theme }) => ({
 export default function Page() {
   const { user, isLoggedIn } = useAuth();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [userName, setUserName] = useState("กำลังโหลด..."); // เก็บชื่อผู้ใช้งาน
+  const [userName, setUserName] = useState("กำลังโหลด...");
   const [profileImage, setProfileImage] = useState("");
   const [totalViews, setTotalViews] = useState(0);
   const [totalPosts, setTotalPosts] = useState(0);
   const [totalComments, setTotalComments] = useState(0);
+  const [totalLikes, setTotalLikes] = useState(0);
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
@@ -115,6 +116,29 @@ export default function Page() {
     }
   };
 
+  const fetchTotalLikes = async () => {
+    if (!user?.userId) return;
+  
+    try {
+      const response = await fetch(`http://localhost:3001/contents?userId=${user.userId}`);
+      if (!response.ok) throw new Error("Failed to fetch posts");
+  
+      const posts = await response.json();
+  
+      const total = posts.reduce((sum: number, post: any) => {
+        if (typeof post.likes === "number") {
+          return sum + post.likes;
+        }
+        return sum;
+      }, 0);
+  
+      setTotalLikes(total);
+    } catch (error) {
+      console.error("Error fetching total likes:", error);
+    }
+  };
+  
+
   useEffect(() => {
     fetchUserData();
   }, []);
@@ -124,6 +148,7 @@ export default function Page() {
       fetchTotalPosts();
       fetchTotalViews();
       fetchTotalComments();
+      fetchTotalLikes();
     }
   }, [isLoggedIn, user?.userId]);
 
@@ -417,7 +442,7 @@ export default function Page() {
                 color: "#FF8383",
               }}
             >
-              0
+              {totalLikes}
             </Typography>
             <ThumbUpIcon
               id="profile-icon"
