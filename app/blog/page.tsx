@@ -20,6 +20,7 @@ import {
   TextField,
   MenuItem, Select, FormControl, InputLabel, SelectChangeEvent
 } from "@mui/material";
+import Swal from "sweetalert2";
 import BorderColorIcon from '@mui/icons-material/BorderColor';
 import DeleteIcon from '@mui/icons-material/Delete';
 
@@ -113,18 +114,41 @@ export default function Page() {
         const response = await fetch(`http://localhost:3001/contents/${selectedPost}`, {
           method: "DELETE",
         });
-
+  
         if (response.ok) {
           setRows(rows.filter((row) => row._id !== selectedPost));
           setOpenModal(false);
+  
+          Swal.fire({
+            title: "ลบสำเร็จ!",
+            text: "บทความถูกลบเรียบร้อย",
+            icon: "success",
+            confirmButtonText: "ตกลง",
+            confirmButtonColor: "#77bfa3",
+          });
+  
         } else {
           console.error("❌ ไม่สามารถลบบทความ");
+          Swal.fire({
+            title: "เกิดข้อผิดพลาด!",
+            text: "ไม่สามารถลบบทความได้",
+            icon: "error",
+            confirmButtonText: "ตกลง",
+            confirmButtonColor: "#77bfa3",
+          });
         }
       } catch (error) {
         console.error("❌ เกิดข้อผิดพลาดในการลบบทความ:", error);
+        Swal.fire({
+          title: "เกิดข้อผิดพลาด!",
+          text: "เกิดปัญหาขณะลบบทความ",
+          icon: "error",
+          confirmButtonText: "ตกลง",
+          confirmButtonColor: "#77bfa3",
+        });
       }
     }
-  };
+  };  
 
   return (
     <Container
