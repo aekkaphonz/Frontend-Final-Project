@@ -22,6 +22,7 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import axios from "axios";
 import Swal from "sweetalert2";
+import { useAuth } from "@/app/context/AuthProvider";
 
 function signin() {
   interface LoginResponse {
@@ -35,6 +36,7 @@ function signin() {
 
   const [isFormSubmitted, setIsFormSubmitted] = useState(false);
   const router = useRouter();
+  const { refreshUserData } = useAuth();
 
   const {
     register,
@@ -69,6 +71,8 @@ function signin() {
         sessionStorage.setItem("sessionId", response.data.sessionId);
         sessionStorage.setItem("user", JSON.stringify(response.data.user));
   
+        await refreshUserData(); // เพิ่มการเรียก refreshUserData เพื่ออัพเดท Navbar
+
         Swal.fire({
           title: "เข้าสู่ระบบสำเร็จ!",
           text: "ยินดีต้อนรับกลับเข้าสู่ระบบ!",

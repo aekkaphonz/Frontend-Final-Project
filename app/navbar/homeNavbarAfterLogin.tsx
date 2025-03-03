@@ -80,7 +80,14 @@ export default function HomeNavbarAfterLogin() {
         {/* ปุ่มสร้างและโปรไฟล์ */}
         <Box sx={{ display: "flex", alignItems: "center", gap: "20px" }}>
           {/* ปุ่มเขียน */}
-          <Button href="/createBlog"
+          <Button 
+            onClick={() => {
+              if (!user) {
+                router.push('/signin');
+                return;
+              }
+              router.push('/createBlog');
+            }}
             sx={{
               color: "#ffffff",
               backgroundColor: "#77bfa3",
@@ -105,11 +112,12 @@ export default function HomeNavbarAfterLogin() {
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
                 <Avatar
                   alt={user?.userName || "User"}
-                  src={user?.profileImage || "/default-profile.png"} 
+                  src={user?.profileImage || "/images/default-avatar.png"}
+                  onError={(e: any) => {
+                    e.target.src = "/images/default-avatar.png";
+                  }}
                 />
-
               </IconButton>
-
             </Tooltip>
             <Menu
               sx={{ mt: "45px" }}
