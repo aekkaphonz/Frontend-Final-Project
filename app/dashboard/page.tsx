@@ -37,6 +37,7 @@ export default function Page() {
   const [totalPosts, setTotalPosts] = useState(0);
   const [totalComments, setTotalComments] = useState(0);
   const [totalLikes, setTotalLikes] = useState(0);
+  const [searchQuery, setSearchQuery] = useState("");
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
@@ -64,7 +65,7 @@ export default function Page() {
       if (!response.ok) throw new Error("Failed to fetch posts");
 
       const posts = await response.json();
-      setTotalPosts(posts.length); // ✅ นับจำนวนโพสต์ทั้งหมด
+      setTotalPosts(posts.length); // นับจำนวนโพสต์ทั้งหมด
     } catch (error) {
       console.error("Error fetching total posts:", error);
     }
@@ -126,8 +127,8 @@ export default function Page() {
       const posts = await response.json();
   
       const total = posts.reduce((sum: number, post: any) => {
-        if (typeof post.likes === "number") {
-          return sum + post.likes;
+        if (typeof post.likeCount === "number") {
+          return sum + post.likeCount;
         }
         return sum;
       }, 0);
@@ -138,6 +139,11 @@ export default function Page() {
     }
   };
   
+
+  const handleSearch = (query: string) => {
+    setSearchQuery(query);
+    // ทำการค้นหาตาม query ถ้าต้องการ
+  };
 
   useEffect(() => {
     fetchUserData();
@@ -161,9 +167,16 @@ export default function Page() {
       }}
     >
       {isLoggedIn ? (
-        <AutherAfterLogin isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
+        <AutherAfterLogin 
+          isOpen={isSidebarOpen} 
+          toggleSidebar={toggleSidebar}
+        />
       ) : (
-        <Navbar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
+        <Navbar 
+          isOpen={isSidebarOpen} 
+          toggleSidebar={toggleSidebar}
+          handleSearch={handleSearch}
+        />
       )}
 
       <Grid
@@ -232,12 +245,12 @@ export default function Page() {
                 </Typography>
               </Box>
 
-              <Box sx={{ my: 1, textAlign: "right", ml: "auto" }}>
+              {/* <Box sx={{ my: 1, textAlign: "right", ml: "auto" }}>
                 <Typography sx={{ fontSize: 14, color: "gray" }}>
                   จำนวนผู้ติดตาม
                 </Typography>
                 <Typography sx={{ fontSize: 18, color: "black" }}>0</Typography>
-              </Box>
+              </Box> */}
             </Box>
           </Item>
         </Grid>
