@@ -22,6 +22,7 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import axios from "axios";
 import Swal from "sweetalert2";
+import { useAuth } from "@/app/context/AuthProvider";
 
 function signin() {
   interface LoginResponse {
@@ -35,6 +36,7 @@ function signin() {
 
   const [isFormSubmitted, setIsFormSubmitted] = useState(false);
   const router = useRouter();
+  const { refreshAuth } = useAuth();
 
   const {
     register,
@@ -63,21 +65,24 @@ function signin() {
           withCredentials: true,  
         }
       );
-      console.log(response.data);
   
       if (response.data) {
         sessionStorage.setItem("sessionId", response.data.sessionId);
         sessionStorage.setItem("user", JSON.stringify(response.data.user));
   
+        // รีเฟรช auth state หลังจาก login สำเร็จ
+        await refreshAuth();
+
         Swal.fire({
           title: "เข้าสู่ระบบสำเร็จ!",
           text: "ยินดีต้อนรับกลับเข้าสู่ระบบ!",
           icon: "success",
           confirmButtonText: "ตกลง",
           confirmButtonColor: "#77bfa3",
+        }).then(() => {
+          router.push("/");
+          router.refresh(); // เพิ่ม refresh เพื่อให้ Next.js รีเรนเดอร์หน้าใหม่
         });
-  
-        router.push("/"); 
       } else {
         Swal.fire({
           title: "การเข้าสู่ระบบล้มเหลว",

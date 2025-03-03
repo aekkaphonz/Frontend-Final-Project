@@ -92,17 +92,18 @@ export default function Page({ params }: { params: { id: string } }) {
 
 
 
-  const editComment = async (commentId: string, newMessage: string) => {
-    if (!newMessage.trim()) return;
-
+  const editComment = async (commentId: number, newMessage: string) => {
     try {
-      const res = await fetch(`http://localhost:3001/comments/${commentId}`, {
-        method: "PUT", // ใช้ PUT สำหรับการอัปเดตข้อมูล
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ comment: newMessage }), // ส่งข้อความใหม่ไปยัง API
-      });
+      const res = await fetch(
+        `http://localhost:3001/comments/${commentId}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ comment: newMessage }),
+        }
+      );
 
       if (!res.ok) {
         const errorMessage = await res.text();
@@ -112,44 +113,15 @@ export default function Page({ params }: { params: { id: string } }) {
 
       const updatedComment = await res.json();
 
-      // อัปเดต state ของ comments ใน Frontend
       setComments((prevComments) =>
         prevComments.map((comment) =>
-          comment.id === updatedComment._id
-            ? { ...comment, message: updatedComment.comment }
+          comment.id === commentId
+            ? { ...comment, message: newMessage }
             : comment
         )
       );
 
-      const deleteComment = async (commentId: string) => {
-        try {
-          const res = await fetch(
-            `http://localhost:3001/comments/${commentId}`,
-            {
-              method: "DELETE",
-            }
-          );
-
-          if (!res.ok) {
-            const errorMessage = await res.text();
-            console.error("API Error:", errorMessage);
-            throw new Error("Failed to delete comment");
-          }
-
-          // อัปเดต state หลังลบสำเร็จ
-          setComments(
-            (prevComments) =>
-              prevComments.filter(
-                (comment) => comment.id.toString() !== commentId
-              ) // ตรวจสอบด้วย string
-          );
-        } catch (error) {
-          console.error("Error deleting comment:", error);
-          alert("เกิดข้อผิดพลาดในการลบคอมเมนต์");
-        }
-      };
-
-      setEditingCommentId(null); // ปิดโหมดแก้ไข
+      setEditingCommentId(null);
     } catch (error) {
       console.error("Error updating comment:", error);
       alert("เกิดข้อผิดพลาดในการแก้ไขคอมเมนต์");
@@ -158,9 +130,12 @@ export default function Page({ params }: { params: { id: string } }) {
 
   const deleteComment = async (commentId: string) => {
     try {
-      const res = await fetch(`http://localhost:3001/comments/${commentId}`, {
-        method: "DELETE",
-      });
+      const res = await fetch(
+        `http://localhost:3001/comments/${commentId}`,
+        {
+          method: "DELETE",
+        }
+      );
 
       if (!res.ok) {
         const errorMessage = await res.text();
@@ -169,8 +144,11 @@ export default function Page({ params }: { params: { id: string } }) {
       }
 
       // อัปเดต state หลังลบสำเร็จ
-      setComments((prevComments) =>
-        prevComments.filter((comment) => comment.id !== Number(commentId))
+      setComments(
+        (prevComments) =>
+          prevComments.filter(
+            (comment) => comment.id.toString() !== commentId
+          ) // ตรวจสอบด้วย string
       );
     } catch (error) {
       console.error("Error deleting comment:", error);
