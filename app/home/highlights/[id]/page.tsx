@@ -170,7 +170,7 @@ export default function Page({ params }: { params: { id: string } }) {
 
       // อัปเดต state หลังลบสำเร็จ
       setComments((prevComments) =>
-        prevComments.filter((comment) => comment.id !== commentId)
+        prevComments.filter((comment) => comment.id !== Number(commentId))
       );
     } catch (error) {
       console.error("Error deleting comment:", error);
