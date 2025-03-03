@@ -66,6 +66,7 @@ export default function Statistics() {
         const response = await fetch(`http://localhost:3001/contents?userId=${user.userId}`);
         if (!response.ok) throw new Error("Failed to fetch posts");
         const data = await response.json();
+        console.log("Posts data:", data); // เพิ่มบรรทัดนี้เพื่อตรวจสอบข้อมูล
         setPosts(data);
       } catch (err) {
         setError(err instanceof Error ? err.message : "An error occurred");
@@ -78,11 +79,15 @@ export default function Statistics() {
   }, [user?.userId]);
 
   // เตรียมข้อมูลสำหรับกราฟแท่ง
-  const barChartData = posts.map(post => ({
-    name: post.title.substring(0, 20) + "...",
-    likes: post.likeCount,
-    comments: post.commentCount,
-  }));
+  const barChartData = posts.map(post => {
+    console.log("Processing post:", post); // เพิ่มบรรทัดนี้เพื่อตรวจสอบข้อมูล
+    return {
+      name: post.title.substring(0, 15) + "...",
+      likeCount: post.likeCount || 0,
+      commentCount: post.commentCount || 0,
+    };
+  });
+  console.log("Bar chart data:", barChartData); // เพิ่มบรรทัดนี้เพื่อตรวจสอบข้อมูล
 
   // เตรียมข้อมูลสำหรับกราฟวงกลม (แท็ก)
   const tagData = posts.reduce((acc: { name: string; value: number }[], post) => {
@@ -148,12 +153,24 @@ export default function Statistics() {
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={barChartData}>
                   <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="name" />
+                  <XAxis dataKey="name" textAnchor="end" height={50} />
                   <YAxis />
-                  <Tooltip />
-                  <Legend />
-                  <Bar dataKey="likes" fill="#8884d8" name="ไลค์" />
-                  <Bar dataKey="comments" fill="#82ca9d" name="คอมเมนต์" />
+                  <Tooltip
+                    formatter={(value, name) => {
+                      const label = name === "likeCount" ? "ไลค์" : "ความคิดเห็น";
+                      return [`${value} ${label}`, label];
+                    }}
+                  />
+                  <Legend 
+                    verticalAlign="top" 
+                    height={36}
+                    payload={[
+                      { value: 'ไลค์', type: 'rect', color: '#8884d8' },
+                      { value: 'ความคิดเห็น', type: 'rect', color: '#82ca9d' }
+                    ]}
+                  />
+                  <Bar dataKey="likeCount" fill="#8884d8" name="likeCount" barSize={60} />
+                  <Bar dataKey="commentCount" fill="#82ca9d" name="commentCount" barSize={50} />
                 </BarChart>
               </ResponsiveContainer>
             </Paper>
@@ -197,23 +214,15 @@ export default function Statistics() {
                 <Table>
                   <TableHead>
                     <TableRow>
-                      <TableCell key="header-title">ชื่อบทความ</TableCell>
-                      <TableCell key="header-likes" align="right">ไลค์</TableCell>
-                      <TableCell key="header-comments" align="right">คอมเมนต์</TableCell>
+                      <TableCell>ชื่อบทความ</TableCell>
+                      <TableCell align="right">ไลค์</TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {topPosts.map((post) => (
-                      <TableRow key={`post-${post.id}`}>
-                        <TableCell key={`title-${post.id}`} component="th" scope="row">
-                          {post.title}
-                        </TableCell>
-                        <TableCell key={`likes-${post.id}`} align="right">
-                          {post.likeCount}
-                        </TableCell>
-                        <TableCell key={`comments-${post.id}`} align="right">
-                          {post.commentCount}
-                        </TableCell>
+                    {topPosts.map((post, index) => (
+                      <TableRow key={post.id ? `post-${post.id}` : `post-${index}`}>
+                        <TableCell>{post.title}</TableCell>
+                        <TableCell align="right">{post.likeCount}</TableCell>
                       </TableRow>
                     ))}
                   </TableBody>
