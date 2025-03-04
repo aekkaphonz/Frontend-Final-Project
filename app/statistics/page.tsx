@@ -170,7 +170,7 @@ export default function Statistics() {
                     ]}
                   />
                   <Bar dataKey="likeCount" fill="#8884d8" name="likeCount" barSize={60} />
-                  <Bar dataKey="commentCount" fill="#82ca9d" name="commentCount" barSize={50} />
+                  <Bar dataKey="commentCount" fill="#82ca9d" name="commentCount" barSize={60} />
                 </BarChart>
               </ResponsiveContainer>
             </Paper>
