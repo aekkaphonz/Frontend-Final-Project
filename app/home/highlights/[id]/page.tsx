@@ -14,6 +14,8 @@ import {
   InputAdornment,
   Menu,
   MenuItem,
+  Avatar,
+  Button
 } from "@mui/material";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import ShareIcon from "@mui/icons-material/Share";
@@ -33,11 +35,11 @@ import GradeOutlinedIcon from '@mui/icons-material/GradeOutlined';
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import FavoriteOutlinedIcon from '@mui/icons-material/FavoriteOutlined';
 import Swal from "sweetalert2";
-
 interface User {
   id: string;
   name: string;
   email: string;
+  image?: string;
 }
 
 interface Attraction {
@@ -51,15 +53,29 @@ interface Attraction {
   likedUsers: string[];
 
 }
+
 interface Comment {
   id: number;
-  name: string;
+  _id?: string;
   message: string;
-  replies?: Comment[];
+  name: string;
+  userId?: string;
   timestamp: string;
+  replies?: Reply[];
+  image?: string;
 }
 
-export default function Page({ params }: { params: { id: string } }) {
+interface Reply {
+  id: number;
+  _id?: string;
+  message: string;
+  name: string;
+  timestamp: string;
+  userId?: string;
+  image?: string;
+}
+
+export default function Page() {
   const { user } = useAuth();
   const { isLoggedIn } = useAuth();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -73,10 +89,6 @@ export default function Page({ params }: { params: { id: string } }) {
     null
   );
   const [editingCommentId, setEditingCommentId] = useState<number | null>(null);
-  const [editingReplyId, setEditingReplyId] = useState<{
-    commentId: number;
-    replyId: number | null;
-  } | null>(null);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [menuCommentId, setMenuCommentId] = useState<number | null>(null);
   const [menuReplyId, setMenuReplyId] = useState<{
@@ -85,331 +97,320 @@ export default function Page({ params }: { params: { id: string } }) {
   } | null>(null);
   const [anchorReplyEl, setAnchorReplyEl] = useState<null | HTMLElement>(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const [selectedCommentId, setSelectedCommentId] = useState<number | null>(null);
+  const [anchorCommentEl, setAnchorCommentEl] = useState<null | HTMLElement>(null);
+  const [editMessage, setEditMessage] = useState<string>("");
   const router = useRouter();
+  const params = useParams();
   const [liked, setLiked] = useState(false);
   const [updatedLikes, setUpdatedLikes] = useState(0);
   const userId = user?.userId;
+  const [editingReplyId, setEditingReplyId] = useState<{ commentId: number; replyId: number | null } | null>(null);
+  const [editReplyMessage, setEditReplyMessage] = useState<string>("");
 
-  const editComment = async (commentId: string, newMessage: string) => {
-    if (!newMessage.trim()) {
-      alert("ข้อความไม่สามารถเว้นว่างได้");
+  const id = params?.id as string;
+  if (!id) {
+    Swal.fire({
+      title: "ผิดพลาด!",
+      text: "ไม่พบข้อมูลโพสต์",
+      icon: "error",
+      confirmButtonText: "ตกลง",
+      confirmButtonColor: "#d33",
+    });
+    return;
+  }
+
+
+
+  // ฟังก์ชันยืนยันการลบคอมเมนต์หรือการตอบกลับ
+  const handleDeleteReplyMenu = (commentId: number, replyId: number) => {
+    Swal.fire({
+      title: 'ยืนยันการลบ',
+      text: 'คุณแน่ใจหรือไม่ที่จะลบความคิดเห็นนี้?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'ใช่, ลบเลย',
+      cancelButtonText: 'ยกเลิก',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // ถ้าผู้ใช้เลือก "ใช่, ลบเลย" ให้ลบการตอบกลับ
+        setComments((prevComments) =>
+          prevComments.map((comment) =>
+            comment.id === commentId
+              ? {
+                ...comment,
+                replies: comment.replies.filter((reply) => reply.id !== replyId), // ลบการตอบกลับที่มี replyId ตรงกัน
+              }
+              : comment
+          )
+        );
+
+        // แสดงข้อความแจ้งเตือนว่า "ลบสำเร็จ"
+        Swal.fire({
+          title: 'สำเร็จ!',
+          text: 'ลบความคิดเห็นเรียบร้อย',
+          icon: 'success',
+          confirmButtonText: 'ตกลง',
+          confirmButtonColor: '#3085d6',
+        });
+      } else {
+        // ถ้าผู้ใช้เลือก "ยกเลิก"
+        Swal.fire({
+          title: 'ยกเลิก',
+          text: 'คุณยกเลิกการลบความคิดเห็นนี้',
+          icon: 'info',
+          confirmButtonText: 'ตกลง',
+          confirmButtonColor: '#3085d6',
+        });
+      }
+    });
+  };
+
+  const handleEditReply = async () => {
+    if (!user?.userId) {
+      Swal.fire({
+        title: "แจ้งเตือน!",
+        text: "กรุณาเข้าสู่ระบบก่อนแก้ไขการตอบกลับ",
+        icon: "warning",
+        confirmButtonText: "ตกลง",
+        confirmButtonColor: "#3085d6",
+      });
       return;
     }
-  
-    console.log("🔍 Editing comment:", { commentId, newMessage });
-  
+
+    if (!editReplyMessage.trim()) {
+      Swal.fire({
+        title: "แจ้งเตือน!",
+        text: "ข้อความไม่สามารถเว้นว่างได้",
+        icon: "warning",
+        confirmButtonText: "ตกลง",
+        confirmButtonColor: "#3085d6",
+      });
+      return;
+    }
+
     try {
-      const res = await fetch(`http://localhost:3001/comments/${commentId}`, {
+      const res = await fetch(`http://localhost:3001/replies/${editingReplyId?.replyId}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ comment: newMessage }),
-      });
-  
-      const responseText = await res.text();
-      console.log("🔍 Response from server:", responseText);
-  
-      if (!res.ok) {
-        console.error("❌ API Error:", responseText);
-        alert("แก้ไขคอมเมนต์ไม่สำเร็จ!");
-        return;
-      }
-  
-      const updatedComment = JSON.parse(responseText);
-  
-      setComments((prevComments) =>
-        prevComments.map((comment) =>
-          comment.id.toString() === updatedComment._id
-            ? { ...comment, message: updatedComment.comment }
-            : comment
-        )
-      );
-  
-      setEditingCommentId(null);
-      alert("แก้ไขคอมเมนต์เรียบร้อย!");
-    } catch (error) {
-      console.error("❌ Error updating comment:", error);
-      alert("เกิดข้อผิดพลาดในการแก้ไขคอมเมนต์");
-    }
-  };
-  
-  const deleteComment = async (commentId: string, postId: string) => {
-    if (!window.confirm("คุณแน่ใจหรือไม่ว่าต้องการลบความคิดเห็นนี้?")) {
-      return;
-    }
-  
-    console.log("🔍 Deleting comment:", { commentId, postId });
-  
-    try {
-      const res = await fetch(`http://localhost:3001/comments/${commentId}`, {
-        method: "DELETE",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ postId }),
-      });
-  
-      const responseText = await res.text();
-      console.log("🔍 Response from server:", responseText);
-  
-      if (!res.ok) {
-        console.error("❌ API Error:", responseText);
-        alert("ลบคอมเมนต์ไม่สำเร็จ!");
-        return;
-      }
-  
-      setComments((prevComments) => prevComments.filter((comment) => comment.id !== Number(commentId)));
-  
-      alert("ลบความคิดเห็นสำเร็จ!");
-    } catch (error) {
-      console.error("❌ Error deleting comment:", error);
-      alert("เกิดข้อผิดพลาดในการลบคอมเมนต์");
-    }
-  };
-  
-  
-  // ดึงความคิดเห็น
-  useEffect(() => {
-    async function fetchComments(postId: string) {
-      try {
-        const res = await fetch(
-          `http://localhost:3001/comments/content/${postId}`
-        );
-        if (!res.ok) throw new Error("Failed to fetch comments");
-
-        const result = await res.json();
-        const mappedComments = await Promise.all(
-          result.map(async (comment: any) => {
-            let userName = comment.userName || "Anonymous"; // ดึงจาก API ถ้ามี
-
-            // ดึง userName จาก API users ถ้าไม่ถูกส่งมา
-            if (!comment.userName && comment.userId) {
-              const userRes = await fetch(
-                `http://localhost:3001/users/${comment.userId}`
-              );
-              if (userRes.ok) {
-                const user = await userRes.json();
-                userName = user.userName || "Anonymous";
-              }
-            }
-
-            return {
-              id: comment._id,
-              name: userName, // ใช้ userName ที่ได้มา
-              message: comment.comment,
-              timestamp: new Date(comment.createdAt).toLocaleString(),
-              replies: comment.replies || [],
-            };
-          })
-        );
-
-        setComments(mappedComments);
-      } catch (error) {
-        console.error("Error fetching comments:", error);
-      }
-    }
-
-    if (data) {
-      fetchComments(data._id);
-    }
-  }, [data]);
-  // ดึงข้อมูลโพสต์
-  useEffect(() => {
-    async function fetchData(postId: string) {
-      try {
-        const res = await fetch(`http://localhost:3001/contents/${postId}`);
-        if (!res.ok) throw new Error("Failed to fetch post data");
-
-        const result = await res.json();
-
-        // กำหนดค่า state สำหรับข้อมูลโพสต์
-        setData({
-          _id: result._id,
-          title: result.title,
-          detail: result.detail,
-          tags: result.tags,
-          userName: result.userName,
-          postImage: result.postImage || [],
-          likeCount: result.likeCount || 0,
-          likedUsers: result.likedUsers,
-        });
-
-        // ตรวจสอบสถานะการไลค์ว่าเป็น True หรือ False
-        setLiked(result.likedUsers.includes(user?.userId));
-        // ตั้งค่าจำนวนไลค์
-        setUpdatedLikes(result.likeCount);
-
-        setLoading(false);
-      } catch (error: any) {
-        setError(error.message || "Failed to load post data");
-        setLoading(false);
-      }
-    }
-
-    if (params && params.id) {
-      fetchData(params.id); // เรียกใช้ fetchData เมื่อมีการระบุ ID
-    } else {
-      setError("ไม่พบพารามิเตอร์ ID");
-      setLoading(false);
-    }
-  }, [params, user?.userId]); // ติดตามการเปลี่ยนแปลงของ params และ userId
-
-  // เพิ่มความคิดเห็นใหม่
-  const handleAddComment = async () => {
-    if (!user?.userId) {
-      console.error("User not logged in");
-      alert("กรุณาเข้าสู่ระบบก่อนแสดงความคิดเห็น");
-      return;
-    }
-
-    if (newComment.trim() && data?._id) {
-      try {
-        const res = await fetch("http://localhost:3001/comments/addComment", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            userId: user.userId, // ใช้ userId จาก session
-            userName: user.userName, // เพิ่ม userName
-            postId: data._id,
-            comment: newComment,
-          }),
-        });
-
-        console.log( userId )
-
-
-        if (!res.ok) {
-          const errorMessage = await res.text();
-          console.error("Error:", errorMessage);
-          throw new Error("Failed to add comment");
-        }
-
-        const addedComment = await res.json();
-        setComments((prevComments) => [
-          ...prevComments,
-          {
-            id: addedComment._id,
-            name: user.userName || "Anonymous",
-            message: newComment,
-            timestamp: new Date().toLocaleString(),
-            replies: [],
-          },
-        ]);
-        setNewComment("");
-      } catch (error) {
-        console.error("Error adding comment:", error);
-        alert("เกิดข้อผิดพลาดในการเพิ่มความคิดเห็น");
-      }
-    }
-  };
-
-  const handleAddReply = async (commentId: number) => {
-    if (!replyMessage.trim()) return; // ตรวจสอบว่า replyMessage ไม่ว่าง
-    if (!user?.userId) {
-      alert("กรุณาเข้าสู่ระบบก่อนตอบกลับ");
-      return;
-    }
-  
-    try {
-      const res = await fetch("http://localhost:3001/reply/addReply", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify({
-          commentId: commentId,  // ใช้ commentId เป็นตัวเลขแทนการแปลงเป็น string
+          message: editReplyMessage.trim(),
           userId: user.userId,
-          userName: user.userName,
-          reply: replyMessage,
         }),
       });
 
-      const addedReply = await res.json();
-      
-      // อัปเดต state ของ comment โดยเพิ่ม reply ใหม่เข้าไป
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.message || "ไม่สามารถแก้ไขการตอบกลับได้");
+      }
+
+      // 🎯 **อัปเดต State `comments` โดยไม่ต้องโหลดใหม่**
       setComments((prevComments) =>
         prevComments.map((comment) =>
-          comment.id === commentId
+          comment.id === editingReplyId?.commentId
             ? {
-                ...comment,
-                replies: [
-                  ...(comment.replies || []),
-                  {
-                    id: addedReply._id,
-                    name: user.userName || "Anonymous",
-                    message: replyMessage,
-                    timestamp: new Date().toLocaleString(),
-                  },
-                ],
-              }
+              ...comment,
+              replies: comment.replies.map((reply) =>
+                reply.id === editingReplyId?.replyId ? { ...reply, message: editReplyMessage } : reply
+              ),
+            }
             : comment
         )
       );
-  
-      // รีเซ็ตข้อความและการเลือก comment
-      setReplyMessage("");
-      setReplyingToCommentId(null);
+
+      // 🎯 **รีเซ็ตค่าหลังจากแก้ไขเสร็จ**
+      setEditingReplyId(null);
+      setEditReplyMessage("");
+
+      Swal.fire({
+        title: "สำเร็จ!",
+        text: "แก้ไขการตอบกลับเรียบร้อยแล้ว",
+        icon: "success",
+        confirmButtonText: "ตกลง",
+        confirmButtonColor: "#3085d6",
+      });
     } catch (error) {
-      console.error("❌ Error adding reply:", error);
-      alert("เกิดข้อผิดพลาดในการตอบกลับ");
+      Swal.fire({
+        title: "ผิดพลาด!",
+        text: error instanceof Error ? error.message : "เกิดข้อผิดพลาดในการแก้ไขการตอบกลับ",
+        icon: "error",
+        confirmButtonText: "ตกลง",
+        confirmButtonColor: "#d33",
+      });
     }
   };
-  
 
-  const toggleSidebar = () => {
-    setIsSidebarOpen(!isSidebarOpen);
+
+  // เริ่มจากการเพิ่ม state สำหรับการแก้ไขข้อความ
+  const handleEditComment = async () => {
+    if (!user?.userId) {
+      Swal.fire({
+        title: "แจ้งเตือน!",
+        text: "กรุณาเข้าสู่ระบบก่อนแก้ไขความคิดเห็น",
+        icon: "warning",
+        confirmButtonText: "ตกลง",
+        confirmButtonColor: "#3085d6",
+      });
+      return;
+    }
+
+    if (!editMessage.trim()) {
+      Swal.fire({
+        title: "แจ้งเตือน!",
+        text: "ข้อความไม่สามารถเว้นว่างได้",
+        icon: "warning",
+        confirmButtonText: "ตกลง",
+        confirmButtonColor: "#3085d6",
+      });
+      return;
+    }
+
+    try {
+      const res = await fetch(`http://localhost:3001/comments/${editingCommentId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify({
+          message: editMessage.trim(),
+          postId: id,
+          userId: user.userId,
+        }),
+      });
+
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.message || "ไม่สามารถแก้ไขความคิดเห็นได้");
+      }
+
+      // 🎯 **อัปเดต State `comments` โดยไม่ต้องโหลดใหม่**
+      setComments((prevComments) =>
+        prevComments.map((comment) =>
+          comment.id === editingCommentId ? { ...comment, message: editMessage } : comment
+        )
+      );
+
+      // 🎯 **รีเซ็ตค่าหลังจากแก้ไขเสร็จ**
+      setEditingCommentId(null);
+      setEditMessage("");
+
+      Swal.fire({
+        title: "สำเร็จ!",
+        text: "แก้ไขความคิดเห็นเรียบร้อยแล้ว",
+        icon: "success",
+        confirmButtonText: "ตกลง",
+        confirmButtonColor: "#3085d6",
+      });
+    } catch (error) {
+      Swal.fire({
+        title: "ผิดพลาด!",
+        text: error instanceof Error ? error.message : "เกิดข้อผิดพลาดในการแก้ไขความคิดเห็น",
+        icon: "error",
+        confirmButtonText: "ตกลง",
+        confirmButtonColor: "#d33",
+      });
+    }
   };
 
-  const handleEditReply = async (commentId: number, replyId: number, newMessage: string) => {
-  if (!newMessage.trim()) return;
 
-  try {
-    const res = await fetch(`http://localhost:3001/replies/${replyId}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ reply: newMessage }),
-    });
 
-    if (!res.ok) throw new Error("Failed to edit reply");
+  const handleAddReply = async (commentId: number) => {
+    if (!user?.userId) {
+      Swal.fire({
+        title: "แจ้งเตือน!",
+        text: "กรุณาเข้าสู่ระบบก่อนแสดงความคิดเห็น",
+        icon: "warning",
+        confirmButtonText: "ตกลง",
+        confirmButtonColor: "#3085d6",
+      });
+      return;
+    }
 
-    setComments((prevComments) =>
-      prevComments.map((comment) =>
-        comment.id === commentId
-          ? {
+    if (!replyMessage.trim()) {
+      Swal.fire({
+        title: "แจ้งเตือน!",
+        text: "ข้อความไม่สามารถเว้นว่างได้",
+        icon: "warning",
+        confirmButtonText: "ตกลง",
+        confirmButtonColor: "#3085d6",
+      });
+      return;
+    }
+
+    try {
+      const response = await fetch(`http://localhost:3001/reply/addReply`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: 'include',
+        body: JSON.stringify({
+          commentId: commentId,
+          commentReply: replyMessage.trim(),
+          userId: user.userId,
+          userName: user.userName,
+          highlightId: id,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.text();
+        throw new Error(`Failed to add reply: ${errorData}`);
+      }
+
+      // เพิ่มการตอบกลับใหม่ใน state
+      setComments(prevComments =>
+        prevComments.map(comment =>
+          comment.id === commentId
+            ? {
               ...comment,
-              replies: comment.replies?.map((reply) =>
-                reply.id === replyId ? { ...reply, message: newMessage } : reply
-              ),
+              replies: [
+                ...comment.replies,
+                {
+                  id: new Date().getTime(), // สร้าง ID ใหม่สำหรับการตอบกลับ
+                  name: user.userName,
+                  message: replyMessage.trim(),
+                  timestamp: new Date().toLocaleString(),
+                  userId: user.userId,
+                  image: user.profileImage || ''
+                }
+              ]
             }
-          : comment
-      )
-    );
+            : comment
+        )
+      );
 
-    setEditingReplyId(null);
-  } catch (error) {
-    console.error("Error updating reply:", error);
-  }
-};
+      // เคลียร์ข้อความตอบกลับ
+      setReplyMessage("");
+      setReplyingToCommentId(null);
 
-const handleDeleteReply = async (commentId: number, replyId: number) => {
-  try {
-    const res = await fetch(`http://localhost:3001/reply/${replyId}`, {
-      method: "DELETE",
-    });
+      // อัปเดตข้อมูลใหม่ใน localStorage
+      localStorage.setItem("comments", JSON.stringify(comments)); // อัปเดตข้อมูลใน localStorage
 
-    if (!res.ok) throw new Error("Failed to delete reply");
+      // แสดงข้อความสำเร็จ
+      await Swal.fire({
+        title: "สำเร็จ!",
+        text: "เพิ่มการตอบกลับเรียบร้อย",
+        icon: "success",
+        confirmButtonText: "ตกลง",
+        confirmButtonColor: "#3085d6",
+      });
 
-    setComments((prevComments) =>
-      prevComments.map((comment) =>
-        comment.id === commentId
-          ? {
-              ...comment,
-              replies: comment.replies?.filter((reply) => reply.id !== replyId),
-            }
-          : comment
-      )
-    );
-  } catch (error) {
-    console.error("Error deleting reply:", error);
-    alert("เกิดข้อผิดพลาดในการลบการตอบกลับ");
-  }
-};
-
+    } catch (error) {
+      console.error("Error adding reply:", error);
+      Swal.fire({
+        title: "ผิดพลาด!",
+        text: error instanceof Error ? error.message : "เกิดข้อผิดพลาดในการเพิ่มการตอบกลับ",
+        icon: "error",
+        confirmButtonText: "ตกลง",
+        confirmButtonColor: "#d33",
+      });
+    }
+  };
 
   const handleMenuOpen = (
     event: React.MouseEvent<HTMLElement>,
@@ -424,6 +425,157 @@ const handleDeleteReply = async (commentId: number, replyId: number) => {
     setMenuCommentId(null);
   };
 
+  const handleMenuCloseComment = () => {
+    setAnchorCommentEl(null);
+    setSelectedCommentId(null);
+  };
+
+  const handleUpdateComment = async (commentId: number) => {
+    try {
+      const response = await fetch(`http://localhost:3001/comments/edit/${commentId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({
+          comment: editMessage.trim(),
+          highlightId: id
+        }),
+      });
+
+      if (!response.ok) throw new Error('Failed to update comment');
+
+      // ดึงข้อมูลคอมเมนต์ใหม่
+      const commentsRes = await fetch(`http://localhost:3001/comments/content/${id}`, {
+        credentials: 'include'
+      });
+
+      if (!commentsRes.ok) {
+        throw new Error("ไม่สามารถดึงข้อมูลความคิดเห็นใหม่ได้");
+      }
+
+      const updatedComments = await commentsRes.json();
+      const formattedComments = updatedComments.map((comment: any) => ({
+        id: comment._id,
+        _id: comment._id,
+        name: comment.userName || 'Anonymous',
+        message: comment.comment,
+        userId: comment.userId || '',
+        timestamp: new Date(comment.createdAt).toLocaleString(),
+        image: comment.userImage || '',
+        replies: Array.isArray(comment.replies) && comment.replies.length > 0
+          ? comment.replies.map((reply: any) => ({
+            id: reply._id,
+            name: reply.userName || 'Anonymous',
+            message: reply.commentReply,
+            timestamp: new Date(reply.createdAt).toLocaleString(),
+            userId: reply.userId || '',
+            image: reply.userImage || ''
+          }))
+          : []
+      }));
+
+      setComments(formattedComments);
+      setEditingCommentId(null);
+      setEditMessage('');
+
+      await Swal.fire({
+        title: "สำเร็จ!",
+        text: "แก้ไขความคิดเห็นเรียบร้อย",
+        icon: "success",
+        confirmButtonText: "ตกลง",
+        confirmButtonColor: "#3085d6",
+      });
+    } catch (error) {
+      console.error('Error updating comment:', error);
+      Swal.fire({
+        title: "ผิดพลาด!",
+        text: error instanceof Error ? error.message : "เกิดข้อผิดพลาดในการแก้ไขความคิดเห็น",
+        icon: "error",
+        confirmButtonText: "ตกลง",
+        confirmButtonColor: "#d33",
+      });
+    }
+  };
+
+  const handleDeleteCommentMenu = async () => {
+    try {
+      if (!selectedCommentId) return;
+
+      // ขอการยืนยันจากผู้ใช้ก่อนการลบ
+      const willDelete = await Swal.fire({
+        title: "ยืนยันการลบ",
+        text: "คุณแน่ใจหรือไม่ที่จะลบความคิดเห็นนี้?",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "ใช่, ลบเลย",
+        cancelButtonText: "ยกเลิก",
+        confirmButtonColor: "#d33",
+        cancelButtonColor: "#3085d6",
+      });
+
+      // หากผู้ใช้ยืนยันการลบ
+      if (willDelete.isConfirmed) {
+        const res = await fetch(`http://localhost:3001/comments/${selectedCommentId}`, {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: 'include', // ตรวจสอบการตั้งค่า credentials เช่น cookie หรือ token
+          body: JSON.stringify({
+            postId: id, // ID ของโพสต์ที่เกี่ยวข้อง
+            userId: user?.userId // userId ที่กำลังทำการลบ
+          }),
+        });
+
+        if (!res.ok) {
+          const errorText = await res.text(); // อ่านข้อความแสดงข้อผิดพลาดจากเซิร์ฟเวอร์
+          console.error("❌ API Error:", errorText);
+          // แสดงข้อความข้อผิดพลาดจากเซิร์ฟเวอร์
+          Swal.fire({
+            title: "ผิดพลาด!",
+            text: errorText || "ไม่สามารถลบคอมเมนต์ได้",
+            icon: "error",
+            confirmButtonText: "ตกลง",
+            confirmButtonColor: "#d33",
+          });
+          return;
+        }
+
+        // หากการลบสำเร็จ จะทำการอัปเดตคอมเมนต์
+        setComments((prevComments) =>
+          prevComments.filter((comment) => comment.id !== selectedCommentId)
+        );
+
+        await Swal.fire({
+          title: "สำเร็จ!",
+          text: "ลบความคิดเห็นเรียบร้อย",
+          icon: "success",
+          confirmButtonText: "ตกลง",
+          confirmButtonColor: "#3085d6",
+        });
+
+        // รีเฟรชข้อมูลคอมเมนต์ใหม่
+        await fetchData();
+        router.refresh();
+      }
+    } catch (error) {
+      console.error("❌ Error deleting comment:", error);
+      Swal.fire({
+        title: "ผิดพลาด!",
+        text: error instanceof Error ? error.message : "เกิดข้อผิดพลาดในการลบความคิดเห็น",
+        icon: "error",
+        confirmButtonText: "ตกลง",
+        confirmButtonColor: "#d33",
+      });
+    }
+  };
+
+  const handleCancelEdit = () => {
+    setEditingCommentId(null);
+    setEditMessage('');
+  };
 
   const renderTags = (tags: string[]) => {
     return tags.map((tag, index) => (
@@ -449,7 +601,6 @@ const handleDeleteReply = async (commentId: number, replyId: number) => {
     ));
   };
 
-  // ฟังก์ชันการไลค์
   const handleLike = async () => {
     if (!user?.userId) {
       Swal.fire({
@@ -469,7 +620,10 @@ const handleDeleteReply = async (commentId: number, replyId: number) => {
     try {
       const res = await fetch(`http://localhost:3001/contents/${data?._id}/like`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: 'include',
         body: JSON.stringify({ userId: user.userId }),
       });
 
@@ -483,7 +637,9 @@ const handleDeleteReply = async (commentId: number, replyId: number) => {
     }
   };
 
-  const formatCommentText = (text: string) => {
+  const formatCommentText = (text: string | undefined) => {
+    if (!text) return '';
+
     const urlRegex = /(https?:\/\/[^\s]+)/g;
     return text.split(urlRegex).map((part, index) =>
       urlRegex.test(part) ? (
@@ -506,16 +662,250 @@ const handleDeleteReply = async (commentId: number, replyId: number) => {
     setSearchQuery(query);
   };
 
+  const fetchData = async () => {
+    try {
+      const res = await fetch(`http://localhost:3001/contents/${id}`, {
+        credentials: 'include'
+      });
+      const postData = await res.json();
+      setData(postData);
+
+      // Fetch comments with their replies
+      const commentsRes = await fetch(`http://localhost:3001/comments/content/${id}`, {
+        credentials: 'include'
+      });
+
+      if (!commentsRes.ok) {
+        console.error("Failed to fetch comments:", {
+          status: commentsRes.status,
+          statusText: commentsRes.statusText
+        });
+        return;
+      }
+
+      const commentsData = await commentsRes.json();
+      console.log("Raw comments data:", commentsData);
+
+      if (!Array.isArray(commentsData)) {
+        console.error("Comments data is not an array:", commentsData);
+        return;
+      }
+
+      // แปลงข้อมูล comments และ replies
+      const transformedComments = commentsData.map((comment: any) => {
+        // ดึง replies จากข้อมูล comment ที่มีอยู่แล้ว
+        const repliesData = comment.replies || [];
+        console.log(`Replies for comment ${comment._id}:`, repliesData);
+
+        return {
+          id: comment._id,
+          _id: comment._id,
+          name: comment.userName || 'Anonymous',
+          message: comment.comment,
+          userId: comment.userId,
+          timestamp: new Date(comment.createdAt).toLocaleString(),
+          image: comment.userImage || '',
+          replies: Array.isArray(repliesData) && repliesData.length > 0
+            ? repliesData.map((reply: any) => ({
+              id: reply._id,
+              _id: reply._id,
+              name: reply.userName || 'Anonymous',
+              message: reply.commentReply,
+              timestamp: new Date(reply.createdAt).toLocaleString(),
+              userId: reply.userId,
+              image: reply.userImage || ''
+            }))
+            : []
+        };
+      });
+
+      console.log("Comments with replies:", transformedComments);
+      setComments(transformedComments);
+
+      if (postData && user?.userId) {
+        setLiked(postData.likedUsers?.includes(user.userId));
+        setUpdatedLikes(postData.likeCount || 0);
+      }
+    } catch (error) {
+      console.error("Error fetching data:", error);
+      setError("Failed to fetch data");
+      setComments([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    const fetchComments = async () => {
+      try {
+        const response = await fetch(`http://localhost:3001/comments/content/${id}`, {
+          credentials: 'include'
+        });
+
+        if (!response.ok) {
+          throw new Error("ไม่สามารถดึงข้อมูลความคิดเห็นได้");
+        }
+
+        const data = await response.json();
+        console.log("Fetched comments data:", data); // Debug log
+
+        // แปลงข้อมูลให้ตรงกับ interface
+        const formattedComments = data.map((comment: any) => {
+          console.log("Processing comment:", comment); // Debug log
+          return {
+            id: comment._id,
+            _id: comment._id,
+            name: comment.userName || 'Anonymous',
+            message: comment.comment,
+            userId: comment.userId || '',
+            timestamp: new Date(comment.createdAt).toLocaleString(),
+            image: comment.userImage || '',
+            replies: Array.isArray(comment.replies) && comment.replies.length > 0
+              ? comment.replies.map((reply: any) => {
+                console.log("Processing reply:", reply); // Debug log
+                return {
+                  id: reply._id,
+                  name: reply.userName || 'Anonymous',
+                  message: reply.commentReply,
+                  timestamp: new Date(reply.createdAt).toLocaleString(),
+                  userId: reply.userId || '',
+                  image: reply.userImage || ''
+                };
+              })
+              : []
+          };
+        });
+
+        console.log("Formatted comments:", formattedComments); // Debug log
+        setComments(formattedComments);
+      } catch (error) {
+        console.error("Error fetching comments:", error);
+        setError(error instanceof Error ? error.message : "เกิดข้อผิดพลาดในการดึงข้อมูล");
+      }
+    };
+
+    if (id) {
+      fetchComments();
+    }
+  }, [id]);
+
+  useEffect(() => {
+    if (id) {
+      fetchData();
+    }
+  }, [id, user?.userId]);
+
+  // ฟังก์ชันสำหรับเพิ่มความคิดเห็น
+  const handleAddComment = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!user?.userId) {
+      Swal.fire({
+        title: "แจ้งเตือน!",
+        text: "กรุณาเข้าสู่ระบบก่อนแสดงความคิดเห็น",
+        icon: "warning",
+        confirmButtonText: "ตกลง",
+        confirmButtonColor: "#3085d6",
+      });
+      return;
+    }
+
+    if (!newComment.trim()) {
+      Swal.fire({
+        title: "แจ้งเตือน!",
+        text: "กรุณากรอกความคิดเห็น",
+        icon: "warning",
+        confirmButtonText: "ตกลง",
+        confirmButtonColor: "#3085d6",
+      });
+      return;
+    }
+
+    if (newComment.trim() && data?._id) {
+      try {
+        const res = await fetch("http://localhost:3001/comments/addComment", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: 'include',
+          body: JSON.stringify({
+            userId: user.userId,
+            userName: user.userName,
+            postId: data._id,
+            comment: newComment.trim(),
+          }),
+        });
+
+        if (!res.ok) {
+          const errorMessage = await res.text();
+          console.error("Error:", errorMessage);
+          throw new Error("Failed to add comment");
+        }
+
+        const addedComment = await res.json();
+        setComments((prevComments) => [
+          ...prevComments,
+          {
+            id: addedComment._id,
+            _id: addedComment._id,
+            name: user.userName || "Anonymous",
+            message: newComment,
+            userId: user.userId,
+            timestamp: new Date().toLocaleString(),
+            replies: []
+          }
+        ]);
+        setNewComment("");
+      } catch (error) {
+        console.error("Error adding comment:", error);
+        Swal.fire({
+          title: "ผิดพลาด!",
+          text: "เกิดข้อผิดพลาดในการเพิ่มความคิดเห็น",
+          icon: "error",
+          confirmButtonText: "ตกลง",
+          confirmButtonColor: "#d33",
+        });
+      }
+    }
+  };
+
+
+
+  // เมื่อ Component โหลด ให้ดึงข้อมูลคอมเมนต์จาก localStorage
+  useEffect(() => {
+    // เมื่อ `comments` เปลี่ยนแปลง, จะบันทึกข้อมูลทั้งหมดใน `localStorage`
+    if (comments.length > 0) {
+      localStorage.setItem("comments", JSON.stringify(comments)); // เก็บข้อมูลคอมเมนต์ทั้งหมด
+    }
+  }, [comments]);
+
+  useEffect(() => {
+    const savedComments = JSON.parse(localStorage.getItem("comments") || "[]");
+    if (savedComments.length > 0) {
+      setComments(savedComments); // โหลดข้อมูลคอมเมนต์จาก localStorage
+    } else {
+      fetchData(); // หากไม่มีข้อมูลใน localStorage ให้ดึงข้อมูลจาก API
+    }
+  }, []);
+
+
+  const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen);
+  };
+
   return (
-    <Box sx={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
+    <Box key="page-container" sx={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
       {isLoggedIn ? (
-        <AfterLogin 
+        <AfterLogin
+          key="after-login"
           isOpen={isSidebarOpen}
           toggleSidebar={toggleSidebar}
           handleSearch={handleSearch}
         />
       ) : (
-        <Navbar 
+        <Navbar
+          key="navbar"
           isOpen={isSidebarOpen}
           toggleSidebar={toggleSidebar}
           handleSearch={handleSearch}
@@ -523,11 +913,13 @@ const handleDeleteReply = async (commentId: number, replyId: number) => {
       )}
 
       <Container
+        key="content-container"
         maxWidth="md"
-        sx={{ mt: 4, textAlign: "center", flexGrow: 1, paddingTop: "80px" }}
+        sx={{ mt: 4, flexGrow: 1, paddingTop: "80px" }}
       >
         {loading ? (
           <Typography
+            key="loading-text"
             variant="h5"
             sx={{
               mt: 4,
@@ -537,42 +929,80 @@ const handleDeleteReply = async (commentId: number, replyId: number) => {
             กำลังโหลด...
           </Typography>
         ) : error ? (
-          <Typography variant="h5" sx={{ mt: 4, color: "#f44336" }}>
+          <Typography
+            key="error-text"
+            variant="h5"
+            sx={{
+              mt: 4,
+              color: "var(--comment-text)",
+            }}
+          >
             {error}
           </Typography>
-        ) : data ? (
+        ) : !data ? (
+          <Typography
+            key="no-data-text"
+            variant="h5"
+            sx={{
+              mt: 4,
+              color: "var(--comment-text)",
+            }}
+          >
+            ไม่พบข้อมูล
+          </Typography>
+        ) : (
           <Card
+            key="post-card"
             sx={{
               borderRadius: 3,
               boxShadow: 4,
               overflow: "hidden",
               backgroundColor: "var(--post-bg)",
               color: "var(--post-text)",
+              mb: 4
             }}
           >
-            <CardContent sx={{ textAlign: "start", ml: 5, mr: 5 }}>
+            <CardContent sx={{ p: 4 }}>
               <Typography
+                key="post-title"
                 gutterBottom
                 variant="h4"
                 component="div"
-                sx={{ color: "#77bfa3", fontWeight: "bold" }}
+                sx={{ color: "#77bfa3", fontWeight: "bold", mb: 2 }}
               >
                 {data.title}
               </Typography>
-              <Box display="flex" gap={1}>
+              <Box display="flex" gap={1} sx={{ mb: 3 }}>
                 {renderTags(data.tags)}
               </Box>
               <CardMedia
+                key="post-image"
                 component="img"
-                sx={{ height: "100%" }}
+                sx={{
+                  height: "auto",
+                  maxHeight: "600px",
+                  width: "100%",
+                  objectFit: "contain",
+                  mb: 3,
+                  borderRadius: 2
+                }}
                 image={data.postImage}
                 alt="ยังไม่ไม่มีรูภาพ"
               />
-              <Typography variant="body1" sx={{ color: "#616161", mt: 2 }}>
+              <Typography
+                key="post-detail"
+                variant="body1"
+                sx={{
+                  color: "var(--post-text)",
+                  whiteSpace: 'pre-wrap',
+                  lineHeight: 1.8
+                }}
+              >
                 {data.detail || "ไม่มีเนื้อหา"}
               </Typography>
             </CardContent>
             <Box
+              key="post-actions"
               sx={{
                 display: "flex",
                 justifyContent: "space-between",
@@ -582,6 +1012,7 @@ const handleDeleteReply = async (commentId: number, replyId: number) => {
               }}
             >
               <Box
+                key="post-actions-left"
                 sx={{
                   display: "flex",
                 }}
@@ -598,354 +1029,343 @@ const handleDeleteReply = async (commentId: number, replyId: number) => {
                   </IconButton>
                 </Tooltip>
                 <Divider orientation="vertical" flexItem sx={{ borderColor: '#3b4c77', height: 40, ml: 1 }} />
-                <Typography sx={{ ml: 1, fontWeight: "bold", color: "var(--nav-text)" }}>
+                <Typography
+                  key="post-author"
+                  sx={{ ml: 1, fontWeight: "bold", color: "var(--nav-text)" }}
+                >
                   {data.userName}
                 </Typography>
               </Box>
 
-              <Box sx={{ display: "flex", alignItems: "center" }}>
-                <IconButton onClick={handleLike} sx={{ color: liked ? "#ff3030" : "var(--comment-text)" }}>
+              <Box key="post-actions-right" sx={{ display: "flex", alignItems: "center" }}>
+                <IconButton
+                  key="post-like-button"
+                  onClick={handleLike}
+                  sx={{ color: liked ? "#ff3030" : "var(--comment-text)" }}
+                >
                   {liked ? (
                     <FavoriteOutlinedIcon sx={{ color: "#ff3030" }} />
                   ) : (
                     <FavoriteBorderIcon sx={{ color: "var(--comment-text)" }} />
                   )}
                 </IconButton>
-                <Typography variant="body2" sx={{ ml: 1 }}>
+                <Typography
+                  key="post-like-count"
+                  variant="body2"
+                  sx={{ ml: 1 }}
+                >
                   {updatedLikes} ถูกใจ
                 </Typography>
               </Box>
             </Box>
           </Card>
-        ) : (
-          <Typography variant="h5" sx={{ mt: 4, color: "#616161" }}>
-            ไม่พบข้อมูล
-          </Typography>
+
+
         )}
+        {/* Comments section header */}
         <Box
-          sx={{ display: "flex", alignItems: "center", width: "100%", mt: 5 }}
+          key="comments-section"
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 2,
+            mb: 4,
+            mt: 2,
+            px: 2
+          }}
         >
-          <Box sx={{ borderBottom: "1px solid #c4c4c4", flexGrow: 1 }} />
-          <Typography variant="body2" sx={{ ml: 2 }}>
-            <ForumOutlinedIcon sx={{ mr: 1 }} />
+
+          <Box key="left-border" sx={{ borderBottom: "1px solid var(--comment-text)", flexGrow: 1, opacity: 0.3 }} />
+          <Typography
+            key="comment-count"
+            variant="body1"
+            sx={{
+              color: "var(--comment-text)",
+              display: 'flex',
+              alignItems: 'center',
+              gap: 1,
+              fontWeight: 500
+            }}
+          >
+            <ForumOutlinedIcon sx={{ fontSize: 20 }} />
             {comments.length +
               comments.reduce(
-                (acc, comment) => acc + (comment.replies?.length || 0),
+                (acc, comment) => acc + (Array.isArray(comment.replies) ? comment.replies.length : 0),
                 0
               )}{" "}
             ความคิดเห็น
           </Typography>
-          <Box sx={{ borderBottom: "1px solid #c4c4c4", flexGrow: 1 }} />
+          <Box key="right-border" sx={{ borderBottom: "1px solid var(--comment-text)", flexGrow: 1, opacity: 0.3 }} />
         </Box>
+
+        {/* Add a Comment Section */}
         <Box
           sx={{
-            mt: 1,
-            p: 2,
-            backgroundColor: "var(--comment-bg)",
-            color: "var(--comment-text)",
+            marginTop: 4,
+            padding: 2,
             borderRadius: 2,
-            boxShadow: 2,
+            backgroundColor: 'grey.100',
           }}
         >
-          <Typography variant="h6" sx={{ mb: 2 }}>
-            แสดงความคิดเห็น
-          </Typography>
+          <Typography variant="h6">เพิ่มความคิดเห็น</Typography>
           <TextField
             fullWidth
-            placeholder="เพิ่มคอมเมนต์..."
-            multiline
-            rows={3}
+            size="small"
             value={newComment}
             onChange={(e) => setNewComment(e.target.value)}
+            placeholder="พิมพ์ความคิดเห็นของคุณ..."
+            multiline
+            maxRows={4}
             sx={{
-              mb: 2,
-              backgroundColor: "var(--comment-bg)",
-              color: "var(--comment-text)",
-              "& .MuiInputBase-input": {
-                color: "var(--comment-text)", // สีข้อความของ Input
+              marginTop: 2,
+              '& .MuiOutlinedInput-root': {
+                borderRadius: 2,
+                bgcolor: 'white',
               },
-              "& .MuiOutlinedInput-root": {
-                "& fieldset": {
-                  borderColor: "var(--comment-text)", // สีเส้นขอบของช่องป้อนข้อความ
-                },
-                "&:hover fieldset": {
-                  borderColor: "var(--comment-text)",
-                },
-                "&.Mui-focused fieldset": {
-                  borderColor: "var(--comment-text)",
-                },
-              },
-            }}
-            InputProps={{
-              endAdornment: (
-                <InputAdornment position="end">
-                  <IconButton
-                    color="primary"
-                    onClick={handleAddComment}
-                    edge="end"
-                  >
-                    <SendIcon />
-                  </IconButton>
-                </InputAdornment>
-              ),
             }}
           />
+          <Button
+            variant="contained"
+            sx={{ marginTop: 2 }}
+            onClick={handleAddComment}
+            disabled={!newComment.trim()}
+          >
+            ส่งความคิดเห็น
+          </Button>
+        </Box>
 
-          {comments.map((comment) => (
-            <Box
-              key={comment.id}
-              sx={{
-                mt: 3,
-                p: 2,
-                backgroundColor: "var(--comment-bg)",
-                color: "var(--comment-text)",
-                borderRadius: 1,
-                textAlign: "left",
-                borderBottom: 1,
-                width: "100%"
-              }}
-            >
-              <Box
-                sx={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                }}
-              >
-                <Box>
-                  {/* ส่วนที่แสดง userName ของผู้แสดงความคิดเห็น */}
-                  {/* <Typography variant="body1">
-                    <strong>{comment.name}:</strong>{" "}
-                    <div> {comment.message}</div>
-                    <Typography
-                      variant="caption"
-                      sx={{ color: "var(--comment-text)" }}
-                    >
-                      {comment.timestamp}
-                    </Typography>
-                  </Typography> */}
-                  <Typography variant="body1">
-                    <strong>{comment.name}:</strong>{" "}
-                    <Box component="span"></Box>
-                    <Typography
-                      variant="caption"
-                      sx={{ color: "var(--comment-text)" }}
-                    >
-                      {comment.timestamp}
-                    </Typography>
-                  </Typography> 
-                  {formatCommentText(comment.message)} 
+        {/* รายการคอมเมนต์ */}
+        {comments.map((comment) => (
+          <Box key={comment.id || comment._id} sx={{ mb: 3 }}>
+
+            {/* คอมเมนต์หลัก */}
+            <Box key={`comment-main-${comment.id}`} sx={{ display: 'flex', alignItems: 'flex-start', gap: 2, mb: 1 }}>
+              <Avatar key={`comment-avatar-${comment.id}`} src={comment.image || ''} alt={comment.name} sx={{ width: 40, height: 40 }} />
+              <Box key={`comment-content-${comment.id}`} sx={{ flexGrow: 1 }}>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1 }}>
+                  <Typography key={`comment-name-${comment.id}`} variant="subtitle2" sx={{ fontWeight: 'bold' }}>
+                    {comment.name}
+                  </Typography>
+                  <IconButton
+                    key={`comment-menu-${comment.id}`}
+                    size="small"
+                    onClick={(e) => {
+                      setAnchorCommentEl(e.currentTarget);
+                      setSelectedCommentId(comment.id);
+                    }}
+                    sx={{ p: 0.5, ml: 1 }}
+                  >
+                    <MoreVertIcon fontSize="small" />
+                  </IconButton>
                 </Box>
-                <IconButton
-                  onClick={(e) => handleMenuOpen(e, comment.id)}
-                  size="small"
-                  sx={{ color: "var(--comment-text)" }}
-                >
-                  <MoreVertIcon />
-                </IconButton>
-              </Box>
 
-              <Menu
-                anchorEl={anchorEl}
-                open={menuCommentId === comment.id}
-                onClose={handleMenuClose}
-                sx={{
-                  "& .MuiPaper-root": {
-                    backgroundColor: "var(--comment-bg)", // เปลี่ยนพื้นหลังของเมนู
-                    color: "var(--comment-text)", // เปลี่ยนสีข้อความของเมนู
-                  },
-                }}
-              >
-                <MenuItem onClick={() => setEditingCommentId(comment.id)}>
-                  แก้ไข
-                </MenuItem>
-                <MenuItem
-                  onClick={() => {
-                    deleteComment(comment.id.toString()); // แปลง id เป็น string ก่อนส่งไปยังฟังก์ชัน
-                    handleMenuClose(); // ปิดเมนู
-                  }}
-                >
-                  ลบ
-                </MenuItem>
-              </Menu>
-
-              {editingCommentId === comment.id && (
-                <Box sx={{ mt: 2 }}>
+                {editingCommentId === comment.id ? (
                   <TextField
                     fullWidth
                     multiline
-                    rows={2}
-                    defaultValue={comment.message} // แสดงข้อความเดิม
-                    onChange={(e) => setReplyMessage(e.target.value)} // บันทึกข้อความใหม่ใน state
+                    size="small"
+                    value={editMessage}
+                    onChange={(e) => setEditMessage(e.target.value)}
+                    sx={{ my: 1 }}
                     InputProps={{
                       endAdornment: (
                         <InputAdornment position="end">
-                          <IconButton
-                            color="primary"
-                            onClick={() =>
-                              editComment(comment.id.toString(), replyMessage.trim())
-                            } // เรียกใช้ฟังก์ชัน editComment
-                            edge="end"
-                          >
-                            <SendIcon />
-                          </IconButton>
+                          <Box>
+                            <Button
+                              size="small"
+                              onClick={() => handleEditComment(comment.id, editMessage)}
+                              disabled={!editMessage.trim()}
+                              sx={{ minWidth: 'auto', p: 0.5 }}
+                            >
+                              บันทึก
+                            </Button>
+                            <Button
+                              size="small"
+                              onClick={() => setEditingCommentId(null)}
+                              sx={{ minWidth: 'auto', p: 0.5 }}
+                            >
+                              ยกเลิก
+                            </Button>
+                          </Box>
                         </InputAdornment>
                       ),
                     }}
-                    autoFocus
                   />
-                </Box>
-              )}
+                ) : (
+                  <Typography variant="body2" sx={{ mt: 1, mb: 2, whiteSpace: 'pre-wrap' }}>
+                    {formatCommentText(comment.message)}
+                  </Typography>
+                )}
 
-              {comment.replies &&
-                comment.replies.map((reply) => (
-                  <Box
-                    key={reply.id}
-                    sx={{
-                      mt: 1,
-                      pl: 2,
-                      borderLeft: "2px solid #ccc",
-                      textAlign: "left",
-                    }}
+                {/* การกระทำกับคอมเมนต์ */}
+                <Box key={`comment-actions-${comment.id}`} sx={{ mt: 1, display: 'flex', gap: 2, alignItems: 'center' }}>
+                  <Typography key={`comment-timestamp-${comment.id}`} variant="caption" color="text.secondary">
+                    {comment.timestamp}
+                  </Typography>
+                  <Button
+                    key={`comment-reply-${comment.id}`}
+                    size="small"
+                    onClick={() => setReplyingToCommentId(replyingToCommentId === comment.id ? null : comment.id)}  // เมื่อคลิกปุ่ม "ตอบกลับ" ให้ตั้งค่า replyingToCommentId
+                    sx={{ minWidth: 'auto', p: 0.5 }}
                   >
-                    <Box
-                      sx={{
-                        display: "flex",
-                        justifyContent: "space-between",
-                        alignItems: "center",
-                      }}
-                    >
-                      <Box
-                        sx={{ display: "flex", alignItems: "center", gap: 1 }}
-                      >
-                        <Typography>
-                          <strong>{reply.name}:</strong> {formatCommentText(reply.message)}
+                    ตอบกลับ
+                  </Button>
+                  {comment.userId === user?.userId && (
+                    <>
+
+                    </>
+                  )}
+                </Box>
+              </Box>
+            </Box>
+
+            {/* เมนูการกระทำของคอมเมนต์ */}
+            <Menu
+              anchorEl={anchorCommentEl}
+              open={Boolean(anchorCommentEl) && selectedCommentId === comment.id}
+              onClose={() => {
+                setAnchorCommentEl(null);
+                setSelectedCommentId(null);
+              }}
+              anchorOrigin={{
+                vertical: 'top',
+                horizontal: 'left',
+              }}
+              transformOrigin={{
+                vertical: 'top',
+                horizontal: 'right',
+              }}
+            >
+              <MenuItem
+                onClick={() => {
+                  setEditingCommentId(comment.id);
+                  setEditMessage(comment.message);
+                  setAnchorCommentEl(null);
+                }}
+              >
+                แก้ไข
+              </MenuItem>
+              <MenuItem
+                onClick={() => {
+                  handleDeleteCommentMenu();
+                  setAnchorCommentEl(null);
+                }}
+              >
+                ลบ
+              </MenuItem>
+            </Menu>
+
+            {/* ส่วนของการตอบกลับ */}
+            {comment.replies && comment.replies.length > 0 && (
+              <Box key={`replies-${comment.id}`} sx={{ ml: 6 }}>
+                {comment.replies.map((reply) => (
+                  <Box key={reply.id || reply._id} sx={{ display: "flex", alignItems: "flex-start", gap: 2, mb: 2 }}>
+                    <Avatar key={`reply-avatar-${reply.id}`} src={reply.image || ''} alt={reply.name} sx={{ width: 32, height: 32 }} />
+                    <Box key={`reply-content-${reply.id}`} sx={{ flexGrow: 1 }}>
+                      <Box key={`reply-message-${reply.id}`} sx={{ bgcolor: 'grey.100', borderRadius: 2, p: 2 }}>
+                        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1 }}>
+                          <Typography key={`reply-name-${reply.id}`} variant="subtitle2" sx={{ fontWeight: 'bold' }}>
+                            {reply.name}
+                          </Typography>
+                          <IconButton
+                            key={`reply-menu-${reply.id}`}
+                            size="small"
+                            onClick={(e) => {
+                              setAnchorReplyEl(e.currentTarget);
+                              setMenuReplyId({ commentId: comment.id, replyId: reply.id });
+                            }}
+                          >
+                            <MoreVertIcon fontSize="small" />
+                          </IconButton>
+                        </Box>
+                        <Typography key={`reply-text-${reply.id}`} variant="body2" sx={{ whiteSpace: 'pre-wrap' }}>
+                          {reply.message}
                         </Typography>
-                        <Typography
-                          variant="caption"
-                          sx={{ color: "var(--comment-text)" }}
+                      </Box>
+                      <Menu
+                        anchorEl={anchorReplyEl}
+                        open={Boolean(anchorReplyEl) && menuReplyId?.replyId === reply.id}
+                        onClose={() => setAnchorReplyEl(null)}
+                        anchorOrigin={{
+                          vertical: 'top',
+                          horizontal: 'left',
+                        }}
+                        transformOrigin={{
+                          vertical: 'top',
+                          horizontal: 'right',
+                        }}
+                      >
+                        <MenuItem
+                          onClick={() => {
+                            setEditingReplyId({ commentId: comment.id, replyId: reply.id });
+                            setEditReplyMessage(reply.message);
+                            setAnchorReplyEl(null);
+                          }}
                         >
-                          {reply.timestamp}
-                        </Typography>
-                      </Box>
-                      <IconButton
-                        onClick={(e) => {
-                          setAnchorReplyEl(e.currentTarget);
-                          setMenuReplyId({
-                            commentId: comment.id,
-                            replyId: reply.id,
-                          });
-                        }}
-                        size="small"
-                        sx={{ color: "var(--comment-text)" }}
-                      >
-                        <MoreVertIcon />
-                      </IconButton>
+                          แก้ไข
+                        </MenuItem>
+
+                        <MenuItem
+                          onClick={() => {
+                            handleDeleteReplyMenu(comment.id, reply.id);
+                            setAnchorReplyEl(null);
+                          }}
+                        >
+                          ลบ
+                        </MenuItem>
+                      </Menu>
                     </Box>
-
-                    <Menu
-                      anchorEl={anchorReplyEl}
-                      open={
-                        menuReplyId?.replyId === reply.id &&
-                        menuReplyId?.commentId === comment.id
-                      }
-                      onClose={() => {
-                        setAnchorReplyEl(null);
-                        setMenuReplyId(null);
-                      }}
-                    >
-                      <MenuItem
-                        onClick={() => {
-                          setEditingReplyId({
-                            commentId: comment.id,
-                            replyId: reply.id,
-                          });
-                          setAnchorReplyEl(null);
-                        }}
-                      >
-                        แก้ไข
-                      </MenuItem>
-                      <MenuItem
-                        onClick={() => {
-                          handleDeleteReply(comment.id, reply.id);
-                          setAnchorReplyEl(null);
-                        }}
-                      >
-                        ลบ
-                      </MenuItem>
-                    </Menu>
-
-                    {editingReplyId?.replyId === reply.id && (
-                      <Box sx={{ mt: 2 }}>
-                        <TextField
-                          fullWidth
-                          multiline
-                          rows={2}
-                          defaultValue={reply.message}
-                          onBlur={(e) =>
-                            handleEditReply(
-                              comment.id,
-                              reply.id,
-                              e.target.value.trim()
-                            )
-                          }
-                          autoFocus
-                        />
-                      </Box>
-                    )}
                   </Box>
                 ))}
-
-              <Box
-                sx={{ display: "flex", justifyContent: "flex-start", mt: 1 }}
-              >
-                <IconButton
-                  size="small"
-                  onClick={() => setReplyingToCommentId(comment.id)}
-                  sx={{ color: "var(--comment-text)" }}
-                >
-                  <ReplyIcon /> ตอบกลับ
-                </IconButton>
               </Box>
+            )}
 
-              {replyingToCommentId === comment.id && (
-                <TextField
-                  fullWidth
-                  placeholder="ตอบกลับ..."
-                  value={replyMessage}
-                  onChange={(e) => setReplyMessage(e.target.value)}
-                  sx={{
-                    backgroundColor: "var(--comment-bg)",
-                    color: "var(--comment-text)",
-                    "& .MuiInputBase-input": {
-                      color: "var(--comment-text)", // สีข้อความของ Input
-                    },
-                    "& .MuiOutlinedInput-root": {
-                      "& fieldset": {
-                        borderColor: "var(--comment-text)", // สีเส้นขอบของช่องป้อนข้อความ
-                      },
-                      "&:hover fieldset": {
-                        borderColor: "var(--comment-text)",
-                      },
-                      "&.Mui-focused fieldset": {
-                        borderColor: "var(--comment-text)",
-                      },
-                    },
-                  }}
-                  InputProps={{
-                    endAdornment: (
-                      <InputAdornment position="end">
-                        <IconButton onClick={() => handleAddReply(comment.id)}>
-                          <SendIcon />
-                        </IconButton>
-                      </InputAdornment>
-                    ),
-                  }}
-                />
-              )}
-            </Box>
-          ))}
-        </Box>
+            {/* การแสดงช่องกรอกข้อความสำหรับการตอบกลับ */}
+            {replyingToCommentId === comment.id && (  // ตรวจสอบว่า comment นี้เป็นคอมเมนต์ที่เราต้องการตอบกลับหรือไม่
+              <Box key={`reply-input-${comment.id}`} sx={{ ml: 6, mt: 1 }}>
+                <Box sx={{ display: 'flex', gap: 2 }}>
+                  <Avatar
+                    key={`reply-avatar-${comment.id}`}
+                    src={user?.profileImage || ''}
+                    alt={user?.userName || ''}
+                    sx={{ width: 32, height: 32 }}
+                  />
+                  <TextField
+                    key={`reply-input-${comment.id}`}
+                    fullWidth
+                    size="small"
+                    value={replyMessage}
+                    onChange={(e) => setReplyMessage(e.target.value)}  // เก็บข้อความตอบกลับ
+                    placeholder="พิมพ์ข้อความตอบกลับ..."
+                    multiline
+                    maxRows={4}
+                    sx={{
+                      '& .MuiOutlinedInput-root': {
+                        borderRadius: 2,
+                        bgcolor: 'grey.100',
+                      }
+                    }}
+                    onKeyPress={(e) => {
+                      if (e.key === 'Enter' && !e.shiftKey) {
+                        e.preventDefault();
+                        handleAddReply(comment.id);  // ส่งการตอบกลับเมื่อกด Enter
+                      }
+                    }}
+                  />
+                  <IconButton
+                    key={`reply-send-${comment.id}`}
+                    onClick={() => handleAddReply(comment.id)}  // เมื่อคลิกส่งให้เพิ่มการตอบกลับ
+                    disabled={!replyMessage.trim()}  // ปิดปุ่มถ้ายังไม่ได้พิมพ์ข้อความ
+                    color="primary"
+                  >
+                    <SendIcon />
+                  </IconButton>
+                </Box>
+              </Box>
+            )}
+          </Box>
+        ))}
+
       </Container>
     </Box>
   );
