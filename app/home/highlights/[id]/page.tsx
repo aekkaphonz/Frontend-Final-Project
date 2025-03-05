@@ -32,7 +32,7 @@ import GradeIcon from '@mui/icons-material/Grade';
 import GradeOutlinedIcon from '@mui/icons-material/GradeOutlined';
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import FavoriteOutlinedIcon from '@mui/icons-material/FavoriteOutlined';
-
+import Swal from "sweetalert2";
 
 interface User {
   id: string;
@@ -59,7 +59,7 @@ interface Comment {
   timestamp: string;
 }
 
-export default function Page() {
+export default function Page({ params }: { params: { id: string } }) {
   const { user } = useAuth();
   const { isLoggedIn } = useAuth();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -84,7 +84,7 @@ export default function Page() {
     replyId: number;
   } | null>(null);
   const [anchorReplyEl, setAnchorReplyEl] = useState<null | HTMLElement>(null);
-  const params: any = useParams();
+  const [searchQuery, setSearchQuery] = useState("");
   const router = useRouter();
   const [liked, setLiked] = useState(false);
   const [updatedLikes, setUpdatedLikes] = useState(0);
@@ -452,7 +452,17 @@ const handleDeleteReply = async (commentId: number, replyId: number) => {
   // ฟังก์ชันการไลค์
   const handleLike = async () => {
     if (!user?.userId) {
-      alert("กรุณาเข้าสู่ระบบเพื่อทำการไลค์");
+      Swal.fire({
+        title: "แจ้งเตือน!",
+        text: "กรุณาเข้าสู่ระบบเพื่อทำการไลค์",
+        icon: "warning",
+        confirmButtonText: "ตกลง",
+        confirmButtonColor: "#3085d6",
+      }).then((result) => {
+        if (result.isConfirmed) {
+          router.push("/signin");
+        }
+      });
       return;
     }
 
@@ -492,9 +502,25 @@ const handleDeleteReply = async (commentId: number, replyId: number) => {
     );
   };
 
+  const handleSearch = (query: string) => {
+    setSearchQuery(query);
+  };
+
   return (
     <Box sx={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
-      {isLoggedIn ? <AfterLogin /> : <Navbar />}
+      {isLoggedIn ? (
+        <AfterLogin 
+          isOpen={isSidebarOpen}
+          toggleSidebar={toggleSidebar}
+          handleSearch={handleSearch}
+        />
+      ) : (
+        <Navbar 
+          isOpen={isSidebarOpen}
+          toggleSidebar={toggleSidebar}
+          handleSearch={handleSearch}
+        />
+      )}
 
       <Container
         maxWidth="md"

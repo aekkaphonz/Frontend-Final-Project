@@ -35,6 +35,7 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import AppsIcon from "@mui/icons-material/Apps";
 import { Menu, MenuItem, Checkbox } from "@mui/material";
 import { Chip } from "@mui/material";
+import Swal from "sweetalert2";
 
 interface Post {
   _id: string;
@@ -61,19 +62,19 @@ export default function Page() {
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [data, setData] = useState<Post[]>([]);
   const [filteredData, setFilteredData] = useState<Post[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const router = useRouter();
   const { user } = useAuth();
   const userId = user?.userId; // ตรวจสอบว่า userId มีค่าหรือไม่
   const [comments, setComments] = useState<Comment[]>([]);
-  // const [anchorEl, setAnchorEl] = useState(null);
-  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
 
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
-
 
   const handleSearch = (query: string) => {
     setSearchQuery(query);
@@ -90,39 +91,73 @@ export default function Page() {
     setFilteredData(filtered);
   };
 
-
   useEffect(() => {
     async function fetchData() {
+      setLoading(true);
+      setError(null);
       try {
         const res = await fetch("http://localhost:3001/contents/all");
-        if (!res.ok) throw new Error("Failed to fetch data");
+        if (!res.ok) {
+          throw new Error(`HTTP error! status: ${res.status}`);
+        }
         const result: Post[] = await res.json();
+        console.log("Fetched data:", result); // เพิ่ม logging เพื่อ debug
         setData(result);
         setFilteredData(result);
       } catch (error) {
-        console.error("❌ Error fetching posts:", error);
+        console.error("Error fetching posts:", error);
+        setError(error instanceof Error ? error.message : "Failed to fetch posts");
+        Swal.fire({
+          title: "Error!",
+          text: "ไม่สามารถโหลดข้อมูลบทความได้",
+          icon: "error",
+          confirmButtonText: "ตกลง"
+        });
+      } finally {
+        setLoading(false);
       }
     }
     fetchData();
   }, []);
 
   useEffect(() => {
-    if (selectedCategories.length > 0) {
-      // กรองข้อมูลตามแท็กที่เลือก
-      const filtered = data.filter((post) =>
-        selectedCategories.every((category) => post.tags.includes(category))
+    let filtered = [...data];
+    
+    // กรองตาม search query
+    if (searchQuery.trim()) {
+      filtered = filtered.filter(post =>
+        post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        post.detail.toLowerCase().includes(searchQuery.toLowerCase())
       );
-      setFilteredData(filtered);
-    } else {
-      setFilteredData(data); // ถ้าไม่มีการเลือกแท็ก ให้แสดงบทความทั้งหมด
     }
-  }, [selectedCategories, data]);
+    
+    // กรองตาม categories
+    if (selectedCategories.length > 0) {
+      filtered = filtered.filter((post) =>
+        selectedCategories.some((category) => post.tags.includes(category))
+      );
+    }
+    
+    console.log("Filtered data:", filtered); // เพิ่ม logging เพื่อ debug
+    setFilteredData(filtered);
+  }, [searchQuery, selectedCategories, data]);
 
   const handleCardClick = async (postId: string) => {
     if (!userId) {
-      console.error("User ID is not available");
+      Swal.fire({
+        title: "แจ้งเตือน!",
+        text: "กรุณาเข้าสู่ระบบก่อนเข้าชมบทความ",
+        icon: "warning",
+        confirmButtonText: "เข้าสู่ระบบ",
+        confirmButtonColor: "#3085d6",
+      }).then((result) => {
+        if (result.isConfirmed) {
+          router.push("/signin");
+        }
+      });
       return;
     }
+
     try {
       await fetch(`http://localhost:3001/contents/updateViews/${postId}`, {
         method: "POST",
@@ -132,6 +167,12 @@ export default function Page() {
       router.push(`/home/highlights/${postId}`);
     } catch (error) {
       console.error("Error updating views:", error);
+      Swal.fire({
+        title: "Error!",
+        text: "เกิดข้อผิดพลาดในการเข้าชมบทความ",
+        icon: "error",
+        confirmButtonText: "ตกลง"
+      });
     }
   };
   const blogCategories = [
@@ -151,7 +192,7 @@ export default function Page() {
     "อนิเมะ",
     "ภาพยนต์"
   ];
-  const handleClick = (event: React.MouseEvent<HTMLElement>) => {
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
   };
   const handleClose = () => {
@@ -261,20 +302,30 @@ export default function Page() {
             )}
           </Box>
           
-          <Grid container spacing={3} justifyContent="center">
-            {filteredData.length > 0 ? (
-              filteredData.map((post) => (
-                <RegionCard key={post._id} post={post} />
-              ))
-            ) : (
-              <Typography
-                variant="body1"
-                sx={{ textAlign: "center", marginTop: "20px" }}
-              >
-                ไม่พบข้อมูลที่ค้นหา
-              </Typography>
-            )}
-          </Grid>
+          {loading ? (
+            <Box sx={{ display: 'flex', justifyContent: 'center', my: 4 }}>
+              <Typography>กำลังโหลดข้อมูล...</Typography>
+            </Box>
+          ) : error ? (
+            <Box sx={{ display: 'flex', justifyContent: 'center', my: 4 }}>
+              <Typography color="error">{error}</Typography>
+            </Box>
+          ) : (
+            <Grid container spacing={3} justifyContent="center">
+              {filteredData.length > 0 ? (
+                filteredData.map((post) => (
+                  <RegionCard key={post._id} post={post} />
+                ))
+              ) : (
+                <Typography
+                  variant="body1"
+                  sx={{ textAlign: "center", marginTop: "20px" }}
+                >
+                  ไม่พบข้อมูลที่ค้นหา
+                </Typography>
+              )}
+            </Grid>
+          )}
         </Box>
       </Box>
     </Box>
@@ -319,7 +370,7 @@ function Sb({
               <img
                 src="/images/logo-blogs.png"
                 alt="Logo"
-                style={{ maxWidth: "142px", height: "auto" }}
+                style={{ maxWidth: "142px", height: "auto" }} 
               />
             </Link>
           </Box>
@@ -478,8 +529,17 @@ function RegionCard({ post }: { post: Post }) {
 
   const handleCardClick = async (postId: string) => {
     if (!userId) {
-      console.error("User ID is not available");
-      alert("กรุณาเข้าสู่ระบบ");
+      Swal.fire({
+        title: "แจ้งเตือน!",
+        text: "กรุณาเข้าสู่ระบบก่อนเข้าชมบทความ",
+        icon: "warning",
+        confirmButtonText: "เข้าสู่ระบบ",
+        confirmButtonColor: "#3085d6",
+      }).then((result) => {
+        if (result.isConfirmed) {
+          router.push("/signin");
+        }
+      });
       return;
     }
 
@@ -494,6 +554,12 @@ function RegionCard({ post }: { post: Post }) {
       router.push(`/home/highlights/${postId}`);
     } catch (error) {
       console.error("Error updating views:", error);
+      Swal.fire({
+        title: "Error!",
+        text: "เกิดข้อผิดพลาดในการเข้าชมบทความ",
+        icon: "error",
+        confirmButtonText: "ตกลง"
+      });
     }
   };
 
@@ -509,9 +575,6 @@ function RegionCard({ post }: { post: Post }) {
     comments.reduce((acc, comment) => acc + (comment.replies?.length || 0), 0);
 
   return (
-
-
-
     <Grid item xs={12} sm={6} md={4} lg={3}>
       <Card
         sx={{
@@ -529,8 +592,6 @@ function RegionCard({ post }: { post: Post }) {
         }}
       >
         <Box
-
-
           sx={{
             borderRadius: "15px",
             overflow: "hidden",
@@ -564,7 +625,6 @@ function RegionCard({ post }: { post: Post }) {
             </CardContent>
           </CardActionArea>
           <Box
-
             sx={{
               borderRadius: "15px",
               overflow: "hidden",
@@ -622,7 +682,5 @@ function RegionCard({ post }: { post: Post }) {
         </Box>
       </Card>
     </Grid>
-
-
   );
 }
