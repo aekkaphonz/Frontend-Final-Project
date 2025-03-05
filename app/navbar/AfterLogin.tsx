@@ -196,6 +196,7 @@ function NavLogIn({ isOpen, toggleSidebar, handleSearch }: { isOpen: boolean; to
         }}
       >
         <List>
+          <Tooltip title="หน้าหลัก" placement="right">
           <Link href="/home/highlights">
             <ListItem
 
@@ -218,6 +219,7 @@ function NavLogIn({ isOpen, toggleSidebar, handleSearch }: { isOpen: boolean; to
               {isOpen && <ListItemText primary="หน้าหลัก" sx={{ color: "#000" }} />}
             </ListItem>
           </Link>
+          </Tooltip>
           <Link href="/home/article">
             <ListItem
               component="button"

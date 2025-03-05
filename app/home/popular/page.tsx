@@ -153,6 +153,23 @@ export default function PopularPage() {
         />
       )}
       <Container maxWidth="lg" sx={{ mt: 10, mb: 4 }}>
+
+        <Typography
+                    variant="h5"
+                    gutterBottom
+                    sx={{
+                      fontWeight: "bold",
+                      textAlign: "center",
+                      color: "#98c9a3",
+                      marginBottom: "30px",
+                      borderBottom: "2px solid #c9dbc4",
+                      display: "inline-block",
+                      paddingBottom: "5px",
+                    }}
+                  >
+                    บทความมาแรง
+                  </Typography>
+
         {loading ? (
           <Box sx={{ display: 'flex', justifyContent: 'center', my: 4 }}>
             <Typography>กำลังโหลด...</Typography>
@@ -162,7 +179,9 @@ export default function PopularPage() {
             ไม่พบบทความ
           </Typography>
         ) : (
+          
           <Grid container spacing={3}>
+            
             {posts.map((post, index) => (
               <Grid item xs={12} sm={6} md={4} key={post._id}>
                 <Card 
@@ -177,6 +196,7 @@ export default function PopularPage() {
                     }
                   }}
                 >
+                  
                   <CardActionArea onClick={() => handlePostClick(post._id)}>
                     <Box sx={{ position: 'relative' }}>
                       <CardMedia

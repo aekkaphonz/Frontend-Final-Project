@@ -9,6 +9,12 @@ import {
   Button,
   IconButton,
   Container,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  Chip,
+  Stack,
 } from "@mui/material";
 import CommentIcon from "@mui/icons-material/Comment";
 import FavoriteIcon from "@mui/icons-material/Favorite";
@@ -44,12 +50,16 @@ interface Post {
 export default function Page() {
   const { isLoggedIn, user } = useAuth();
   const [posts, setPosts] = useState<Post[]>([]);
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false); 
+  const [filteredPosts, setFilteredPosts] = useState<Post[]>([]);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [liked, setLiked] = useState<{ [key: string]: boolean }>({});
   const [updatedLikes, setUpdatedLikes] = useState<{ [key: string]: number }>({});
+  const [selectedTag, setSelectedTag] = useState<string>("ทั้งหมด");
+  const [sortBy, setSortBy] = useState<string>("newest");
+  const [availableTags, setAvailableTags] = useState<string[]>([]);
   const router = useRouter();
 
   const toggleSidebar = () => {
@@ -76,13 +86,13 @@ export default function Page() {
       if (!res.ok) throw new Error("Failed to update like status");
 
       const updatedPost = await res.json();
-      
+
       // อัปเดตสถานะไลค์
       setLiked(prev => ({
         ...prev,
         [postId]: updatedPost.likedUsers.includes(user.userId)
       }));
-      
+
       // อัปเดตจำนวนไลค์
       setUpdatedLikes(prev => ({
         ...prev,
@@ -90,7 +100,7 @@ export default function Page() {
       }));
 
       // อัพเดท state ของโพสต์
-      setPosts(prevPosts => 
+      setPosts(prevPosts =>
         prevPosts.map(post => {
           if (post._id === postId) {
             return {
@@ -115,6 +125,23 @@ export default function Page() {
     }
   };
 
+  // เพิ่มฟังก์ชันการจัดเรียง
+  const sortPosts = (posts: Post[], sortType: string) => {
+    const sortedPosts = [...posts];
+    switch (sortType) {
+      case "newest":
+        return sortedPosts.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+      case "oldest":
+        return sortedPosts.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
+      case "mostLikes":
+        return sortedPosts.sort((a, b) => (b.likes?.length || 0) - (a.likes?.length || 0));
+      case "mostViews":
+        return sortedPosts.sort((a, b) => (b.views?.length || 0) - (a.views?.length || 0));
+      default:
+        return sortedPosts;
+    }
+  };
+
   useEffect(() => {
     const fetchPosts = async () => {
       try {
@@ -124,17 +151,24 @@ export default function Page() {
         }
         const data = await response.json();
         setPosts(data);
+        setFilteredPosts(data);
 
-        // ตั้งค่าสถานะไลค์เริ่มต้นสำหรับแต่ละโพสต์
+        // รวบรวมแท็กที่มีทั้งหมด
+        const tags = new Set<string>();
+        data.forEach((post: Post) => {
+          post.tags?.forEach(tag => tags.add(tag));
+        });
+        setAvailableTags(["ทั้งหมด", ...Array.from(tags)]);
+
         if (user?.userId) {
           const initialLikedState: { [key: string]: boolean } = {};
           const initialLikesCount: { [key: string]: number } = {};
-          
+
           data.forEach((post: Post) => {
             initialLikedState[post._id] = post.likes?.includes(user.userId) || false;
             initialLikesCount[post._id] = post.likes?.length || 0;
           });
-          
+
           setLiked(initialLikedState);
           setUpdatedLikes(initialLikesCount);
         }
@@ -150,15 +184,25 @@ export default function Page() {
     fetchPosts();
   }, [user]);
 
+  // เพิ่มฟังก์ชันการกรองตามแท็ก
+  useEffect(() => {
+    let filtered = [...posts];
+    if (selectedTag !== "ทั้งหมด") {
+      filtered = filtered.filter(post => post.tags?.includes(selectedTag));
+    }
+    const sorted = sortPosts(filtered, sortBy);
+    setFilteredPosts(sorted);
+  }, [selectedTag, sortBy, posts]);
+
   // แปลงเวลาให้เป็นรูปแบบที่ต้องการ
   const formatTimeAgo = (createdAt: string) => {
     if (!createdAt) return '';
-    
+
     try {
       const now = new Date();
       const postDate = new Date(createdAt);
       const diffInMinutes = Math.floor((now.getTime() - postDate.getTime()) / (1000 * 60));
-      
+
       if (diffInMinutes < 60) {
         return `${diffInMinutes} นาที`;
       } else if (diffInMinutes < 1440) {
@@ -190,6 +234,7 @@ export default function Page() {
           />
         )}
 
+
         {/* Main Content */}
         <Box
           component="main"
@@ -202,6 +247,54 @@ export default function Page() {
             paddingBottom: 2,
           }}
         >
+          <Typography
+            variant="h5"
+            gutterBottom
+            sx={{
+              fontWeight: "bold",
+              textAlign: "center",
+              color: "#98c9a3",
+              marginBottom: "30px",
+              borderBottom: "2px solid #c9dbc4",
+              display: "inline-block",
+              paddingBottom: "5px",
+            }}
+          >
+            บทความน่าสนใจ
+          </Typography>
+
+          {/* เพิ่มส่วนตัวกรองและการเรียงลำดับ */}
+          <Box sx={{ mb: 3, display: 'flex', gap: 2, flexWrap: 'wrap' }}>
+            <FormControl size="small" sx={{ minWidth: 200 }}>
+              <InputLabel>หมวดหมู่</InputLabel>
+              <Select
+                value={selectedTag}
+                onChange={(e) => setSelectedTag(e.target.value)}
+                label="หมวดหมู่"
+              >
+                {availableTags.map((tag) => (
+                  <MenuItem key={tag} value={tag}>
+                    {tag}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+
+            <FormControl size="small" sx={{ minWidth: 200 }}>
+              <InputLabel>เรียงลำดับ</InputLabel>
+              <Select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value)}
+                label="เรียงลำดับ"
+              >
+                <MenuItem value="newest">ล่าสุด</MenuItem>
+                <MenuItem value="oldest">เก่าสุด</MenuItem>
+                <MenuItem value="mostLikes">ยอดไลค์มากที่สุด</MenuItem>
+                <MenuItem value="mostViews">ยอดดูมากที่สุด</MenuItem>
+              </Select>
+            </FormControl>
+          </Box>
+
           {loading ? (
             <Box sx={{ display: 'flex', justifyContent: 'center', my: 4 }}>
               <Typography>กำลังโหลด...</Typography>
@@ -210,18 +303,18 @@ export default function Page() {
             <Box sx={{ display: 'flex', justifyContent: 'center', my: 4 }}>
               <Typography color="error">{error}</Typography>
             </Box>
-          ) : posts.length === 0 ? (
+          ) : filteredPosts.length === 0 ? (
             <Box sx={{ display: 'flex', justifyContent: 'center', my: 4 }}>
               <Typography>ไม่พบบทความ</Typography>
             </Box>
           ) : (
-            <List sx={{ 
+            <List sx={{
               bgcolor: 'background.paper',
               borderRadius: 1,
               boxShadow: 1,
               overflow: 'hidden'
             }}>
-              {posts.map((post) => (
+              {filteredPosts.map((post) => (
                 <ListItem
                   key={post._id}
                   alignItems="flex-start"
@@ -235,10 +328,10 @@ export default function Page() {
                     padding: 2
                   }}
                 >
-                  <Box sx={{ 
-                    width: '100%', 
-                    display: 'flex', 
-                    gap: 2 
+                  <Box sx={{
+                    width: '100%',
+                    display: 'flex',
+                    gap: 2
                   }}>
                     {/* รูปภาพประจำโพสต์ */}
                     <Box
@@ -282,7 +375,7 @@ export default function Page() {
                       <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
                         <Typography
                           variant="subtitle1"
-                          sx={{ 
+                          sx={{
                             fontWeight: 'bold',
                             flex: 1,
                             overflow: 'hidden',
@@ -300,7 +393,7 @@ export default function Page() {
                           {formatTimeAgo(post.createdAt)}
                         </Typography>
                       </Box>
-                      
+
                       {/* แสดงส่วนของเนื้อหาโพสต์ */}
                       <Typography
                         variant="body2"
@@ -316,7 +409,7 @@ export default function Page() {
                       >
                         {post.detail || 'ไม่มีรายละเอียด'}
                       </Typography>
-                      
+
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mt: 'auto' }}>
                         <Box sx={{ display: 'flex', alignItems: 'center' }}>
                           <CommentIcon fontSize="small" sx={{ mr: 0.5, color: 'text.secondary' }} />
@@ -352,6 +445,22 @@ export default function Page() {
                       </Box>
                     </Box>
                   </Box>
+
+                  {/* แสดงแท็กของบทความ */}
+                  <Stack direction="row" spacing={1} sx={{ mt: 1 }}>
+                    {post.tags?.map((tag) => (
+                      <Chip
+                        key={tag}
+                        label={tag}
+                        size="small"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setSelectedTag(tag);
+                        }}
+                        sx={{ backgroundColor: '#c9dbc4' }}
+                      />
+                    ))}
+                  </Stack>
                 </ListItem>
               ))}
             </List>

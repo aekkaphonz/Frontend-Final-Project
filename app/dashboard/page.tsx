@@ -31,11 +31,13 @@ const Item = styled(Paper)(({ theme }) => ({
 export default function Page() {
   const { user, isLoggedIn } = useAuth();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [userName, setUserName] = useState("กำลังโหลด..."); // เก็บชื่อผู้ใช้งาน
+  const [userName, setUserName] = useState("กำลังโหลด...");
   const [profileImage, setProfileImage] = useState("");
   const [totalViews, setTotalViews] = useState(0);
   const [totalPosts, setTotalPosts] = useState(0);
   const [totalComments, setTotalComments] = useState(0);
+  const [totalLikes, setTotalLikes] = useState(0);
+  const [searchQuery, setSearchQuery] = useState("");
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
@@ -63,7 +65,7 @@ export default function Page() {
       if (!response.ok) throw new Error("Failed to fetch posts");
 
       const posts = await response.json();
-      setTotalPosts(posts.length); // ✅ นับจำนวนโพสต์ทั้งหมด
+      setTotalPosts(posts.length); // นับจำนวนโพสต์ทั้งหมด
     } catch (error) {
       console.error("Error fetching total posts:", error);
     }
@@ -115,6 +117,34 @@ export default function Page() {
     }
   };
 
+  const fetchTotalLikes = async () => {
+    if (!user?.userId) return;
+  
+    try {
+      const response = await fetch(`http://localhost:3001/contents?userId=${user.userId}`);
+      if (!response.ok) throw new Error("Failed to fetch posts");
+  
+      const posts = await response.json();
+  
+      const total = posts.reduce((sum: number, post: any) => {
+        if (typeof post.likeCount === "number") {
+          return sum + post.likeCount;
+        }
+        return sum;
+      }, 0);
+  
+      setTotalLikes(total);
+    } catch (error) {
+      console.error("Error fetching total likes:", error);
+    }
+  };
+  
+
+  const handleSearch = (query: string) => {
+    setSearchQuery(query);
+    // ทำการค้นหาตาม query ถ้าต้องการ
+  };
+
   useEffect(() => {
     fetchUserData();
   }, []);
@@ -124,6 +154,7 @@ export default function Page() {
       fetchTotalPosts();
       fetchTotalViews();
       fetchTotalComments();
+      fetchTotalLikes();
     }
   }, [isLoggedIn, user?.userId]);
 
@@ -136,9 +167,16 @@ export default function Page() {
       }}
     >
       {isLoggedIn ? (
-        <AutherAfterLogin isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
+        <AutherAfterLogin 
+          isOpen={isSidebarOpen} 
+          toggleSidebar={toggleSidebar}
+        />
       ) : (
-        <Navbar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
+        <Navbar 
+          isOpen={isSidebarOpen} 
+          toggleSidebar={toggleSidebar}
+          handleSearch={handleSearch}
+        />
       )}
 
       <Grid
@@ -207,12 +245,12 @@ export default function Page() {
                 </Typography>
               </Box>
 
-              <Box sx={{ my: 1, textAlign: "right", ml: "auto" }}>
+              {/* <Box sx={{ my: 1, textAlign: "right", ml: "auto" }}>
                 <Typography sx={{ fontSize: 14, color: "gray" }}>
                   จำนวนผู้ติดตาม
                 </Typography>
                 <Typography sx={{ fontSize: 18, color: "black" }}>0</Typography>
-              </Box>
+              </Box> */}
             </Box>
           </Item>
         </Grid>
@@ -417,7 +455,7 @@ export default function Page() {
                 color: "#FF8383",
               }}
             >
-              0
+              {totalLikes}
             </Typography>
             <ThumbUpIcon
               id="profile-icon"

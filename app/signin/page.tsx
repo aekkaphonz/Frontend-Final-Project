@@ -219,7 +219,7 @@ function signin() {
                 ลงทะเบียนสมัครสมาชิก
               </a>
             </div>
-            <div className="flex justify-center items-center relative">
+            {/* <div className="flex justify-center items-center relative">
               <hr className="w-4/5 border-t-1 border-gray-400" />
               <span className="absolute bg-white px-2">หรือ</span>
             </div>
@@ -254,7 +254,7 @@ function signin() {
                 />
                 Login with Google
               </Button>
-            </div>
+            </div> */}
           </Box>
         </CardContent>
       </Card>
